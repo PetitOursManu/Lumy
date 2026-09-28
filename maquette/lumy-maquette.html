@@ -1,0 +1,1915 @@
+<title>Maquette Lumy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* ── Tokens ─────────────────────────────────────────────────────────────
+   The brand colour is the only thing an application has to give Lumy:
+   --brand-l for the light theme, --brand-d for the dark one. Everything
+   else is neutral and shared by every documentation site. */
+:root{
+  --brand-l:#20796c; --brand-d:#2dc7b0;
+  --bg:#ffffff; --bg-subtle:#fafafa; --card:#ffffff;
+  --fg:#0b0b0d; --fg-2:#3b3b43; --muted:#f4f4f5; --muted-fg:#6b6b74;
+  --border:#e7e7ea; --border-strong:#d4d4d8;
+  --code-bg:#fafafa; --code-fg:#27272a;
+  --primary:var(--brand-l); --on-primary:#ffffff;
+  --note:#2563eb; --tip:#15803d; --warn:#b45309; --why:#7c3aed; --ok:#15803d; --bad:#dc2626;
+  --str:#b45309; --flag:#7c3aed;
+  --shadow-lg:0 24px 64px -18px rgb(0 0 0 / .28), 0 2px 6px rgb(0 0 0 / .06);
+  --header-h:56px;
+  --sans:"Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:"Geist Mono", ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#09090b; --bg-subtle:#0e0e11; --card:#111114;
+    --fg:#f4f4f5; --fg-2:#d0d0d6; --muted:#1a1a1e; --muted-fg:#a1a1aa;
+    --border:#232328; --border-strong:#34343b;
+    --code-bg:#0e0e11; --code-fg:#e4e4e7;
+    --primary:var(--brand-d); --on-primary:#06120f;
+    --note:#60a5fa; --tip:#4ade80; --warn:#fbbf24; --why:#a78bfa; --ok:#4ade80; --bad:#f87171;
+    --str:#fbbf24; --flag:#c4b5fd;
+    --shadow-lg:0 24px 64px -18px rgb(0 0 0 / .7), 0 2px 6px rgb(0 0 0 / .4);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#09090b; --bg-subtle:#0e0e11; --card:#111114;
+  --fg:#f4f4f5; --fg-2:#d0d0d6; --muted:#1a1a1e; --muted-fg:#a1a1aa;
+  --border:#232328; --border-strong:#34343b;
+  --code-bg:#0e0e11; --code-fg:#e4e4e7;
+  --primary:var(--brand-d); --on-primary:#06120f;
+  --note:#60a5fa; --tip:#4ade80; --warn:#fbbf24; --why:#a78bfa; --ok:#4ade80; --bad:#f87171;
+  --str:#fbbf24; --flag:#c4b5fd;
+  --shadow-lg:0 24px 64px -18px rgb(0 0 0 / .7), 0 2px 6px rgb(0 0 0 / .4);
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none !important}
+html{scroll-padding-top:120px;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+#lumy{min-height:100vh;background:var(--bg)}
+#lumy[data-lang="fr"] [lang="en"], #lumy[data-lang="en"] [lang="fr"]{display:none !important}
+button{font:inherit;color:inherit}
+a{color:inherit}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:6px}
+::selection{background:color-mix(in srgb,var(--primary) 24%,transparent)}
+.i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.muted{color:var(--muted-fg)}
+.grow{flex:1}
+kbd{font:500 11px/1 var(--mono);padding:3px 5px;border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;background:var(--bg);color:var(--muted-fg)}
+.chip{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:6px;border:1px solid var(--border);color:var(--muted-fg);background:var(--bg);vertical-align:middle;line-height:1.3}
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:7px;height:34px;padding-inline:12px;border:1px solid var(--border);border-radius:9px;background:var(--card);color:var(--fg);font-size:13.5px;font-weight:500;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--muted)}
+.btn-sm{height:30px;padding-inline:10px;font-size:13px}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.btn-primary:hover{background:color-mix(in srgb,var(--primary) 86%,var(--fg))}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;min-width:36px;padding-inline:9px;border:1px solid transparent;border-radius:10px;background:none;cursor:pointer;color:var(--fg-2);font-size:14px;font-weight:500;text-decoration:none;white-space:nowrap}
+.icon-btn:hover{background:var(--muted);color:var(--fg)}
+.linkish{border:0;background:none;padding:0;color:var(--muted-fg);font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.linkish:hover{color:var(--fg)}
+
+/* ── Demo strip ───────────────────────────────────────────────────────── */
+.demo-bar{display:flex;align-items:center;justify-content:center;gap:10px;padding-block:7px;padding-inline:16px;font-size:12.5px;line-height:1.45;background:var(--fg);color:var(--bg);text-align:center}
+.demo-bar b{font-weight:600}
+.demo-bar button{background:none;border:0;color:inherit;opacity:.7;cursor:pointer;padding:2px;display:inline-flex;flex:none}
+.demo-bar button:hover{opacity:1}
+
+/* ── Top bar ──────────────────────────────────────────────────────────── */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;height:var(--header-h);display:flex;align-items:center;gap:6px;padding-inline:20px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:saturate(1.4) blur(12px);backdrop-filter:saturate(1.4) blur(12px)}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;font-weight:600;letter-spacing:-.01em;margin-right:10px;white-space:nowrap;font-size:15px}
+.brand img{width:24px;height:24px;border-radius:6px;display:block}
+.brand .sep{color:var(--border-strong);font-weight:400}
+.brand .docs{color:var(--muted-fg);font-weight:500}
+.ver{font:500 11px/1 var(--mono);padding:4px 6px;border:1px solid var(--border);border-radius:6px;color:var(--muted-fg)}
+.topnav{display:flex;gap:2px;margin-left:10px}
+.topnav a{padding:6px 10px;border-radius:8px;font-size:14px;color:var(--muted-fg);text-decoration:none;font-weight:500}
+.topnav a:hover,.topnav a[aria-current]{color:var(--fg)}
+.search-btn{display:flex;align-items:center;gap:8px;height:36px;width:250px;padding-inline:10px 6px;border:1px solid var(--border);border-radius:10px;background:var(--bg-subtle);color:var(--muted-fg);font-size:14px;cursor:pointer;text-align:left;margin-right:4px}
+.search-btn:hover{border-color:var(--border-strong)}
+.search-btn .ph{flex:1}
+.btn-ai{border-color:var(--border)}
+.btn-ai .i{color:var(--primary)}
+.theme-btn[data-mode="dark"] .i-moon,.theme-btn[data-mode="light"] .i-sun{display:none}
+.menu-btn{display:none}
+.lang-code{font:600 12px/1 var(--mono);letter-spacing:.02em}
+
+.menu-wrap{position:relative}
+.menu{position:absolute;right:0;top:calc(100% + 6px);min-width:230px;padding:6px;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);z-index:50}
+.menu button,.menu a{display:flex;width:100%;align-items:center;gap:10px;padding:8px 10px;border:0;background:none;border-radius:8px;text-align:left;cursor:pointer;font-size:14px;color:var(--fg);text-decoration:none}
+.menu button:hover,.menu a:hover{background:var(--muted)}
+.menu .check{margin-left:auto;color:var(--primary);visibility:hidden}
+.menu [aria-checked="true"] .check{visibility:visible}
+.menu .menu-note{font-size:12px;line-height:1.45;color:var(--muted-fg);padding:8px 10px 4px;border-top:1px solid var(--border);margin-top:4px}
+.menu .mi-sub{display:block;font-size:12px;color:var(--muted-fg)}
+
+/* ── Layout ───────────────────────────────────────────────────────────── */
+.layout{display:grid;grid-template-columns:268px minmax(0,1fr) 236px;max-width:1440px;margin-inline:auto}
+.main{min-width:0}
+.scrim{position:fixed;inset:0;z-index:55;background:rgb(0 0 0 / .4)}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────── */
+.sidebar{position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top,0px));align-self:start;height:calc(100vh - var(--header-h));overflow-y:auto;padding-block:20px 24px;padding-inline:16px 14px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:20px;font-size:14px}
+.sb-mobile-head{display:none;align-items:center;justify-content:space-between;gap:8px}
+.aud-label{display:block;font-size:12px;color:var(--muted-fg);margin:0 0 6px;padding-inline:2px}
+.seg{display:flex;gap:2px;padding:3px;background:var(--muted);border-radius:10px}
+.seg button{flex:1 1 auto;border:0;background:none;padding:5px 6px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--muted-fg);cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--fg);box-shadow:0 1px 2px rgb(0 0 0 / .1)}
+.sb-nav{display:grid;gap:20px}
+.sb-title{margin:0 0 6px;padding-inline:10px;font-size:12.5px;font-weight:600;color:var(--fg)}
+.sb-group ul{list-style:none;margin:0;padding:0;display:grid;gap:1px}
+.sb-group a{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;text-decoration:none;color:var(--muted-fg);line-height:1.35}
+.sb-group a:hover{background:var(--muted);color:var(--fg)}
+.sb-group a.is-current{background:color-mix(in srgb,var(--primary) 11%,transparent);color:var(--primary);font-weight:500}
+.sb-group li.is-filtered,.sb-group.is-empty{display:none}
+.badge-new{margin-left:auto;font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:999px;background:color-mix(in srgb,var(--primary) 14%,transparent);color:var(--primary)}
+.sb-brand{margin-top:auto;padding:12px 10px 0;border-top:1px solid var(--border)}
+.sb-brand p{margin:0 0 8px;font-size:12px;color:var(--muted-fg);display:flex;align-items:center;gap:6px}
+.swatches{display:flex;gap:8px}
+.swatches button{width:24px;height:24px;border-radius:50%;border:2px solid var(--bg);background:var(--sw);cursor:pointer;box-shadow:0 0 0 1px var(--border-strong);padding:0}
+.swatches button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--fg)}
+
+/* ── Right-hand table of contents ─────────────────────────────────────── */
+.toc{position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top,0px));align-self:start;max-height:calc(100vh - var(--header-h));overflow-y:auto;padding-block:38px 24px;padding-inline:8px 20px;font-size:13.5px}
+.toc-title{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;margin:0 0 10px}
+.toc ul{list-style:none;margin:0;padding:0;border-left:1px solid var(--border)}
+.toc li a{display:block;padding:5px 0 5px 12px;margin-left:-1px;border-left:1px solid transparent;color:var(--muted-fg);text-decoration:none;line-height:1.4}
+.toc li a:hover{color:var(--fg)}
+.toc li a.is-active{color:var(--primary);border-left-color:var(--primary);font-weight:500}
+.toc-extra{margin-top:22px;padding-top:16px;border-top:1px solid var(--border);display:grid;gap:2px}
+.toc-extra button,.toc-extra a{display:flex;align-items:center;gap:8px;padding:5px 0;border:0;background:none;color:var(--muted-fg);cursor:pointer;font-size:13px;text-align:left;text-decoration:none}
+.toc-extra button:hover,.toc-extra a:hover{color:var(--fg)}
+
+.toc-bar{display:none;position:sticky;top:calc(var(--header-h) + env(safe-area-inset-top,0px));z-index:30;background:color-mix(in srgb,var(--bg) 90%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding-inline:40px}
+.toc-bar > button{display:flex;align-items:center;gap:8px;width:100%;height:44px;border:0;background:none;cursor:pointer;font-size:13.5px;text-align:left;padding:0}
+.tb-k{color:var(--muted-fg);flex:none}
+.tb-cur{font-weight:500;color:var(--fg);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toc-bar > button .i{transition:transform .2s;color:var(--muted-fg)}
+.toc-bar > button[aria-expanded="true"] .i{transform:rotate(180deg)}
+.toc-bar ul{list-style:none;margin:0;padding:0 0 10px;display:grid}
+.toc-bar ul a{display:block;padding:7px 0;color:var(--muted-fg);text-decoration:none;font-size:14px}
+.toc-bar ul a.is-active{color:var(--primary);font-weight:500}
+
+/* ── Article ──────────────────────────────────────────────────────────── */
+.content{max-width:768px;margin-inline:auto;padding-block:36px 56px;padding-inline:40px}
+.eyebrow{font-size:13px;font-weight:600;color:var(--primary);margin-bottom:6px}
+.doc h1{font-size:34px;line-height:1.15;letter-spacing:-.025em;font-weight:700;margin:0 0 10px;text-wrap:balance}
+.lead{font-size:17.5px;color:var(--muted-fg) !important;margin:0 0 18px !important;line-height:1.55}
+.page-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding-bottom:22px;margin-bottom:26px;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted-fg)}
+.meta{display:inline-flex;align-items:center;gap:6px}
+.page-actions{margin-left:auto;display:flex}
+.page-actions .btn{border-radius:9px 0 0 9px}
+.page-actions .btn + .menu-wrap .btn{border-radius:0 9px 9px 0;border-left:0;padding-inline:8px}
+.doc h2{font-size:23px;line-height:1.3;letter-spacing:-.018em;font-weight:650;margin:52px 0 12px;scroll-margin-top:120px;text-wrap:balance}
+.doc h2 .anchor{margin-left:8px;color:var(--muted-fg);opacity:0;text-decoration:none;font-weight:400;border:0;background:none;cursor:pointer;padding:0;font-size:.85em}
+.doc h2:hover .anchor,.doc h2 .anchor:focus-visible{opacity:1}
+.doc p{margin:0 0 14px;color:var(--fg-2)}
+.doc strong{color:var(--fg);font-weight:600}
+.doc a{color:var(--primary);text-underline-offset:3px;text-decoration-thickness:1px}
+.doc :not(pre) > code, .dlg-body :not(pre) > code, .gloss code{font:500 .86em/1 var(--mono);padding:.2em .4em;border-radius:6px;background:var(--muted);border:1px solid var(--border);color:var(--fg);overflow-wrap:anywhere}
+.flash{animation:ring 1.6s ease}
+@keyframes ring{0%{box-shadow:0 0 0 5px color-mix(in srgb,var(--primary) 40%,transparent);border-radius:8px}100%{box-shadow:0 0 0 5px transparent;border-radius:8px}}
+
+.trans-banner{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 0 26px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--warn) 32%,transparent);background:color-mix(in srgb,var(--warn) 7%,var(--bg));border-radius:12px;font-size:13.5px;color:var(--fg-2);line-height:1.5}
+.trans-banner > .i{color:var(--warn)}
+.trans-banner > div{flex:1 1 260px}
+
+/* Code */
+.code{margin:14px 0 18px;border:1px solid var(--border);border-radius:12px;background:var(--code-bg);overflow:hidden}
+.code-head{display:flex;align-items:center;gap:8px;height:40px;padding-inline:14px 6px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted-fg)}
+.code pre{margin:0;padding:14px 16px;overflow-x:auto;font:13.5px/1.7 var(--mono);color:var(--code-fg)}
+.tok-c{color:var(--muted-fg)} .tok-k{color:var(--primary)} .tok-s{color:var(--str)} .tok-f{color:var(--flag)}
+.copy{margin-left:auto;display:inline-flex;align-items:center;gap:6px;height:28px;padding-inline:8px;border:0;border-radius:7px;background:none;color:var(--muted-fg);cursor:pointer;font-size:12px}
+.copy:hover{background:var(--muted);color:var(--fg)}
+.copy .i-check{display:none}
+.copy.done{color:var(--ok)}
+.copy.done .i-copy{display:none}
+.copy.done .i-check{display:block}
+var{font-style:normal;color:var(--primary);background:color-mix(in srgb,var(--primary) 12%,transparent);border-radius:4px;padding:0 3px;transition:background .3s}
+var.pulse{background:color-mix(in srgb,var(--primary) 32%,transparent)}
+
+/* Callouts */
+.callout{--c:var(--note);display:flex;gap:12px;margin:16px 0 20px;padding:13px 16px;border:1px solid color-mix(in srgb,var(--c) 28%,transparent);background:color-mix(in srgb,var(--c) 7%,var(--bg));border-radius:12px;font-size:14.5px}
+.callout > .i{color:var(--c);margin-top:4px}
+.callout p{margin:0 !important;color:var(--fg-2)}
+.callout.tip{--c:var(--tip)} .callout.warn{--c:var(--warn)}
+.why{margin:16px 0 20px;border:1px solid var(--border);border-radius:12px;background:var(--bg-subtle)}
+.why summary{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;font-weight:500;font-size:14.5px;list-style:none;border-radius:12px}
+.why summary::-webkit-details-marker{display:none}
+.why summary .i-why{color:var(--why)}
+.why summary .chev{margin-left:auto;transition:transform .2s;color:var(--muted-fg)}
+.why[open] summary .chev{transform:rotate(180deg)}
+.why-k{display:block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--why);line-height:1.2}
+.why-body{padding:0 16px 14px 42px;font-size:14.5px}
+.why-body p{margin:0 !important}
+
+/* Tabs */
+.tabs{margin:14px 0 20px}
+.tabs-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:10px}
+.tablist{display:inline-flex;max-width:100%;overflow-x:auto;padding:3px;gap:2px;background:var(--muted);border-radius:10px}
+.tablist [role="tab"]{border:0;background:none;padding:6px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--muted-fg);cursor:pointer;white-space:nowrap}
+.tablist [role="tab"][aria-selected="true"]{background:var(--card);color:var(--fg);box-shadow:0 1px 2px rgb(0 0 0 / .1)}
+.tab-hint{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted-fg)}
+[role="tabpanel"] > .code:first-child{margin-top:0}
+
+/* Your values */
+.vars{margin:14px 0 16px;border:1px dashed color-mix(in srgb,var(--primary) 50%,var(--border));border-radius:12px;padding:14px 16px;background:color-mix(in srgb,var(--primary) 4%,var(--bg))}
+.vars-head{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-bottom:12px;font-size:14px}
+.vars-head .i{color:var(--primary)}
+.vars-head span{color:var(--muted-fg);font-size:13px}
+.vars-fields{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.field{display:grid;gap:5px;font-size:12.5px;font-weight:500;color:var(--fg-2);flex:1 1 200px}
+.field.small{flex:0 1 120px}
+.field input{height:36px;padding-inline:10px;border:1px solid var(--border-strong);border-radius:9px;background:var(--bg);color:var(--fg);font:14px var(--mono);width:100%;min-width:0}
+.field input:focus{outline:2px solid color-mix(in srgb,var(--primary) 60%,transparent);outline-offset:0;border-color:var(--primary)}
+
+/* Steps */
+.steps-wrap{margin:14px 0 20px}
+.steps-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:16px;font-size:13px;color:var(--muted-fg)}
+.steps-bar{flex:1 1 120px;height:6px;border-radius:99px;background:var(--muted);overflow:hidden}
+.steps-bar i{display:block;height:100%;width:0;background:var(--primary);border-radius:inherit;transition:width .35s ease}
+.steps-count{font-variant-numeric:tabular-nums;font-weight:600;color:var(--fg)}
+.steps{list-style:none;margin:0;padding:0}
+.step{position:relative;display:grid;grid-template-columns:32px minmax(0,1fr);gap:14px;padding-bottom:18px}
+.step:not(:last-child)::before{content:"";position:absolute;left:15.5px;top:38px;bottom:4px;width:1px;background:var(--border)}
+.step-check{width:32px;height:32px;border-radius:50%;border:1px solid var(--border-strong);background:var(--bg);display:grid;place-items:center;cursor:pointer;font:600 13px var(--sans);color:var(--fg);padding:0;transition:background .2s,border-color .2s}
+.step-check:hover{border-color:var(--primary)}
+.step-check .i{display:none;width:15px;height:15px;stroke-width:2.4}
+.step.is-done .step-check{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.step.is-done .step-check .n{display:none}
+.step.is-done .step-check .i{display:block}
+.step-title{font-weight:600;color:var(--fg) !important;margin:4px 0 4px !important}
+.step-body p{margin:0 0 6px}
+.step.is-done .step-title::after{content:attr(data-done);margin-left:8px;font-size:11px;font-weight:600;color:var(--primary);letter-spacing:.03em}
+
+/* Annotated screenshot */
+.hs{margin:16px 0 22px}
+.hs-stage{position:relative;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--muted)}
+.hs-stage img{display:block;width:100%;height:auto}
+.hs-dot{position:absolute;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;border:2px solid #fff;background:var(--primary);color:var(--on-primary);font:600 12px/1 var(--sans);display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 8px rgb(0 0 0 / .35);padding:0;transition:transform .2s}
+.hs-dot:hover{transform:translate(-50%,-50%) scale(1.1)}
+.hs-dot.is-active{transform:translate(-50%,-50%) scale(1.15);animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--primary) 60%,transparent),0 2px 8px rgb(0 0 0 / .35)}100%{box-shadow:0 0 0 16px transparent,0 2px 8px rgb(0 0 0 / .35)}}
+.hs-zoom{position:absolute;right:10px;bottom:10px;display:inline-flex;align-items:center;gap:6px;height:30px;padding-inline:10px;border:1px solid var(--border);border-radius:8px;background:color-mix(in srgb,var(--card) 90%,transparent);color:var(--fg);font-size:12.5px;font-weight:500;cursor:pointer}
+.hs-panel{margin-top:10px;border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:var(--card)}
+.hs-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.hs-num{width:22px;height:22px;border-radius:50%;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;font-size:12px;font-weight:600;flex:none}
+.hs-title{font-weight:600;color:var(--fg)}
+.hs-count{margin-left:auto;font-size:12.5px;color:var(--muted-fg);font-variant-numeric:tabular-nums;flex:none}
+.hs-text{margin:0 0 12px !important;font-size:14.5px}
+.hs-nav{display:flex;gap:8px;justify-content:flex-end}
+
+/* Glossary terms */
+.term{border:0;background:none;padding:0;font:inherit;color:inherit;cursor:help;text-decoration:underline dotted;text-decoration-color:color-mix(in srgb,var(--primary) 75%,transparent);text-decoration-thickness:1.5px;text-underline-offset:4px}
+.term:hover{color:var(--primary)}
+.gloss{position:fixed;z-index:70;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);font-size:13.5px;line-height:1.55}
+.gloss .gk{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-fg)}
+.gloss .gt{font-weight:600;font-size:15px;margin:2px 0 4px;color:var(--fg)}
+.gloss p{margin:0 0 8px;color:var(--fg-2)}
+.gloss .gm{border:0;background:none;padding:0;color:var(--primary);font-size:13px;font-weight:500;cursor:pointer}
+
+/* Tables */
+.table-wrap{margin:14px 0 18px;overflow-x:auto;border:1px solid var(--border);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.5}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-weight:600;font-size:12.5px;color:var(--muted-fg);background:var(--bg-subtle)}
+td{color:var(--fg-2)}
+td:first-child{color:var(--fg)}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* Quiz */
+.quiz{margin:24px 0;padding:16px;border:1px solid var(--border);border-radius:14px;background:var(--bg-subtle)}
+.quiz-k{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted-fg);margin-bottom:6px}
+.quiz-q{font-weight:600;color:var(--fg) !important;font-size:15.5px;margin-bottom:12px !important}
+.quiz-opts{display:grid;gap:8px}
+.quiz-opt{display:flex;align-items:center;gap:10px;text-align:left;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);cursor:pointer;font-size:14.5px;color:var(--fg-2)}
+.quiz-opt:hover{border-color:var(--border-strong)}
+.quiz-opt::before{content:"";width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border-strong);flex:none}
+.quiz-opt.is-ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,var(--card));color:var(--fg)}
+.quiz-opt.is-ok::before{background:var(--ok);border-color:var(--ok);box-shadow:inset 0 0 0 3px var(--card)}
+.quiz-opt.is-bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 7%,var(--card))}
+.quiz-opt.is-bad::before{border-color:var(--bad)}
+.quiz-opt[disabled]{cursor:default}
+.quiz-fb{margin:12px 0 0 !important;font-size:14px}
+.quiz-fb.ok{color:var(--ok) !important}
+
+/* End of page */
+.page-end{margin-top:48px;display:grid;gap:22px}
+.fb{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding-block:18px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.fb-q{font-weight:500;font-size:14.5px;color:var(--fg)}
+.fb-btns{display:flex;gap:8px}
+.fb-form{flex-basis:100%;display:grid;gap:8px;font-size:13.5px;color:var(--fg-2)}
+.fb-form textarea{width:100%;border:1px solid var(--border-strong);border-radius:10px;padding:10px;background:var(--bg);color:var(--fg);font:inherit;font-size:14px;resize:vertical}
+.fb-form .btn{justify-self:start}
+.fb-thanks{margin:0 !important;font-size:14px}
+.edit-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;font-size:13px;color:var(--muted-fg)}
+.edit-row button{display:inline-flex;align-items:center;gap:6px;border:0;background:none;padding:0;color:inherit;cursor:pointer;font-size:13px}
+.edit-row button:hover{color:var(--fg)}
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pager button{display:grid;gap:2px;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--card);text-align:left;cursor:pointer}
+.pager .next{text-align:right}
+.pager small{color:var(--muted-fg);font-size:12.5px}
+.pager strong{font-weight:600;color:var(--fg);font-size:15px}
+.pager button:hover{border-color:color-mix(in srgb,var(--primary) 50%,var(--border))}
+.site-foot{max-width:768px;margin-inline:auto;padding-block:22px 40px;padding-inline:40px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;font-size:13px;color:var(--muted-fg)}
+.site-foot button{border:0;background:none;padding:0;color:inherit;cursor:pointer;font-size:13px}
+.site-foot button:hover{color:var(--fg)}
+.lumy-mark{display:inline-flex;align-items:center;gap:7px;color:var(--fg-2)}
+.lumy-mark svg{width:16px;height:16px}
+
+/* ── Overlays ─────────────────────────────────────────────────────────── */
+.overlay{position:fixed;inset:0;z-index:80;background:rgb(0 0 0 / .45);display:flex;justify-content:center;align-items:flex-start;padding:max(10vh,16px) 16px 16px}
+.search-card{width:min(640px,100%);background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden;display:flex;flex-direction:column;max-height:min(560px,80vh)}
+.search-in{display:flex;align-items:center;gap:10px;padding-inline:16px;height:54px;border-bottom:1px solid var(--border);color:var(--muted-fg)}
+.search-in input{flex:1;border:0;background:none;outline:none;font:inherit;font-size:16px;color:var(--fg);min-width:0}
+.search-in input::-webkit-search-cancel-button{display:none}
+.search-res{overflow-y:auto;padding:6px 8px 8px}
+.sr-group{font-size:12px;font-weight:600;color:var(--muted-fg);padding:10px 10px 4px}
+.sr-item{display:flex;gap:12px;width:100%;align-items:flex-start;padding:9px 10px;border:0;background:none;border-radius:10px;text-align:left;cursor:pointer}
+.sr-item .i{margin-top:3px;color:var(--muted-fg)}
+.sr-item.is-active{background:var(--muted)}
+.sr-t{display:block;font-weight:500;font-size:14px;color:var(--fg)}
+.sr-s{display:block;font-size:13px;color:var(--muted-fg);line-height:1.45}
+.sr-item mark{background:color-mix(in srgb,var(--primary) 22%,transparent);color:inherit;border-radius:3px;padding:0 1px}
+.sr-empty{padding:28px 16px;text-align:center;color:var(--muted-fg);font-size:14px}
+.search-foot{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:10px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted-fg);background:var(--bg-subtle)}
+.search-foot > span{display:inline-flex;align-items:center;gap:4px}
+
+.overlay-sheet{justify-content:flex-end;align-items:stretch;padding:0}
+.sheet{width:min(420px,100%);height:100%;background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;box-shadow:var(--shadow-lg);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet-head{display:flex;align-items:center;gap:10px;padding-inline:18px 10px;height:56px;border-bottom:1px solid var(--border);flex:none}
+.sheet-head > .i{color:var(--primary)}
+.sheet-head h2{font-size:15px;margin:0;font-weight:600}
+.ai-msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px}
+.ai-msgs > div{display:flex;flex-direction:column;gap:14px}
+.msg{max-width:92%;font-size:14px;line-height:1.6}
+.msg.user{align-self:flex-end;background:var(--primary);color:var(--on-primary);padding:9px 13px;border-radius:14px 14px 4px 14px}
+.msg.bot{align-self:flex-start;background:var(--muted);padding:12px 14px;border-radius:14px 14px 14px 4px;color:var(--fg)}
+.msg.bot p{margin:0 0 8px}
+.msg.bot p:last-child{margin-bottom:0}
+.msg.bot code{font:500 .86em var(--mono);padding:.1em .35em;border-radius:5px;background:var(--card);border:1px solid var(--border)}
+.sources{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted-fg);margin-top:4px}
+.src{border:1px solid var(--border);background:var(--card);border-radius:999px;padding:3px 9px;font-size:12px;cursor:pointer;color:var(--fg-2)}
+.src:hover{border-color:var(--primary);color:var(--fg)}
+.typing{display:inline-flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted-fg);animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+.ai-form{display:flex;gap:8px;padding:12px 12px 6px;border-top:1px solid var(--border);flex:none}
+.ai-form input{flex:1;min-width:0;height:40px;border:1px solid var(--border-strong);border-radius:10px;padding-inline:12px;background:var(--bg);color:var(--fg);font:inherit;font-size:14px}
+.ai-note{margin:0;padding:0 14px 12px;font-size:12px;color:var(--muted-fg);flex:none}
+
+.dlg-card{width:min(680px,100%);max-height:min(660px,84vh);display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden}
+.dlg-head{display:flex;align-items:center;gap:10px;padding-block:12px;padding-inline:20px 10px;border-bottom:1px solid var(--border);flex:none}
+.dlg-head h2{margin:0;font-size:16px;font-weight:600;flex:1}
+.dlg-body{overflow-y:auto;padding:18px 20px 20px;font-size:14.5px;color:var(--fg-2)}
+.dlg-body > p{margin:0 0 12px}
+.src-md{margin:0;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--code-bg);font:12.5px/1.65 var(--mono);overflow-x:auto;white-space:pre;color:var(--code-fg)}
+.tool-list{display:grid;gap:8px;margin:8px 0 16px;padding:0;list-style:none}
+.tool-list li{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr);gap:12px;align-items:baseline;font-size:13.5px}
+
+.lightbox{position:fixed;inset:0;z-index:85;background:rgb(0 0 0 / .88);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.lb-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;color:#fff;font-size:13px}
+.lb-bar .icon-btn{color:#fff}
+.lb-bar .icon-btn:hover{background:rgb(255 255 255 / .12)}
+.lb-scroll{flex:1;overflow:auto;padding:12px;display:flex}
+.lb-scroll img{margin:auto;width:min(1600px,100%);max-width:none;height:auto;border-radius:8px}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(8px);z-index:90;max-width:calc(100% - 32px);width:max-content;padding:10px 14px;border-radius:12px;background:var(--fg);color:var(--bg);font-size:13.5px;line-height:1.45;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width:1200px){
+  .layout{grid-template-columns:260px minmax(0,1fr)}
+  .toc{display:none}
+  .toc-bar{display:block}
+  .topnav{display:none}
+}
+@media (max-width:880px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;height:auto;width:min(310px,86vw);z-index:60;background:var(--bg);transform:translateX(-104%);transition:transform .25s ease;padding-top:calc(14px + env(safe-area-inset-top,0px))}
+  #lumy.drawer-open .sidebar{transform:none;box-shadow:var(--shadow-lg)}
+  .sb-mobile-head{display:flex}
+  .menu-btn{display:inline-flex}
+  .topbar{padding-inline:10px;gap:2px}
+  .search-btn{width:36px;padding:0;justify-content:center;border-color:transparent;background:none;color:var(--fg-2);margin-right:0}
+  .search-btn .ph,.search-btn kbd{display:none}
+  .btn-ai{border-color:transparent}
+  .btn-ai .lbl,.gh-link{display:none}
+  .content{padding-inline:20px;padding-block:24px 48px}
+  .site-foot,.toc-bar{padding-inline:20px}
+  .doc h1{font-size:29px}
+  .doc h2{font-size:21px;margin-top:44px}
+  .lightbox .lb-scroll img{width:260%}
+}
+@media (max-width:540px){
+  .brand .sep,.brand .docs,.ver{display:none}
+  .pager{grid-template-columns:1fr}
+  .page-actions{margin-left:0}
+  .tool-list li{grid-template-columns:1fr;gap:2px}
+  .why-body{padding-left:16px}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{transition:none !important;animation:none !important}
+  html{scroll-behavior:auto !important}
+}
+</style>
+
+<!-- Icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2V17h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h6"/></symbol>
+  <symbol id="i-plug" viewBox="0 0 24 24"><path d="M12 22v-5M9 8V2M15 8V2M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8z"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M7 10v12M15 5.9 14 10h5.8a2 2 0 0 1 1.9 2.6l-2.3 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.8a2 2 0 0 0 1.8-1.1L12 2a3.1 3.1 0 0 1 3 3.9z"/></symbol>
+  <symbol id="i-dn" viewBox="0 0 24 24"><path d="M17 14V2M9 18.1 10 14H4.2a2 2 0 0 1-1.9-2.6l2.3-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.8a2 2 0 0 0-1.8 1.1L12 22a3.1 3.1 0 0 1-3-3.9z"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20h4L20 8a2.8 2.8 0 0 0-4-4L4 16v4ZM14 6l4 4"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
+  <symbol id="i-hash" viewBox="0 0 24 24"><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M8 7h8"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 22V4M4 4h13l-2 4 2 4H4"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 17v5M9 3h6l-1 6 4 4H6l4-4z"/></symbol>
+</svg>
+
+<div id="lumy" data-lang="fr">
+
+  <div class="demo-bar" id="demo-bar">
+    <span lang="fr"><b>Maquette de Lumy.</b> Seule la page « Démarrage » est construite ; l’assistant et les retours montrent des exemples.</span>
+    <span lang="en"><b>Lumy mock-up.</b> Only the “Getting started” page is built; the assistant and feedback show examples.</span>
+    <button type="button" data-action="demo-close" aria-label="Fermer"><svg class="i"><use href="#i-x"/></svg></button>
+  </div>
+
+  <header class="topbar">
+    <button class="icon-btn menu-btn" type="button" data-action="menu" data-t-aria="menu" aria-label="Menu"><svg class="i"><use href="#i-menu"/></svg></button>
+    <a class="brand" href="#" data-action="top">
+      <img src="assets/logo.png" alt="" width="24" height="24">
+      <span>Mocky</span><span class="sep">/</span><span class="docs">Docs</span>
+    </a>
+    <span class="ver">v0.2</span>
+    <nav class="topnav" aria-label="Sections">
+      <a href="#" aria-current="page" data-action="top"><span lang="fr">Documentation</span><span lang="en">Documentation</span></a>
+      <a href="#" data-page><span lang="fr">Journal des modifications</span><span lang="en">Changelog</span></a>
+    </nav>
+    <span class="grow"></span>
+    <button class="search-btn" type="button" data-action="search" data-t-aria="search" aria-label="Rechercher">
+      <svg class="i"><use href="#i-search"/></svg>
+      <span class="ph"><span lang="fr">Rechercher…</span><span lang="en">Search…</span></span>
+      <kbd class="kbd-k">Ctrl K</kbd>
+    </button>
+    <button class="icon-btn btn-ai" type="button" data-action="ask" data-t-aria="ask" aria-label="Demander à l’IA">
+      <svg class="i"><use href="#i-sparkles"/></svg>
+      <span class="lbl"><span lang="fr">Demander à l’IA</span><span lang="en">Ask AI</span></span>
+    </button>
+    <div class="menu-wrap">
+      <button class="icon-btn" type="button" data-action="lang-menu" aria-haspopup="true" aria-expanded="false" data-t-aria="language" aria-label="Langue">
+        <svg class="i"><use href="#i-globe"/></svg><span class="lang-code" id="lang-code">FR</span>
+      </button>
+      <div class="menu" id="lang-menu" role="menu" hidden>
+        <button type="button" role="menuitemradio" data-action="set-lang" data-lang="fr" aria-checked="false">Français<svg class="i check"><use href="#i-check"/></svg></button>
+        <button type="button" role="menuitemradio" data-action="set-lang" data-lang="en" aria-checked="false">English<svg class="i check"><use href="#i-check"/></svg></button>
+        <p class="menu-note"><span lang="fr">Chaque doc choisit ses langues dans sa configuration. Vous restez sur la même page en changeant.</span><span lang="en">Each site picks its own languages in its configuration. Switching keeps you on the same page.</span></p>
+      </div>
+    </div>
+    <button class="icon-btn theme-btn" type="button" data-action="theme" data-t-aria="theme" aria-label="Changer de thème" data-mode="light">
+      <svg class="i i-moon"><use href="#i-moon"/></svg><svg class="i i-sun"><use href="#i-sun"/></svg>
+    </button>
+    <a class="icon-btn gh-link" href="https://github.com/PetitOursManu/Mocky" target="_blank" rel="noopener" aria-label="GitHub"><svg class="i"><use href="#i-github"/></svg></a>
+  </header>
+
+  <div class="layout">
+
+    <!-- ── Sidebar ──────────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar" aria-label="Navigation">
+      <div class="sb-mobile-head">
+        <a class="brand" href="#" data-action="top"><img src="assets/logo.png" alt="" width="24" height="24"><span>Mocky</span><span class="sep">/</span><span class="docs">Docs</span></a>
+        <button class="icon-btn" type="button" data-action="drawer-close" data-t-aria="close" aria-label="Fermer"><svg class="i"><use href="#i-x"/></svg></button>
+      </div>
+
+      <div>
+        <span class="aud-label"><span lang="fr">Je lis la doc en tant que…</span><span lang="en">I am reading as…</span></span>
+        <div class="seg" role="group">
+          <button type="button" data-action="aud" data-aud="all" aria-pressed="true"><span lang="fr">Tous</span><span lang="en">All</span></button>
+          <button type="button" data-action="aud" data-aud="user" aria-pressed="false"><span lang="fr">Utilisateur</span><span lang="en">User</span></button>
+          <button type="button" data-action="aud" data-aud="admin" aria-pressed="false">Admin</button>
+          <button type="button" data-action="aud" data-aud="dev" aria-pressed="false"><span lang="fr">Dév</span><span lang="en">Dev</span></button>
+        </div>
+      </div>
+
+      <nav class="sb-nav">
+        <div class="sb-group">
+          <p class="sb-title"><span lang="fr">Démarrer</span><span lang="en">Get started</span></p>
+          <ul>
+            <li data-aud="user admin dev"><a href="#" data-page><span lang="fr">Introduction</span><span lang="en">Introduction</span></a></li>
+            <li data-aud="user admin"><a href="#" class="is-current" aria-current="page" data-action="top"><span lang="fr">Démarrage</span><span lang="en">Getting started</span></a></li>
+            <li data-aud="user"><a href="#" data-page><span lang="fr">L’interface</span><span lang="en">The interface</span></a></li>
+            <li data-aud="user"><a href="#" data-page><span lang="fr">Préréglages DESIGN.md</span><span lang="en">DESIGN.md presets</span></a></li>
+          </ul>
+        </div>
+        <div class="sb-group">
+          <p class="sb-title"><span lang="fr">Fonctionnalités</span><span lang="en">Features</span></p>
+          <ul>
+            <li data-aud="user"><a href="#" data-page>Muse</a></li>
+            <li data-aud="user"><a href="#" data-page><span lang="fr">Passe de qualité</span><span lang="en">Quality pass</span></a></li>
+            <li data-aud="user"><a href="#" data-page>Motion Ultra — pages</a></li>
+            <li data-aud="user"><a href="#" data-page><span lang="fr">Motion Ultra — films</span><span lang="en">Motion Ultra — films</span></a></li>
+            <li data-aud="user dev"><a href="#" data-page><span lang="fr">SEO et accessibilité</span><span lang="en">SEO and accessibility</span></a></li>
+          </ul>
+        </div>
+        <div class="sb-group">
+          <p class="sb-title"><span lang="fr">Auto-hébergement</span><span lang="en">Self-hosting</span></p>
+          <ul>
+            <li data-aud="admin"><a href="#" data-page><span lang="fr">Déploiement</span><span lang="en">Deployment</span></a></li>
+            <li data-aud="admin"><a href="#" data-page><span lang="fr">Maintenance et migration</span><span lang="en">Maintenance and migration</span></a></li>
+            <li data-aud="admin"><a href="#" data-page><span lang="fr">Tableau de bord admin</span><span lang="en">Admin dashboard</span><span class="badge-new"><span lang="fr">Nouveau</span><span lang="en">New</span></span></a></li>
+          </ul>
+        </div>
+        <div class="sb-group">
+          <p class="sb-title">Architecture</p>
+          <ul>
+            <li data-aud="dev"><a href="#" data-page><span lang="fr">Vue d’ensemble</span><span lang="en">Overview</span></a></li>
+            <li data-aud="dev"><a href="#" data-page>Invariants</a></li>
+            <li data-aud="dev"><a href="#" data-page>ADR 001 — Muse</a></li>
+            <li data-aud="dev"><a href="#" data-page><span lang="fr">Système de design</span><span lang="en">Design system</span></a></li>
+          </ul>
+        </div>
+        <div class="sb-group">
+          <p class="sb-title"><span lang="fr">Référence</span><span lang="en">Reference</span></p>
+          <ul>
+            <li data-aud="user admin dev"><a href="#" data-page><span lang="fr">Journal des modifications</span><span lang="en">Changelog</span></a></li>
+            <li data-aud="user admin dev"><a href="#" data-page><span lang="fr">Glossaire</span><span lang="en">Glossary</span></a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="sb-brand">
+        <p><span lang="fr">Couleur de marque</span><span lang="en">Brand colour</span> <span class="chip"><span lang="fr">aperçu</span><span lang="en">preview</span></span></p>
+        <div class="swatches">
+          <button type="button" data-action="brand" data-brand="teal" style="--sw:#228477" aria-pressed="true" aria-label="Mocky"></button>
+          <button type="button" data-action="brand" data-brand="indigo" style="--sw:#4f46e5" aria-pressed="false" aria-label="Indigo"></button>
+          <button type="button" data-action="brand" data-brand="orange" style="--sw:#c2410c" aria-pressed="false" aria-label="Orange"></button>
+          <button type="button" data-action="brand" data-brand="rose" style="--sw:#be123c" aria-pressed="false" aria-label="Rose"></button>
+        </div>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim" data-action="drawer-close" hidden></div>
+
+    <!-- ── Main column ──────────────────────────────────────────── -->
+    <main class="main" id="main">
+      <div class="toc-bar">
+        <button type="button" data-action="toc-toggle" aria-expanded="false">
+          <svg class="i"><use href="#i-list"/></svg>
+          <span class="tb-k"><span lang="fr">Sur cette page</span><span lang="en">On this page</span></span>
+          <span class="tb-cur" id="toc-cur"></span>
+          <svg class="i"><use href="#i-down"/></svg>
+        </button>
+        <ul id="toc-mobile-list" hidden></ul>
+      </div>
+
+      <div class="content">
+
+<!-- ════════════════════════════ FRANÇAIS ════════════════════════════ -->
+<article class="doc" lang="fr">
+  <div class="eyebrow">Démarrer</div>
+  <h1>Démarrage</h1>
+  <p class="lead">Installer Mocky, créer le premier compte et générer un premier écran.</p>
+  <div class="page-meta">
+    <span class="meta"><svg class="i"><use href="#i-clock"/></svg>6 min de lecture</span>
+    <span class="meta">Mis à jour le 28 sept. 2026</span>
+    <div class="page-actions">
+      <button class="btn btn-sm" type="button" data-action="copy-md"><svg class="i"><use href="#i-copy"/></svg>Copier la page</button>
+      <div class="menu-wrap">
+        <button class="btn btn-sm" type="button" data-action="pa-menu" aria-haspopup="true" aria-expanded="false" aria-label="Plus d’options"><svg class="i"><use href="#i-down"/></svg></button>
+        <div class="menu pa-menu" role="menu" hidden>
+          <button type="button" data-action="copy-md"><svg class="i"><use href="#i-copy"/></svg><span>Copier en Markdown<span class="mi-sub">Pour la coller dans un LLM</span></span></button>
+          <button type="button" data-action="source"><svg class="i"><use href="#i-file"/></svg><span>Voir la source<span class="mi-sub">Ce que l’auteur a écrit</span></span></button>
+          <button type="button" data-action="ask"><svg class="i"><use href="#i-sparkles"/></svg><span>Demander à l’IA<span class="mi-sub">Avec cette page en contexte</span></span></button>
+          <button type="button" data-action="mcp"><svg class="i"><use href="#i-plug"/></svg><span>Connecter un assistant (MCP)<span class="mi-sub">Pour lire et écrire la doc</span></span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="trans-banner" role="note">
+    <svg class="i"><use href="#i-globe"/></svg>
+    <div><strong>La version anglaise a changé depuis cette traduction.</strong> Anglais modifié le 26 sept., traduction du 12 sept. <span class="chip">exemple</span></div>
+    <button class="btn btn-sm" type="button" data-action="read-en">Lire en anglais</button>
+  </div>
+
+  <h2 id="prerequis" data-sec="req">Prérequis</h2>
+  <p>Docker, <strong>ou</strong> Node ≥ 22.12. Le fichier <code>.nvmrc</code> fixe la version 22.12, celle qu’utilise l’image <code>node:22-slim</code>. Il n’y a ni base de données, ni module natif à compiler.</p>
+  <div class="callout note"><svg class="i"><use href="#i-info"/></svg><div><p><code>ffmpeg</code> est le seul binaire externe, et il ne sert qu’à la vidéo au défilement. Sans lui, tout le reste fonctionne, et cette fonctionnalité se déclare indisponible au lieu d’échouer.</p></div></div>
+
+  <h2 id="installation" data-sec="install">Installation</h2>
+  <p>Choisissez comment lancer Mocky.</p>
+  <div class="tabs" data-tabs="install">
+    <div class="tabs-top">
+      <div class="tablist" role="tablist" aria-label="Méthode d’installation">
+        <button type="button" role="tab" data-tab="docker" aria-selected="true">Docker</button>
+        <button type="button" role="tab" data-tab="dev" aria-selected="false">Développement</button>
+        <button type="button" role="tab" data-tab="prod" aria-selected="false">Production</button>
+      </div>
+      <span class="tab-hint"><svg class="i"><use href="#i-pin"/></svg>Choix retenu sur tout le site</span>
+    </div>
+    <div role="tabpanel" data-tab="docker">
+      <div class="code"><div class="code-head"><span>Terminal</span><button class="copy" type="button"><svg class="i i-copy"><use href="#i-copy"/></svg><svg class="i i-check"><use href="#i-check"/></svg><span>Copier</span></button></div>
+<pre><code><span class="tok-k">git</span> clone https://github.com/PetitOursManu/Mocky.git
+<span class="tok-k">cd</span> Mocky
+<span class="tok-k">docker</span> compose up <span class="tok-f">-d --build</span></code></pre></div>
+      <p>Mocky écoute sur <strong>http://localhost:8787</strong>. Les comptes, les projets, les images et les séquences vidéo sont conservés dans le volume <code>mocky-data</code>.</p>
+    </div>
+    <div role="tabpanel" data-tab="dev" hidden>
+      <div class="code"><div class="code-head"><span>Terminal</span><button class="copy" type="button"><svg class="i i-copy"><use href="#i-copy"/></svg><svg class="i i-check"><use href="#i-check"/></svg><span>Copier</span></button></div>
+<pre><code><span class="tok-k">npm</span> install
+<span class="tok-k">npm</span> run dev:all</code></pre></div>
+      <p>Puis ouvrez <strong>http://localhost:5173</strong>.</p>
+      <div class="callout warn"><svg class="i"><use href="#i-alert"/></svg><div><p>Utilisez <code>dev:all</code>, pas <code>dev</code>. <code>npm run dev</code> ne lance que le serveur web, sans le back-end : la boîte de connexion annoncera qu’elle ne peut pas le joindre.</p></div></div>
+    </div>
+    <div role="tabpanel" data-tab="prod" hidden>
+      <div class="code"><div class="code-head"><span>Terminal</span><button class="copy" type="button"><svg class="i i-copy"><use href="#i-copy"/></svg><svg class="i i-check"><use href="#i-check"/></svg><span>Copier</span></button></div>
+<pre><code><span class="tok-k">npm</span> run build   <span class="tok-c"># tsc &amp;&amp; vite build → dist/</span>
+<span class="tok-k">npm</span> start       <span class="tok-c"># Express sert dist/, l’API et le proxy sur :8787</span></code></pre></div>
+      <p><code>npm start</code> sans <code>npm run build</code> démarre bien, mais chaque page est un 404 nu. Le serveur affiche un avertissement.</p>
+    </div>
+  </div>
+  <details class="why">
+    <summary><svg class="i i-why"><use href="#i-help"/></svg><span><span class="why-k">Pourquoi c’est ainsi</span>Pourquoi le port n’est-il publié que sur 127.0.0.1 ?</span><svg class="i chev"><use href="#i-down"/></svg></summary>
+    <div class="why-body"><p>Plusieurs routes dépensent vos crédits de modèle : l’instance n’est donc pas joignable depuis le réseau tant que vous ne l’avez pas demandé. Pour l’exposer volontairement, mettez <code>MOCKY_BIND=0.0.0.0</code> dans <code>.env</code>, après avoir lu la section reverse proxy de <a href="#" data-page>Déploiement</a>. La configuration recommandée reste de garder <code>127.0.0.1</code> et de laisser le proxy joindre Mocky en local.</p></div>
+  </details>
+
+  <h2 id="verifier" data-sec="check">Vérifier l’installation</h2>
+  <div class="vars">
+    <div class="vars-head"><svg class="i"><use href="#i-sliders"/></svg><strong>Vos valeurs</strong><span>Les commandes de cette page s’adaptent à ce que vous saisissez.</span></div>
+    <div class="vars-fields">
+      <label class="field" for="v-host-fr">Adresse du serveur<input id="v-host-fr" data-var="host" autocomplete="off" spellcheck="false"></label>
+      <label class="field small" for="v-port-fr">Port<input id="v-port-fr" data-var="port" inputmode="numeric" autocomplete="off"></label>
+      <button class="btn btn-sm" type="button" data-action="vars-reset">Réinitialiser</button>
+    </div>
+  </div>
+  <p>Le serveur répond sur sa route de santé :</p>
+  <div class="code"><div class="code-head"><span>Terminal</span><button class="copy" type="button"><svg class="i i-copy"><use href="#i-copy"/></svg><svg class="i i-check"><use href="#i-check"/></svg><span>Copier</span></button></div>
+<pre><code><span class="tok-k">curl</span> <span class="tok-f">-s</span> <var data-var="host">localhost</var>:<var data-var="port">8787</var>/api/health</code></pre></div>
+  <p>Ouvrez ensuite <code>http://<var data-var="host">localhost</var>:<var data-var="port">8787</var></code> dans votre navigateur. Si l’interface n’a pas été compilée, <code>/api/health</code> répond <code>503</code> avec <code>frontendBuilt: false</code> : c’est ce que lit la sonde de santé du conteneur.</p>
+
+  <h2 id="premiere-utilisation" data-sec="first">Première utilisation</h2>
+  <div class="steps-wrap">
+    <div class="steps-top"><span>Cochez chaque étape terminée</span><div class="steps-bar"><i></i></div><span class="steps-count">0 / 4</span><button class="linkish" type="button" data-action="steps-reset">Recommencer</button></div>
+    <ol class="steps" data-steps="first-run">
+      <li class="step"><button class="step-check" type="button" aria-pressed="false" aria-label="Étape 1 faite"><span class="n">1</span><svg class="i"><use href="#i-check"/></svg></button>
+        <div class="step-body"><p class="step-title" data-done="FAIT">Ouvrez Mocky</p><p>La boîte de connexion apparaît et <strong>ne peut pas être fermée</strong>. Il n’existe pas de mode anonyme.</p></div></li>
+      <li class="step"><button class="step-check" type="button" aria-pressed="false" aria-label="Étape 2 faite"><span class="n">2</span><svg class="i"><use href="#i-check"/></svg></button>
+        <div class="step-body"><p class="step-title" data-done="FAIT">Créez le premier compte</p><p><strong>Il devient l’administrateur de l’instance.</strong> Il n’y a pas de procédure de mot de passe oublié.</p></div></li>
+      <li class="step"><button class="step-check" type="button" aria-pressed="false" aria-label="Étape 3 faite"><span class="n">3</span><svg class="i"><use href="#i-check"/></svg></button>
+        <div class="step-body"><p class="step-title" data-done="FAIT">Configurez un modèle de texte</p><p>Dans <strong>Réglages</strong>, choisissez <code>Ollama Cloud</code>, gardez l’URL <code>https://ollama.com</code>, collez votre clé d’API, choisissez un modèle et cliquez sur <strong>Tester la connexion</strong>.</p></div></li>
+      <li class="step"><button class="step-check" type="button" aria-pressed="false" aria-label="Étape 4 faite"><span class="n">4</span><svg class="i"><use href="#i-check"/></svg></button>
+        <div class="step-body"><p class="step-title" data-done="FAIT">Générez un premier écran</p><p>Décrivez-le dans le <button class="term" type="button" data-term="composer">composer</button>, en bas du canevas, puis lancez la génération.</p></div></li>
+    </ol>
+  </div>
+
+  <h2 id="interface" data-sec="ui">Repérer l’interface</h2>
+  <p>Cliquez sur les points numérotés, ou suivez la visite avec <strong>Suivant</strong>.</p>
+  <figure class="hs" style="margin-inline:0">
+    <div class="hs-stage">
+      <img src="assets/13-canvas-project.png" alt="Un projet ouvert dans Mocky : la navigation en haut, la barre d’outils du projet, deux écrans sur le canevas, la barre de zoom et le composer en bas." width="2880" height="1800" loading="lazy">
+      <button class="hs-dot" type="button" data-i="0" style="left:72.5%;top:4.2%">1</button>
+      <button class="hs-dot" type="button" data-i="1" style="left:29%;top:9.7%">2</button>
+      <button class="hs-dot" type="button" data-i="2" style="left:45%;top:36%">3</button>
+      <button class="hs-dot" type="button" data-i="3" style="left:50%;top:88%">4</button>
+      <button class="hs-dot" type="button" data-i="4" style="left:8.6%;top:95.4%">5</button>
+      <button class="hs-zoom" type="button" data-action="zoom"><svg class="i"><use href="#i-expand"/></svg>Agrandir</button>
+    </div>
+    <div class="hs-panel" aria-live="polite">
+      <div class="hs-head"><span class="hs-num">1</span><span class="hs-title"></span><span class="hs-count"></span></div>
+      <p class="hs-text"></p>
+      <div class="hs-nav"><button class="btn btn-sm" type="button" data-action="hs-prev"><svg class="i"><use href="#i-left"/></svg>Précédent</button><button class="btn btn-sm btn-primary" type="button" data-action="hs-next">Suivant<svg class="i"><use href="#i-right"/></svg></button></div>
+    </div>
+    <div class="hs-data" hidden>
+      <div data-title="Navigation principale">La barre en haut de chaque page : Accueil, DESIGN.md, Média, Réglages, Admin (visible seulement par les administrateurs) et Docs. Rien ici ne touche au contenu d’un projet.</div>
+      <div data-title="Barre d’outils du projet">En haut à gauche du canevas. Lier, Modifier et Annoter changent ce que signifie un clic dans un écran, donc un seul des trois est actif à la fois.</div>
+      <div data-title="Le canevas">Chaque écran généré est un cadre sur un canevas infini. Glissez pour sélectionner, Espace ou clic molette pour vous déplacer, molette pour zoomer, double-clic pour interagir avec un écran.</div>
+      <div data-title="Le composer">La barre flottante du bas. Choisissez le format, les interrupteurs de design, Muse et animations, puis décrivez l’écran à générer.</div>
+      <div data-title="La barre de zoom">Tout afficher cadre tous les écrans et continue de le faire tant que vous ne bougez pas la vue. Zoomer sur le dernier écran saute au plus récent.</div>
+    </div>
+  </figure>
+
+  <h2 id="direction" data-sec="direction">Une direction par projet</h2>
+  <p>Un projet garde <strong>une seule</strong> <button class="term" type="button" data-term="direction">direction de design</button>, pour que ses écrans aient l’air d’un produit et non de cinq esquisses. Elle est fixée par le premier écran généré, puis laissée tranquille.</p>
+  <p><strong>Nouvelle direction</strong> est l’exception : cochez-la et la demande que vous vous apprêtez à envoyer réécrit la direction pour tous les écrans suivants. Elle se décoche toute seule une fois cet écran généré.</p>
+  <div class="callout tip"><svg class="i"><use href="#i-bulb"/></svg><div><p>Tant qu’un projet n’a pas de direction, il se rabat sur <button class="term" type="button" data-term="designmd">DESIGN.md</button>. Activez <button class="term" type="button" data-term="muse">Muse</button> pour qu’il construise la direction artistique à partir de références réelles.</p></div></div>
+
+  <h2 id="comptes" data-sec="accounts">Règles des comptes</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Règle</th><th>Valeur</th></tr></thead>
+    <tbody>
+      <tr><td>Longueur minimale du nom d’utilisateur</td><td class="num">3 caractères</td></tr>
+      <tr><td>Mot de passe à l’inscription publique</td><td class="num">8 caractères</td></tr>
+      <tr><td>Mot de passe créé ou réinitialisé par un admin</td><td class="num">8 caractères</td></tr>
+      <tr><td>Durée d’une session</td><td class="num">90 jours, glissante</td></tr>
+      <tr><td>Limite sur les routes d’authentification</td><td class="num">8 essais / min / IP</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout tip"><svg class="i"><use href="#i-bulb"/></svg><div><p>Les inscriptions publiques <strong>se ferment d’elles-mêmes</strong> une fois le premier compte créé. Un administrateur les rouvre depuis l’écran Admin pour inviter quelqu’un.</p></div></div>
+
+  <div class="quiz">
+    <div class="quiz-k"><svg class="i"><use href="#i-help"/></svg>Vérifiez que vous avez compris</div>
+    <p class="quiz-q">Qui devient administrateur d’une nouvelle instance Mocky ?</p>
+    <div class="quiz-opts">
+      <button class="quiz-opt" type="button" data-ok="0">Le compte qui renseigne la clé d’API</button>
+      <button class="quiz-opt" type="button" data-ok="1">Le premier compte créé</button>
+      <button class="quiz-opt" type="button" data-ok="0">Personne : l’administrateur se déclare dans <code>.env</code></button>
+    </div>
+    <p class="quiz-fb ok" hidden>Exact. Le premier compte devient administrateur, puis les inscriptions publiques se ferment d’elles-mêmes.</p>
+    <p class="quiz-fb bad" hidden>Pas tout à fait. Relisez l’étape 2 de « Première utilisation ».</p>
+  </div>
+
+  <div class="page-end">
+    <div class="fb">
+      <span class="fb-q">Cette page vous a-t-elle aidé ?</span>
+      <div class="fb-btns"><button class="btn btn-sm" type="button" data-action="fb-yes"><svg class="i"><use href="#i-up"/></svg>Oui</button><button class="btn btn-sm" type="button" data-action="fb-no"><svg class="i"><use href="#i-dn"/></svg>Non</button></div>
+      <form class="fb-form" hidden><label for="fb-text-fr">Qu’est-ce qui vous a manqué ?</label><textarea id="fb-text-fr" rows="3"></textarea><button class="btn btn-sm btn-primary" type="submit">Envoyer</button></form>
+      <p class="fb-thanks" hidden>Merci pour votre retour ! <span class="muted">(Maquette : rien n’est envoyé.)</span></p>
+    </div>
+    <div class="edit-row">
+      <button type="button" data-page><svg class="i"><use href="#i-pencil"/></svg>Modifier cette page</button>
+      <button type="button" data-page><svg class="i"><use href="#i-flag"/></svg>Signaler un problème</button>
+    </div>
+    <nav class="pager" aria-label="Pages voisines">
+      <button type="button" data-page><small>Précédent</small><strong>Introduction</strong></button>
+      <button type="button" class="next" data-page><small>Suivant</small><strong>L’interface</strong></button>
+    </nav>
+  </div>
+</article>
+
+<!-- ════════════════════════════ ENGLISH ════════════════════════════ -->
+<article class="doc" lang="en">
+  <div class="eyebrow">Get started</div>
+  <h1>Getting started</h1>
+  <p class="lead">Install Mocky, create the first account and generate a first screen.</p>
+  <div class="page-meta">
+    <span class="meta"><svg class="i"><use href="#i-clock"/></svg>6 min read</span>
+    <span class="meta">Updated 26 Sept 2026</span>
+    <div class="page-actions">
+      <button class="btn btn-sm" type="button" data-action="copy-md"><svg class="i"><use href="#i-copy"/></svg>Copy page</button>
+      <div class="menu-wrap">
+        <button class="btn btn-sm" type="button" data-action="pa-menu" aria-haspopup="true" aria-expanded="false" aria-label="More options"><svg class="i"><use href="#i-down"/></svg></button>
+        <div class="menu pa-menu" role="menu" hidden>
+          <button type="button" data-action="copy-md"><svg class="i"><use href="#i-copy"/></svg><span>Copy as Markdown<span class="mi-sub">To paste into an LLM</span></span></button>
+          <button type="button" data-action="source"><svg class="i"><use href="#i-file"/></svg><span>View source<span class="mi-sub">What the author wrote</span></span></button>
+          <button type="button" data-action="ask"><svg class="i"><use href="#i-sparkles"/></svg><span>Ask AI<span class="mi-sub">With this page as context</span></span></button>
+          <button type="button" data-action="mcp"><svg class="i"><use href="#i-plug"/></svg><span>Connect an assistant (MCP)<span class="mi-sub">To read and write the docs</span></span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 id="requirements" data-sec="req">Requirements</h2>
+  <p>Docker, <strong>or</strong> Node ≥ 22.12. The <code>.nvmrc</code> file pins 22.12, which is what the <code>node:22-slim</code> image uses. There is no database and no native module to compile.</p>
+  <div class="callout note"><svg class="i"><use href="#i-info"/></svg><div><p><code>ffmpeg</code> is the only external binary, and it is used only for scroll-driven video. Without it everything else works, and that one feature reports itself as unavailable rather than failing.</p></div></div>
+
+  <h2 id="install" data-sec="install">Install</h2>
+  <p>Choose how to run Mocky.</p>
+  <div class="tabs" data-tabs="install">
+    <div class="tabs-top">
+      <div class="tablist" role="tablist" aria-label="Install method">
+        <button type="button" role="tab" data-tab="docker" aria-selected="true">Docker</button>
+        <button type="button" role="tab" data-tab="dev" aria-selected="false">Development</button>
+        <button type="button" role="tab" data-tab="prod" aria-selected="false">Production</button>
+      </div>
+      <span class="tab-hint"><svg class="i"><use href="#i-pin"/></svg>Remembered across the site</span>
+    </div>
+    <div role="tabpanel" data-tab="docker">
+      <div class="code"><div class="code-head"><span>Terminal</span><button class="copy" type="button"><svg class="i i-copy"><use href="#i-copy"/></svg><svg class="i i-check"><use href="#i-check"/></svg><span>Copy</span></button></div>
+<pre><code><span class="tok-k">git</span> clone https://github.com/PetitOursManu/Mocky.git
+<span class="tok-k">cd</span> Mocky
+<span class="tok-k">docker</span> compose up <span class="tok-f">-d --build</span></code></pre></div>
+      <p>Mocky listens on <strong>http://localhost:8787</strong>. Accounts, projects, images and video sequences persist in the <code>mocky-data</code> volume.</p>
+    </div>
+    <div role="tabpanel" data-tab="dev" hidden>
+      <div class="code"><div class="code-head"><span>Terminal</span><button class="copy" type="button"><svg class="i i-copy"><use href="#i-copy"/></svg><svg class="i i-check"><use href="#i-check"/></svg><span>Copy</span></button></div>
+<pre><code><span class="tok-k">npm</span> install
+<span class="tok-k">npm</span> run dev:all</code></pre></div>
+      <p>Then open <strong>http://localhost:5173</strong>.</p>
+      <div class="callout warn"><svg class="i"><use href="#i-alert"/></svg><div><p>Use <code>dev:all</code>, not <code>dev</code>. <code>npm run dev</code> starts the web server alone, with no back end, so the sign-in box will report that it cannot reach it.</p></div></div>
+    </div>
+    <div role="tabpanel" data-tab="prod" hidden>
+      <div class="code"><div class="code-head"><span>Terminal</span><button class="copy" type="button"><svg class="i i-copy"><use href="#i-copy"/></svg><svg class="i i-check"><use href="#i-check"/></svg><span>Copy</span></button></div>
+<pre><code><span class="tok-k">npm</span> run build   <span class="tok-c"># tsc &amp;&amp; vite build → dist/</span>
+<span class="tok-k">npm</span> start       <span class="tok-c"># Express serves dist/, the API and the proxy on :8787</span></code></pre></div>
+      <p><code>npm start</code> without <code>npm run build</code> starts successfully, but every page is a bare 404. The server prints a warning.</p>
+    </div>
+  </div>
+  <details class="why">
+    <summary><svg class="i i-why"><use href="#i-help"/></svg><span><span class="why-k">Why it is this way</span>Why is the port published on 127.0.0.1 only?</span><svg class="i chev"><use href="#i-down"/></svg></summary>
+    <div class="why-body"><p>Several routes spend your model credits, so the instance is not reachable from the network until you say so. To expose it deliberately, set <code>MOCKY_BIND=0.0.0.0</code> in <code>.env</code>, after reading the reverse proxy section of <a href="#" data-page>Deployment</a>. The recommended setup is the opposite: keep <code>127.0.0.1</code> and let the proxy reach Mocky over the loopback interface.</p></div>
+  </details>
+
+  <h2 id="check" data-sec="check">Check the install</h2>
+  <div class="vars">
+    <div class="vars-head"><svg class="i"><use href="#i-sliders"/></svg><strong>Your values</strong><span>The commands on this page adapt to what you type.</span></div>
+    <div class="vars-fields">
+      <label class="field" for="v-host-en">Server address<input id="v-host-en" data-var="host" autocomplete="off" spellcheck="false"></label>
+      <label class="field small" for="v-port-en">Port<input id="v-port-en" data-var="port" inputmode="numeric" autocomplete="off"></label>
+      <button class="btn btn-sm" type="button" data-action="vars-reset">Reset</button>
+    </div>
+  </div>
+  <p>The server answers on its health route:</p>
+  <div class="code"><div class="code-head"><span>Terminal</span><button class="copy" type="button"><svg class="i i-copy"><use href="#i-copy"/></svg><svg class="i i-check"><use href="#i-check"/></svg><span>Copy</span></button></div>
+<pre><code><span class="tok-k">curl</span> <span class="tok-f">-s</span> <var data-var="host">localhost</var>:<var data-var="port">8787</var>/api/health</code></pre></div>
+  <p>Then open <code>http://<var data-var="host">localhost</var>:<var data-var="port">8787</var></code> in your browser. If the front end was not built, <code>/api/health</code> answers <code>503</code> with <code>frontendBuilt: false</code>: that is what the container health check reads.</p>
+
+  <h2 id="first-run" data-sec="first">First run</h2>
+  <div class="steps-wrap">
+    <div class="steps-top"><span>Tick each step once done</span><div class="steps-bar"><i></i></div><span class="steps-count">0 / 4</span><button class="linkish" type="button" data-action="steps-reset">Start over</button></div>
+    <ol class="steps" data-steps="first-run">
+      <li class="step"><button class="step-check" type="button" aria-pressed="false" aria-label="Step 1 done"><span class="n">1</span><svg class="i"><use href="#i-check"/></svg></button>
+        <div class="step-body"><p class="step-title" data-done="DONE">Open Mocky</p><p>The sign-in box appears and <strong>cannot be dismissed</strong>. There is no anonymous mode.</p></div></li>
+      <li class="step"><button class="step-check" type="button" aria-pressed="false" aria-label="Step 2 done"><span class="n">2</span><svg class="i"><use href="#i-check"/></svg></button>
+        <div class="step-body"><p class="step-title" data-done="DONE">Create the first account</p><p><strong>It becomes the instance administrator.</strong> There is no password-reset flow.</p></div></li>
+      <li class="step"><button class="step-check" type="button" aria-pressed="false" aria-label="Step 3 done"><span class="n">3</span><svg class="i"><use href="#i-check"/></svg></button>
+        <div class="step-body"><p class="step-title" data-done="DONE">Configure a text model</p><p>In <strong>Settings</strong>, choose <code>Ollama Cloud</code>, keep the base URL <code>https://ollama.com</code>, paste your API key, pick a model and press <strong>Test connection</strong>.</p></div></li>
+      <li class="step"><button class="step-check" type="button" aria-pressed="false" aria-label="Step 4 done"><span class="n">4</span><svg class="i"><use href="#i-check"/></svg></button>
+        <div class="step-body"><p class="step-title" data-done="DONE">Generate a first screen</p><p>Describe it in the <button class="term" type="button" data-term="composer">composer</button> at the bottom of the canvas, then generate it.</p></div></li>
+    </ol>
+  </div>
+
+  <h2 id="the-interface" data-sec="ui">Find your way around</h2>
+  <p>Click the numbered dots, or take the tour with <strong>Next</strong>.</p>
+  <figure class="hs" style="margin-inline:0">
+    <div class="hs-stage">
+      <img src="assets/13-canvas-project.png" alt="A project open in Mocky: the navigation at the top, the project toolbar, two screens on the canvas, the zoom bar and the composer at the bottom." width="2880" height="1800" loading="lazy">
+      <button class="hs-dot" type="button" data-i="0" style="left:72.5%;top:4.2%">1</button>
+      <button class="hs-dot" type="button" data-i="1" style="left:29%;top:9.7%">2</button>
+      <button class="hs-dot" type="button" data-i="2" style="left:45%;top:36%">3</button>
+      <button class="hs-dot" type="button" data-i="3" style="left:50%;top:88%">4</button>
+      <button class="hs-dot" type="button" data-i="4" style="left:8.6%;top:95.4%">5</button>
+      <button class="hs-zoom" type="button" data-action="zoom"><svg class="i"><use href="#i-expand"/></svg>Enlarge</button>
+    </div>
+    <div class="hs-panel" aria-live="polite">
+      <div class="hs-head"><span class="hs-num">1</span><span class="hs-title"></span><span class="hs-count"></span></div>
+      <p class="hs-text"></p>
+      <div class="hs-nav"><button class="btn btn-sm" type="button" data-action="hs-prev"><svg class="i"><use href="#i-left"/></svg>Previous</button><button class="btn btn-sm btn-primary" type="button" data-action="hs-next">Next<svg class="i"><use href="#i-right"/></svg></button></div>
+    </div>
+    <div class="hs-data" hidden>
+      <div data-title="Main navigation">The bar across the top of every route: Home, DESIGN.md, Media, Settings, Admin (shown to administrators only) and Docs. Nothing here touches a project’s contents.</div>
+      <div data-title="Project toolbar">Top-left of the canvas. Link, Modify and Annotate each change what a click inside a screen means, so only one of the three is on at a time.</div>
+      <div data-title="The canvas">Every generated screen is a frame on an infinite canvas. Drag to select, Space or middle-click to pan, scroll to zoom, double-click to interact with a screen.</div>
+      <div data-title="The composer">The floating bar at the bottom. Pick the format, the design, Muse and animation switches, then describe the screen to generate.</div>
+      <div data-title="The zoom bar">Fit all frames every screen and keeps doing so until you move the view yourself. Zoom to the latest screen jumps to the most recent one.</div>
+    </div>
+  </figure>
+
+  <h2 id="one-direction" data-sec="direction">One direction per project</h2>
+  <p>A project keeps <strong>one</strong> <button class="term" type="button" data-term="direction">design direction</button>, so its screens look like one product rather than five sketches. It is set by the first screen you generate and then left alone.</p>
+  <p><strong>New direction</strong> is the exception: tick it and the prompt you are about to send rewrites the direction for every screen after it. It unticks itself once that screen is generated.</p>
+  <div class="callout tip"><svg class="i"><use href="#i-bulb"/></svg><div><p>Until a project has a direction, it falls back to <button class="term" type="button" data-term="designmd">DESIGN.md</button>. Turn on <button class="term" type="button" data-term="muse">Muse</button> to have the art direction built from real references.</p></div></div>
+
+  <h2 id="accounts" data-sec="accounts">Account rules</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Rule</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Minimum username length</td><td class="num">3 characters</td></tr>
+      <tr><td>Password at public sign-up</td><td class="num">8 characters</td></tr>
+      <tr><td>Password created or reset by an admin</td><td class="num">8 characters</td></tr>
+      <tr><td>Session lifetime</td><td class="num">90 days, sliding</td></tr>
+      <tr><td>Auth rate limit</td><td class="num">8 tries / min / IP</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout tip"><svg class="i"><use href="#i-bulb"/></svg><div><p>Public sign-ups <strong>close themselves</strong> once the first account exists. An administrator reopens them from the Admin screen to invite someone.</p></div></div>
+
+  <div class="quiz">
+    <div class="quiz-k"><svg class="i"><use href="#i-help"/></svg>Check your understanding</div>
+    <p class="quiz-q">Who becomes the administrator of a new Mocky instance?</p>
+    <div class="quiz-opts">
+      <button class="quiz-opt" type="button" data-ok="0">The account that enters the API key</button>
+      <button class="quiz-opt" type="button" data-ok="1">The first account created</button>
+      <button class="quiz-opt" type="button" data-ok="0">Nobody: the administrator is declared in <code>.env</code></button>
+    </div>
+    <p class="quiz-fb ok" hidden>Right. The first account becomes the administrator, then public sign-ups close themselves.</p>
+    <p class="quiz-fb bad" hidden>Not quite. Read step 2 of “First run” again.</p>
+  </div>
+
+  <div class="page-end">
+    <div class="fb">
+      <span class="fb-q">Was this page helpful?</span>
+      <div class="fb-btns"><button class="btn btn-sm" type="button" data-action="fb-yes"><svg class="i"><use href="#i-up"/></svg>Yes</button><button class="btn btn-sm" type="button" data-action="fb-no"><svg class="i"><use href="#i-dn"/></svg>No</button></div>
+      <form class="fb-form" hidden><label for="fb-text-en">What was missing?</label><textarea id="fb-text-en" rows="3"></textarea><button class="btn btn-sm btn-primary" type="submit">Send</button></form>
+      <p class="fb-thanks" hidden>Thanks for your feedback! <span class="muted">(Mock-up: nothing is sent.)</span></p>
+    </div>
+    <div class="edit-row">
+      <button type="button" data-page><svg class="i"><use href="#i-pencil"/></svg>Edit this page</button>
+      <button type="button" data-page><svg class="i"><use href="#i-flag"/></svg>Report an issue</button>
+    </div>
+    <nav class="pager" aria-label="Neighbouring pages">
+      <button type="button" data-page><small>Previous</small><strong>Introduction</strong></button>
+      <button type="button" class="next" data-page><small>Next</small><strong>The interface</strong></button>
+    </nav>
+  </div>
+</article>
+
+      </div>
+
+      <footer class="site-foot">
+        <span class="lumy-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="var(--primary)"/><circle cx="12" cy="12" r="9" fill="none" stroke="var(--primary)" stroke-opacity=".35" stroke-width="1.6"/></svg><span lang="fr">Documentation propulsée par <strong>Lumy</strong></span><span lang="en">Documentation powered by <strong>Lumy</strong></span></span>
+        <span class="grow"></span>
+        <button type="button" data-action="llms">llms.txt</button>
+        <button type="button" data-action="mcp">MCP</button>
+        <button type="button" data-action="source"><span lang="fr">Source</span><span lang="en">Source</span></button>
+      </footer>
+    </main>
+
+    <!-- ── On this page ─────────────────────────────────────────── -->
+    <aside class="toc" aria-label="Sur cette page">
+      <p class="toc-title"><svg class="i"><use href="#i-list"/></svg><span lang="fr">Sur cette page</span><span lang="en">On this page</span></p>
+      <ul id="toc-list"></ul>
+      <div class="toc-extra">
+        <button type="button" data-action="ask"><svg class="i"><use href="#i-sparkles"/></svg><span lang="fr">Poser une question sur cette page</span><span lang="en">Ask about this page</span></button>
+        <button type="button" data-action="source"><svg class="i"><use href="#i-file"/></svg><span lang="fr">Voir la source Markdown</span><span lang="en">View the Markdown source</span></button>
+        <button type="button" data-page><svg class="i"><use href="#i-pencil"/></svg><span lang="fr">Modifier sur GitHub</span><span lang="en">Edit on GitHub</span></button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ── Search ───────────────────────────────────────────────────── -->
+  <div class="overlay" id="search" hidden>
+    <div class="search-card" role="dialog" aria-modal="true" aria-label="Recherche">
+      <div class="search-in">
+        <svg class="i"><use href="#i-search"/></svg>
+        <input id="search-input" type="search" autocomplete="off" spellcheck="false" data-t-ph="searchPh" aria-controls="search-res">
+        <kbd>Esc</kbd>
+      </div>
+      <div class="search-res" id="search-res" role="listbox"></div>
+      <div class="search-foot">
+        <span><kbd>↑</kbd><kbd>↓</kbd><span lang="fr">naviguer</span><span lang="en">move</span></span>
+        <span><kbd>↵</kbd><span lang="fr">ouvrir</span><span lang="en">open</span></span>
+        <span class="grow"></span>
+        <span><span lang="fr">Tolère les fautes de frappe</span><span lang="en">Typo-tolerant</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Ask AI ───────────────────────────────────────────────────── -->
+  <div class="overlay overlay-sheet" id="ai" hidden>
+    <aside class="sheet" role="dialog" aria-modal="true" aria-labelledby="ai-title">
+      <header class="sheet-head">
+        <svg class="i"><use href="#i-sparkles"/></svg>
+        <h2 id="ai-title"><span lang="fr">Assistant de la doc</span><span lang="en">Docs assistant</span></h2>
+        <span class="chip"><span lang="fr">exemple</span><span lang="en">example</span></span>
+        <span class="grow"></span>
+        <button class="icon-btn" type="button" data-action="close" data-t-aria="close" aria-label="Fermer"><svg class="i"><use href="#i-x"/></svg></button>
+      </header>
+      <div class="ai-msgs" id="ai-msgs">
+        <div lang="fr">
+          <div class="msg user">Comment rendre Mocky accessible depuis mon réseau ?</div>
+          <div class="msg bot">
+            <p>Par défaut, le port de Mocky n’est publié que sur <code>127.0.0.1</code>, parce que plusieurs routes dépensent vos crédits de modèle.</p>
+            <p>Pour l’exposer volontairement, mettez <code>MOCKY_BIND=0.0.0.0</code> dans <code>.env</code>. La configuration recommandée reste de garder <code>127.0.0.1</code> et de placer un reverse proxy devant.</p>
+            <div class="sources"><span>Sources</span><button class="src" type="button" data-page>Déploiement › Exposer l’instance</button><button class="src" type="button" data-action="goto" data-sec="install">Démarrage › Installation</button></div>
+          </div>
+        </div>
+        <div lang="en">
+          <div class="msg user">How do I make Mocky reachable from my network?</div>
+          <div class="msg bot">
+            <p>By default Mocky’s port is published on <code>127.0.0.1</code> only, because several routes spend your model credits.</p>
+            <p>To expose it deliberately, set <code>MOCKY_BIND=0.0.0.0</code> in <code>.env</code>. The recommended setup is still to keep <code>127.0.0.1</code> and put a reverse proxy in front.</p>
+            <div class="sources"><span>Sources</span><button class="src" type="button" data-page>Deployment › Exposing the instance</button><button class="src" type="button" data-action="goto" data-sec="install">Getting started › Install</button></div>
+          </div>
+        </div>
+        <div id="ai-live"></div>
+      </div>
+      <form class="ai-form" id="ai-form">
+        <input id="ai-input" autocomplete="off" data-t-ph="aiPh" data-t-aria="aiPh">
+        <button class="btn btn-primary" type="submit" data-t-aria="send" aria-label="Envoyer"><svg class="i"><use href="#i-send"/></svg></button>
+      </form>
+      <p class="ai-note"><span lang="fr">Répond uniquement à partir de la doc, avec le modèle choisi par l’administrateur. Pas besoin de compte.</span><span lang="en">Answers from the docs only, with the model the administrator picked. No account needed.</span></p>
+    </aside>
+  </div>
+
+  <!-- ── Generic dialog ───────────────────────────────────────────── -->
+  <div class="overlay" id="dlg" hidden>
+    <div class="dlg-card" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
+      <div class="dlg-head"><h2 id="dlg-title"></h2><button class="icon-btn" type="button" data-action="close" data-t-aria="close" aria-label="Fermer"><svg class="i"><use href="#i-x"/></svg></button></div>
+      <div class="dlg-body" id="dlg-body"></div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Image">
+    <div class="lb-bar"><span id="lb-caption"></span><button class="icon-btn" type="button" data-action="close" data-t-aria="close" aria-label="Fermer"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="lb-scroll"><img id="lb-img" alt=""></div>
+  </div>
+
+  <div class="gloss" id="gloss" role="tooltip" hidden></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Dialog contents -->
+  <template id="tpl-mcp-fr">
+    <p>Lumy fournit un serveur <strong>MCP</strong> : un assistant IA (Claude, ou tout client compatible) peut lire la doc, écrire des pages et tenir les traductions à jour, en respectant la structure du site.</p>
+    <div class="code"><div class="code-head"><span>Configuration du client MCP</span><button class="copy" type="button"><svg class="i i-copy"><use href="#i-copy"/></svg><svg class="i i-check"><use href="#i-check"/></svg><span>Copier</span></button></div>
+<pre><code>{
+  <span class="tok-s">"mcpServers"</span>: {
+    <span class="tok-s">"lumy"</span>: {
+      <span class="tok-s">"command"</span>: <span class="tok-s">"npx"</span>,
+      <span class="tok-s">"args"</span>: [<span class="tok-s">"lumy"</span>, <span class="tok-s">"mcp"</span>, <span class="tok-s">"--docs"</span>, <span class="tok-s">"./docs"</span>]
+    }
+  }
+}</code></pre></div>
+    <p class="muted">Outils exposés (noms provisoires) :</p>
+    <ul class="tool-list">
+      <li><code>list_pages</code><span>Lister les pages et leur arborescence</span></li>
+      <li><code>read_page</code><span>Lire une page en Markdown</span></li>
+      <li><code>write_page</code><span>Créer ou modifier une page, blocs vérifiés</span></li>
+      <li><code>missing_translations</code><span>Pages non traduites ou en retard</span></li>
+      <li><code>translate_page</code><span>Préparer une traduction à relire</span></li>
+      <li><code>check_links</code><span>Trouver les liens et images cassés</span></li>
+    </ul>
+    <div class="callout note"><svg class="i"><use href="#i-info"/></svg><div><p>Sur une instance hébergée, le serveur MCP distant demande un jeton créé par l’administrateur. La lecture de la doc reste publique, sans compte.</p></div></div>
+  </template>
+  <template id="tpl-mcp-en">
+    <p>Lumy ships an <strong>MCP</strong> server: an AI assistant (Claude, or any compatible client) can read the docs, write pages and keep translations current, within the site’s structure.</p>
+    <div class="code"><div class="code-head"><span>MCP client configuration</span><button class="copy" type="button"><svg class="i i-copy"><use href="#i-copy"/></svg><svg class="i i-check"><use href="#i-check"/></svg><span>Copy</span></button></div>
+<pre><code>{
+  <span class="tok-s">"mcpServers"</span>: {
+    <span class="tok-s">"lumy"</span>: {
+      <span class="tok-s">"command"</span>: <span class="tok-s">"npx"</span>,
+      <span class="tok-s">"args"</span>: [<span class="tok-s">"lumy"</span>, <span class="tok-s">"mcp"</span>, <span class="tok-s">"--docs"</span>, <span class="tok-s">"./docs"</span>]
+    }
+  }
+}</code></pre></div>
+    <p class="muted">Tools it exposes (working names):</p>
+    <ul class="tool-list">
+      <li><code>list_pages</code><span>List the pages and their tree</span></li>
+      <li><code>read_page</code><span>Read a page as Markdown</span></li>
+      <li><code>write_page</code><span>Create or edit a page, blocks validated</span></li>
+      <li><code>missing_translations</code><span>Pages untranslated or out of date</span></li>
+      <li><code>translate_page</code><span>Draft a translation for review</span></li>
+      <li><code>check_links</code><span>Find broken links and images</span></li>
+    </ul>
+    <div class="callout note"><svg class="i"><use href="#i-info"/></svg><div><p>On a hosted instance, the remote MCP server asks for a token created by the administrator. Reading the docs stays public, with no account.</p></div></div>
+  </template>
+
+<script type="text/plain" id="src-fr">---
+title: Démarrage
+description: Installer Mocky, créer le premier compte et générer un premier écran.
+audience: [user, admin]
+---
+
+## Prérequis
+
+Docker, **ou** Node ≥ 22.12. Il n’y a ni base de données, ni module natif à compiler.
+
+:::note
+`ffmpeg` est le seul binaire externe, et il ne sert qu’à la vidéo au défilement.
+:::
+
+## Installation
+
+:::tabs group=install
+@tab Docker
+```bash
+git clone https://github.com/PetitOursManu/Mocky.git
+cd Mocky
+docker compose up -d --build
+```
+@tab Développement
+```bash
+npm install
+npm run dev:all
+```
+@tab Production
+```bash
+npm run build
+npm start
+```
+:::
+
+:::why Pourquoi le port n’est-il publié que sur 127.0.0.1 ?
+Plusieurs routes dépensent vos crédits de modèle…
+:::
+
+## Vérifier l’installation
+
+:::vars
+host = localhost   | Adresse du serveur
+port = 8787        | Port
+:::
+
+```bash
+curl -s {{host}}:{{port}}/api/health
+```
+
+## Première utilisation
+
+:::steps id=first-run
+1. **Ouvrez Mocky.** La boîte de connexion ne peut pas être fermée.
+2. **Créez le premier compte.** Il devient l’administrateur.
+3. **Configurez un modèle de texte** dans Réglages.
+4. **Générez un premier écran** depuis le [[composer]].
+:::
+
+## Repérer l’interface
+
+:::hotspots src=assets/13-canvas-project.png
+- 72,4  **Navigation principale** : la barre en haut de chaque page…
+- 29,10 **Barre d’outils du projet** : Lier, Modifier, Annoter…
+- 45,36 **Le canevas** : chaque écran est un cadre…
+- 50,88 **Le composer** : la barre flottante du bas…
+- 9,95  **La barre de zoom** : Tout afficher, dernier écran…
+:::
+
+## Une direction par projet
+
+Un projet garde **une seule** [[direction de design|direction]]…
+
+:::tip
+Tant qu’un projet n’a pas de direction, il se rabat sur [[DESIGN.md]].
+:::
+
+## Règles des comptes
+
+| Règle                          | Valeur       |
+|--------------------------------|--------------|
+| Longueur minimale du nom       | 3 caractères |
+| Durée d’une session            | 90 jours     |
+
+:::quiz
+Qui devient administrateur d’une nouvelle instance Mocky ?
+- Le compte qui renseigne la clé d’API
+- [x] Le premier compte créé
+- Personne : l’administrateur se déclare dans `.env`
+:::</script>
+<script type="text/plain" id="src-en">---
+title: Getting started
+description: Install Mocky, create the first account and generate a first screen.
+audience: [user, admin]
+---
+
+## Requirements
+
+Docker, **or** Node ≥ 22.12. There is no database and no native module to compile.
+
+:::note
+`ffmpeg` is the only external binary, and it is used only for scroll-driven video.
+:::
+
+## Install
+
+:::tabs group=install
+@tab Docker
+```bash
+git clone https://github.com/PetitOursManu/Mocky.git
+cd Mocky
+docker compose up -d --build
+```
+@tab Development
+```bash
+npm install
+npm run dev:all
+```
+@tab Production
+```bash
+npm run build
+npm start
+```
+:::
+
+:::why Why is the port published on 127.0.0.1 only?
+Several routes spend your model credits…
+:::
+
+## Check the install
+
+:::vars
+host = localhost   | Server address
+port = 8787        | Port
+:::
+
+```bash
+curl -s {{host}}:{{port}}/api/health
+```
+
+## First run
+
+:::steps id=first-run
+1. **Open Mocky.** The sign-in box cannot be dismissed.
+2. **Create the first account.** It becomes the administrator.
+3. **Configure a text model** in Settings.
+4. **Generate a first screen** from the [[composer]].
+:::
+
+## Find your way around
+
+:::hotspots src=assets/13-canvas-project.png
+- 72,4  **Main navigation**: the bar across the top of every route…
+- 29,10 **Project toolbar**: Link, Modify, Annotate…
+- 45,36 **The canvas**: every screen is a frame…
+- 50,88 **The composer**: the floating bar at the bottom…
+- 9,95  **The zoom bar**: Fit all, latest screen…
+:::
+
+## One direction per project
+
+A project keeps **one** [[design direction|direction]]…
+
+:::tip
+Until a project has a direction, it falls back to [[DESIGN.md]].
+:::
+
+## Account rules
+
+| Rule                     | Value        |
+|--------------------------|--------------|
+| Minimum username length  | 3 characters |
+| Session lifetime         | 90 days      |
+
+:::quiz
+Who becomes the administrator of a new Mocky instance?
+- The account that enters the API key
+- [x] The first account created
+- Nobody: the administrator is declared in `.env`
+:::</script>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var root = document.getElementById('lumy');
+  var html = document.documentElement;
+  function $(s, c) { return (c || document).querySelector(s); }
+  function $$(s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); }
+  var store = {
+    get: function (k, d) { try { var v = localStorage.getItem('lumy.' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem('lumy.' + k, JSON.stringify(v)); } catch (e) {} }
+  };
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Strings ─────────────────────────────────────────────────────── */
+  var T = {
+    fr: {
+      searchPh: 'Rechercher dans la doc…', aiPh: 'Posez votre question…', send: 'Envoyer', close: 'Fermer', menu: 'Menu',
+      search: 'Rechercher', theme: 'Changer de thème', ask: 'Demander à l’IA', language: 'Langue',
+      onlyThisPage: 'Maquette : seule la page « Démarrage » est construite.',
+      copied: 'Copié', copy: 'Copier', mdCopied: 'Page copiée en Markdown', linkCopied: 'Lien de la section copié',
+      glossary: 'Glossaire', readMore: 'Voir le glossaire →',
+      onPage: 'Sur cette page', pages: 'Pages', terms: 'Glossaire', inWidgets: 'Dans les blocs interactifs',
+      noRes: 'Aucun résultat pour', suggestions: 'Suggestions',
+      aiCanned: 'Dans Lumy, l’assistant répondra ici à partir de la doc, avec le modèle choisi par l’administrateur, en citant ses sources.',
+      llms: 'llms.txt : toute la doc en texte brut pour les LLM, générée automatiquement.',
+      srcTitle: 'Source de la page', srcIntro: 'C’est tout ce que l’auteur écrit : du Markdown, plus quelques blocs <code>:::</code>. Les termes entre <code>[[ ]]</code> viennent du glossaire commun du site.',
+      mcpTitle: 'Écrire la doc avec un assistant (MCP)', imgCaption: 'Pincez ou faites défiler pour explorer la capture.'
+    },
+    en: {
+      searchPh: 'Search the docs…', aiPh: 'Ask a question…', send: 'Send', close: 'Close', menu: 'Menu',
+      search: 'Search', theme: 'Toggle theme', ask: 'Ask AI', language: 'Language',
+      onlyThisPage: 'Mock-up: only the “Getting started” page is built.',
+      copied: 'Copied', copy: 'Copy', mdCopied: 'Page copied as Markdown', linkCopied: 'Section link copied',
+      glossary: 'Glossary', readMore: 'Open the glossary →',
+      onPage: 'On this page', pages: 'Pages', terms: 'Glossary', inWidgets: 'In interactive blocks',
+      noRes: 'No results for', suggestions: 'Suggestions',
+      aiCanned: 'In Lumy, the assistant will answer here from the docs, with the model the administrator picked, citing its sources.',
+      llms: 'llms.txt: the whole site as plain text for LLMs, generated automatically.',
+      srcTitle: 'Page source', srcIntro: 'This is all the author writes: Markdown, plus a few <code>:::</code> blocks. Terms in <code>[[ ]]</code> come from the site’s shared glossary.',
+      mcpTitle: 'Write the docs with an assistant (MCP)', imgCaption: 'Pinch or scroll to explore the screenshot.'
+    }
+  };
+
+  var GLOSS = {
+    fr: {
+      muse: { term: 'Muse', def: 'L’interrupteur d’intelligence du design : il transforme une demande en direction artistique singulière, avec de vrais textes, une palette cohérente et des images générées, à partir de références consultées en direct.' },
+      direction: { term: 'Direction de design', def: 'Le style propre à un projet : palette, typographie et ton. Fixée par le premier écran généré, elle est suivie par tous les écrans suivants, jusqu’à ce que vous cochiez « Nouvelle direction ».' },
+      designmd: { term: 'DESIGN.md', def: 'Un système de design en Markdown ordinaire (couleurs, typographie, espacements, motifs de composants) que Mocky place en tête de chaque génération.' },
+      composer: { term: 'Composer', def: 'La barre flottante en bas du canevas, où l’on décrit un écran. C’est le seul contrôle qui change de verbe selon ce qui est sélectionné.' },
+      motion: { term: 'Motion Ultra', def: 'Un réglage de projet qui storyboarde chaque nouvel écran, génère ×3 ou ×6 images dans un style commun et l’écrit comme une page portée par le mouvement.' }
+    },
+    en: {
+      muse: { term: 'Muse', def: 'The design-intelligence switch: it turns a prompt into a distinctive art direction, with real copy, a coherent palette and generated images, grounded in references fetched live.' },
+      direction: { term: 'Design direction', def: 'A project’s own style: palette, type and voice. Set by the first screen you generate, every screen after it follows it, until you tick “New direction”.' },
+      designmd: { term: 'DESIGN.md', def: 'A design system in plain Markdown (colour tokens, typography, spacing, component patterns) that Mocky puts at the head of every generation.' },
+      composer: { term: 'Composer', def: 'The floating bar at the bottom of the canvas where you describe a screen. It is the only control whose verb changes with what is selected.' },
+      motion: { term: 'Motion Ultra', def: 'A project setting that storyboards each new screen, generates ×3 or ×6 pictures in one style for it, and writes it as a motion-driven page.' }
+    }
+  };
+
+  var PAGES = {
+    fr: [
+      ['Introduction', 'Démarrer', 'Mocky génère de vrais composants React + Tailwind à partir d’une description, sur un canevas infini, sur votre propre serveur.'],
+      ['L’interface', 'Démarrer', 'Navigation principale, barre d’outils du projet, canevas, barre de zoom, composer et panneaux latéraux.'],
+      ['Préréglages DESIGN.md', 'Démarrer', '17 styles visuels intégrés qui pilotent chaque génération.'],
+      ['Muse', 'Fonctionnalités', 'Inspiration, direction artistique et vrais textes, à partir de références consultées en direct.'],
+      ['Passe de qualité', 'Fonctionnalités', '59 règles déterministes et une passe jugée : une note sur 20, puis des corrections.'],
+      ['Motion Ultra — pages', 'Fonctionnalités', 'Storyboard, séries de ×3 ou ×6 images et pages portées par le mouvement.'],
+      ['Motion Ultra — films', 'Fonctionnalités', 'Un .mp4 composé à partir d’un catalogue fermé de blocs : typographie, graphiques, images, icônes, objets 3D.'],
+      ['SEO et accessibilité', 'Fonctionnalités', 'Audit du balisage, puis correction.'],
+      ['Déploiement', 'Auto-hébergement', 'Docker, reverse proxy, variables d’environnement, exposer l’instance avec MOCKY_BIND, route de santé.'],
+      ['Maintenance et migration', 'Auto-hébergement', 'Passer l’instance en lecture seule et la déplacer vers un autre serveur, chiffrée de bout en bout.'],
+      ['Tableau de bord admin', 'Auto-hébergement', 'Qui est connecté, processeur et mémoire en direct, journal d’audit, annonces.'],
+      ['Vue d’ensemble', 'Architecture', 'Où vivent les choses : le pipeline de génération tourne dans le navigateur.'],
+      ['Invariants', 'Architecture', 'Les règles que le projet ne casse jamais, comme l’absence de CDN.'],
+      ['Journal des modifications', 'Référence', 'Toutes les versions de Mocky.']
+    ],
+    en: [
+      ['Introduction', 'Get started', 'Mocky generates real React + Tailwind components from a description, on an infinite canvas, on your own server.'],
+      ['The interface', 'Get started', 'Main navigation, project toolbar, canvas, zoom bar, composer and side panels.'],
+      ['DESIGN.md presets', 'Get started', '17 built-in visual styles that drive every generation.'],
+      ['Muse', 'Features', 'Inspiration, art direction and real copy, grounded in references fetched live.'],
+      ['Quality pass', 'Features', '59 deterministic rules and a judged pass: a score out of 20, then fixes.'],
+      ['Motion Ultra — pages', 'Features', 'Storyboards, ×3 or ×6 picture series and motion-driven pages.'],
+      ['Motion Ultra — films', 'Features', 'An .mp4 composed from a closed catalogue of blocks: type, charts, pictures, icons, 3D objects.'],
+      ['SEO and accessibility', 'Features', 'A markup audit, then fixes.'],
+      ['Deployment', 'Self-hosting', 'Docker, reverse proxy, environment variables, exposing the instance with MOCKY_BIND, health route.'],
+      ['Maintenance and migration', 'Self-hosting', 'Put the instance in read-only mode and move it to another server, end-to-end encrypted.'],
+      ['Admin dashboard', 'Self-hosting', 'Who is signed in, live CPU and memory, audit log, announcements.'],
+      ['Architecture overview', 'Architecture', 'Where things live: the generation pipeline runs in the browser.'],
+      ['Invariants', 'Architecture', 'The rules the project never breaks, such as no CDN.'],
+      ['Changelog', 'Reference', 'Every Mocky release.']
+    ]
+  };
+
+  var BRANDS = { teal: ['#20796c', '#2dc7b0'], indigo: ['#4f46e5', '#818cf8'], orange: ['#c2410c', '#fb923c'], rose: ['#be123c', '#fb7185'] };
+  var VAR_DEFAULTS = { host: 'localhost', port: '8787' };
+
+  var lang = store.get('lang', null) || ((navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en');
+  function t(k) { return (T[lang] && T[lang][k]) || k; }
+  function article() { return $('article.doc[lang="' + lang + '"]'); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function scrollToEl(el) { el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' }); }
+  function flash(el) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+
+  /* ── Toast & clipboard ───────────────────────────────────────────── */
+  var toastEl = $('#toast'), toastTimer;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2800);
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+    ta.remove(); return ok;
+  }
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return fallbackCopy(text); });
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+
+  /* ── Theme ───────────────────────────────────────────────────────── */
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  var savedTheme = store.get('theme', null);
+  if (savedTheme === 'dark' || savedTheme === 'light') html.setAttribute('data-theme', savedTheme);
+  function effectiveTheme() {
+    var d = html.getAttribute('data-theme');
+    if (d === 'dark' || d === 'light') return d;
+    return mq.matches ? 'dark' : 'light';
+  }
+  function syncThemeIcon() { $$('.theme-btn').forEach(function (b) { b.setAttribute('data-mode', effectiveTheme()); }); }
+  if (mq.addEventListener) mq.addEventListener('change', syncThemeIcon);
+
+  /* ── Brand colour ────────────────────────────────────────────────── */
+  function setBrand(b) {
+    if (!BRANDS[b]) b = 'teal';
+    html.style.setProperty('--brand-l', BRANDS[b][0]);
+    html.style.setProperty('--brand-d', BRANDS[b][1]);
+    $$('[data-brand]').forEach(function (s) { s.setAttribute('aria-pressed', String(s.getAttribute('data-brand') === b)); });
+    store.set('brand', b);
+  }
+
+  /* ── Audience filter ─────────────────────────────────────────────── */
+  function setAud(a) {
+    $$('.seg [data-aud]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-aud') === a)); });
+    $$('.sb-group').forEach(function (g) {
+      var any = false;
+      $$('li[data-aud]', g).forEach(function (li) {
+        var show = a === 'all' || li.getAttribute('data-aud').split(' ').indexOf(a) !== -1;
+        li.classList.toggle('is-filtered', !show);
+        if (show) any = true;
+      });
+      g.classList.toggle('is-empty', !any);
+    });
+    store.set('aud', a);
+  }
+
+  /* ── Language ────────────────────────────────────────────────────── */
+  function applyLang(l, keepPlace) {
+    var sec = keepPlace ? currentSec : null;
+    lang = l;
+    root.setAttribute('data-lang', l);
+    html.setAttribute('lang', l);
+    store.set('lang', l);
+    $('#lang-code').textContent = l.toUpperCase();
+    $$('[data-action="set-lang"]').forEach(function (b) { b.setAttribute('aria-checked', String(b.getAttribute('data-lang') === l)); });
+    $$('[data-t-ph]').forEach(function (el) { el.setAttribute('placeholder', t(el.getAttribute('data-t-ph'))); });
+    $$('[data-t-aria]').forEach(function (el) { el.setAttribute('aria-label', t(el.getAttribute('data-t-aria'))); });
+    buildToc();
+    if (sec) {
+      var h = $('h2[data-sec="' + sec + '"]', article());
+      if (h) h.scrollIntoView({ block: 'start' });
+    }
+    onScroll();
+  }
+
+  /* ── Table of contents & scroll spy ──────────────────────────────── */
+  var currentSec = null;
+  function headingText(h) {
+    var s = '';
+    Array.prototype.forEach.call(h.childNodes, function (n) { if (!(n.classList && n.classList.contains('anchor'))) s += n.textContent; });
+    return s.trim();
+  }
+  function buildToc() {
+    var hs = $$('h2[data-sec]', article());
+    ['#toc-list', '#toc-mobile-list'].forEach(function (sel) {
+      var ul = $(sel); ul.innerHTML = '';
+      hs.forEach(function (h) {
+        var li = document.createElement('li'), a = document.createElement('a');
+        a.href = '#' + h.id; a.textContent = headingText(h); a.setAttribute('data-goto', h.getAttribute('data-sec'));
+        li.appendChild(a); ul.appendChild(li);
+      });
+    });
+  }
+  function setActive(sec) {
+    currentSec = sec;
+    $$('#toc-list a, #toc-mobile-list a').forEach(function (a) { a.classList.toggle('is-active', a.getAttribute('data-goto') === sec); });
+    var h = sec && $('h2[data-sec="' + sec + '"]', article());
+    $('#toc-cur').textContent = h ? headingText(h) : '';
+  }
+  var ticking = false;
+  function onScroll() {
+    var hs = $$('h2[data-sec]', article());
+    if (!hs.length) return;
+    var cur = hs[0];
+    for (var i = 0; i < hs.length; i++) { if (hs[i].getBoundingClientRect().top < 150) cur = hs[i]; else break; }
+    setActive(cur.getAttribute('data-sec'));
+  }
+  window.addEventListener('scroll', function () {
+    if (!gloss.hidden) closeGloss();
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function () { ticking = false; onScroll(); });
+  }, { passive: true });
+  function gotoSec(sec) {
+    var h = $('h2[data-sec="' + sec + '"]', article());
+    if (h) { scrollToEl(h); flash(h); }
+  }
+
+  /* Heading anchors: copy a link to the section */
+  $$('article.doc h2[id]').forEach(function (h) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'anchor'; b.textContent = '#';
+    b.setAttribute('aria-label', 'Lien'); b.setAttribute('data-action', 'anchor');
+    h.appendChild(b);
+  });
+
+  /* ── Tabs ────────────────────────────────────────────────────────── */
+  function setTab(group, key) {
+    $$('[data-tabs="' + group + '"]').forEach(function (tabs) {
+      $$('[role="tab"]', tabs).forEach(function (b) {
+        var on = b.getAttribute('data-tab') === key;
+        b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1;
+      });
+      $$('[role="tabpanel"]', tabs).forEach(function (p) { p.hidden = p.getAttribute('data-tab') !== key; });
+    });
+    store.set('tab.' + group, key);
+  }
+
+  /* ── Your values ─────────────────────────────────────────────────── */
+  var vars = Object.assign({}, VAR_DEFAULTS, store.get('vars', {}));
+  function renderVars(pulse) {
+    $$('[data-var]').forEach(function (el) {
+      var k = el.getAttribute('data-var');
+      if (el.tagName === 'INPUT') { if (el !== document.activeElement) el.value = vars[k]; }
+      else {
+        el.textContent = vars[k];
+        if (pulse) { el.classList.add('pulse'); setTimeout(function () { el.classList.remove('pulse'); }, 350); }
+      }
+    });
+  }
+  $$('input[data-var]').forEach(function (inp) {
+    inp.addEventListener('input', function () {
+      var k = inp.getAttribute('data-var');
+      vars[k] = inp.value.trim() || VAR_DEFAULTS[k];
+      store.set('vars', vars); renderVars(true);
+    });
+  });
+
+  /* ── Steps ───────────────────────────────────────────────────────── */
+  var done = store.get('steps.first-run', []);
+  function renderSteps() {
+    $$('[data-steps]').forEach(function (ol) {
+      var items = $$('.step', ol);
+      items.forEach(function (li, i) {
+        var on = done.indexOf(i) !== -1;
+        li.classList.toggle('is-done', on);
+        $('.step-check', li).setAttribute('aria-pressed', String(on));
+      });
+      var wrap = ol.closest('.steps-wrap');
+      $('.steps-count', wrap).textContent = done.length + ' / ' + items.length;
+      $('.steps-bar i', wrap).style.width = (done.length / items.length * 100) + '%';
+    });
+  }
+  function toggleStep(i) {
+    var at = done.indexOf(i);
+    if (at === -1) done.push(i); else done.splice(at, 1);
+    store.set('steps.first-run', done); renderSteps();
+  }
+
+  /* ── Annotated screenshot ────────────────────────────────────────── */
+  var hsIndex = 0, HS_COUNT = 5;
+  function setHs(i) {
+    hsIndex = (i + HS_COUNT) % HS_COUNT;
+    $$('figure.hs').forEach(function (fig) {
+      $$('.hs-dot', fig).forEach(function (d) {
+        var on = Number(d.getAttribute('data-i')) === hsIndex;
+        d.classList.toggle('is-active', on);
+        d.setAttribute('aria-pressed', String(on));
+      });
+      var data = $$('.hs-data > div', fig)[hsIndex];
+      $('.hs-num', fig).textContent = hsIndex + 1;
+      $('.hs-title', fig).textContent = data.getAttribute('data-title');
+      $('.hs-text', fig).textContent = data.textContent;
+      $('.hs-count', fig).textContent = (hsIndex + 1) + ' / ' + HS_COUNT;
+      $$('.hs-dot', fig).forEach(function (d) {
+        var dd = $$('.hs-data > div', fig)[Number(d.getAttribute('data-i'))];
+        d.setAttribute('aria-label', d.textContent + '. ' + dd.getAttribute('data-title'));
+      });
+    });
+  }
+
+  /* ── Glossary popover ────────────────────────────────────────────── */
+  var gloss = $('#gloss'), glossFor = null, hoverTimer;
+  function openGloss(btn) {
+    var g = GLOSS[lang][btn.getAttribute('data-term')];
+    if (!g) return;
+    glossFor = btn;
+    gloss.innerHTML = '<div class="gk">' + esc(t('glossary')) + '</div><div class="gt">' + esc(g.term) + '</div><p>' + esc(g.def) + '</p><button class="gm" type="button" data-page>' + esc(t('readMore')) + '</button>';
+    gloss.hidden = false;
+    var r = btn.getBoundingClientRect(), w = Math.min(320, window.innerWidth - 32);
+    gloss.style.width = w + 'px';
+    var left = Math.max(16, Math.min(r.left + r.width / 2 - w / 2, window.innerWidth - 16 - w));
+    gloss.style.left = left + 'px';
+    var top = r.bottom + 8;
+    if (top + gloss.offsetHeight > window.innerHeight - 16) top = Math.max(16, r.top - 8 - gloss.offsetHeight);
+    gloss.style.top = top + 'px';
+  }
+  function closeGloss() { gloss.hidden = true; glossFor = null; }
+  document.addEventListener('mouseover', function (e) {
+    var term = e.target.closest && e.target.closest('.term');
+    if (term) { clearTimeout(hoverTimer); hoverTimer = setTimeout(function () { openGloss(term); }, 160); return; }
+    if (e.target.closest && e.target.closest('#gloss')) { clearTimeout(hoverTimer); return; }
+    if (!gloss.hidden && glossFor) { clearTimeout(hoverTimer); hoverTimer = setTimeout(closeGloss, 220); }
+  });
+
+  /* ── Overlays ────────────────────────────────────────────────────── */
+  var lastFocus = null;
+  function openOverlay(id) {
+    lastFocus = document.activeElement;
+    $('#' + id).hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeOverlay(el) {
+    el.hidden = true;
+    if (!$$('.overlay, .lightbox').some(function (o) { return !o.hidden; })) document.body.style.overflow = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  function closeMenus(except) {
+    $$('.menu').forEach(function (m) {
+      if (m === except) return;
+      m.hidden = true;
+      var b = m.parentElement.querySelector('[aria-haspopup]');
+      if (b) b.setAttribute('aria-expanded', 'false');
+    });
+  }
+  function openDrawer() { root.classList.add('drawer-open'); $('#scrim').hidden = false; }
+  function closeDrawer() { root.classList.remove('drawer-open'); $('#scrim').hidden = true; }
+
+  function openDialog(kind) {
+    closeMenus();
+    var body = $('#dlg-body');
+    if (kind === 'source') {
+      $('#dlg-title').textContent = t('srcTitle');
+      body.innerHTML = '<p>' + t('srcIntro') + '</p><pre class="src-md">' + esc($('#src-' + lang).textContent) + '</pre>';
+    } else {
+      $('#dlg-title').textContent = t('mcpTitle');
+      body.innerHTML = '';
+      body.appendChild($('#tpl-mcp-' + lang).content.cloneNode(true));
+    }
+    openOverlay('dlg');
+    body.scrollTop = 0;
+    $('#dlg .icon-btn').focus();
+  }
+
+  /* ── Search ──────────────────────────────────────────────────────── */
+  var searchEl = $('#search'), input = $('#search-input'), resEl = $('#search-res');
+  var results = [], active = 0;
+  function norm(s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+  function lev(a, b) {
+    var m = a.length, n = b.length, d = [], i, j;
+    for (i = 0; i <= m; i++) d[i] = [i];
+    for (j = 0; j <= n; j++) d[0][j] = j;
+    for (i = 1; i <= m; i++) for (j = 1; j <= n; j++)
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    return d[m][n];
+  }
+  function buildIndex() {
+    var items = [], art = article();
+    $$('h2[data-sec]', art).forEach(function (h) {
+      var text = '', n = h.nextElementSibling;
+      while (n && n.tagName !== 'H2') { if (!n.classList.contains('hs') && !n.classList.contains('steps-wrap')) text += ' ' + n.textContent; n = n.nextElementSibling; }
+      items.push({ type: 'sec', title: headingText(h), text: text.replace(/\s+/g, ' ').trim(), el: h });
+    });
+    $$('.step', art).forEach(function (s) {
+      items.push({ type: 'widget', title: $('.step-title', s).textContent, text: $('.step-body p:last-child', s).textContent, el: s });
+    });
+    $$('.hs-data > div', art).forEach(function (d, i) {
+      items.push({ type: 'widget', title: d.getAttribute('data-title'), text: d.textContent, el: d.closest('figure'), hs: i });
+    });
+    PAGES[lang].forEach(function (p) { items.push({ type: 'page', title: p[0], group: p[1], text: p[2] }); });
+    Object.keys(GLOSS[lang]).forEach(function (k) { items.push({ type: 'term', title: GLOSS[lang][k].term, text: GLOSS[lang][k].def, key: k }); });
+    return items;
+  }
+  function matchScore(item, toks) {
+    var ht = norm(item.title), hx = norm(item.text), hay = ht + ' ' + hx, score = 0;
+    var words = hay.split(/[^a-z0-9.]+/);
+    for (var i = 0; i < toks.length; i++) {
+      var tk = toks[i];
+      if (hay.indexOf(tk) !== -1) { score += ht.indexOf(tk) !== -1 ? 4 : 1; continue; }
+      if (tk.length >= 4) {
+        var tol = tk.length >= 7 ? 2 : 1, hit = false;
+        for (var w = 0; w < words.length && !hit; w++) {
+          if (words[w].length >= tk.length - 1 && lev(words[w].slice(0, tk.length), tk) <= tol) hit = true;
+        }
+        if (hit) { score += 0.5; continue; }
+      }
+      return 0;
+    }
+    return score;
+  }
+  function hl(orig, toks) {
+    var n = norm(orig), marks = new Array(orig.length), out = '', open = false, i;
+    toks.forEach(function (tk) {
+      var at = n.indexOf(tk);
+      while (tk && at !== -1) { for (var j = at; j < at + tk.length && j < orig.length; j++) marks[j] = true; at = n.indexOf(tk, at + tk.length); }
+    });
+    for (i = 0; i < orig.length; i++) {
+      if (marks[i] && !open) { out += '<mark>'; open = true; }
+      if (!marks[i] && open) { out += '</mark>'; open = false; }
+      out += esc(orig[i]);
+    }
+    return out + (open ? '</mark>' : '');
+  }
+  function snippet(text, toks) {
+    var n = norm(text), at = -1;
+    toks.forEach(function (tk) { var p = n.indexOf(tk); if (p !== -1 && (at === -1 || p < at)) at = p; });
+    var start = Math.max(0, at - 50), s = text.slice(start, start + 150);
+    return (start > 0 ? '…' : '') + s + (start + 150 < text.length ? '…' : '');
+  }
+  var ICON = { sec: 'i-hash', widget: 'i-sliders', page: 'i-book', term: 'i-bulb' };
+  function renderSearch(q) {
+    var toks = norm(q).split(/\s+/).filter(Boolean), items = buildIndex(), groups;
+    if (!toks.length) {
+      results = items.filter(function (it) { return it.type === 'sec'; }).slice(0, 5)
+        .concat(items.filter(function (it) { return it.type === 'page'; }).slice(8, 10));
+      groups = [[t('suggestions'), results]];
+    } else {
+      items.forEach(function (it) { it.score = matchScore(it, toks); });
+      var hit = items.filter(function (it) { return it.score > 0; }).sort(function (a, b) { return b.score - a.score; });
+      var bucket = function (types) { return hit.filter(function (it) { return types.indexOf(it.type) !== -1; }).slice(0, 5); };
+      groups = [[t('onPage'), bucket(['sec'])], [t('inWidgets'), bucket(['widget'])], [t('pages'), bucket(['page'])], [t('terms'), bucket(['term'])]];
+      results = [];
+      groups.forEach(function (g) { results = results.concat(g[1]); });
+    }
+    active = 0;
+    if (!results.length) { resEl.innerHTML = '<div class="sr-empty">' + esc(t('noRes')) + ' « ' + esc(q) + ' »</div>'; return; }
+    var htmlOut = '', idx = 0;
+    groups.forEach(function (g) {
+      if (!g[1].length) return;
+      htmlOut += '<div class="sr-group">' + esc(g[0]) + '</div>';
+      g[1].forEach(function (it) {
+        var sub = it.type === 'page' ? it.group + ' · ' + it.text : it.text;
+        htmlOut += '<button type="button" class="sr-item" role="option" data-r="' + idx + '"><svg class="i"><use href="#' + ICON[it.type] + '"/></svg><span><span class="sr-t">' + hl(it.title, toks) + '</span><span class="sr-s">' + hl(toks.length ? snippet(sub, toks) : sub.slice(0, 120) + (sub.length > 120 ? '…' : ''), toks) + '</span></span></button>';
+        idx++;
+      });
+    });
+    resEl.innerHTML = htmlOut;
+    markActive();
+  }
+  function markActive() {
+    $$('.sr-item', resEl).forEach(function (b, i) {
+      b.classList.toggle('is-active', i === active);
+      b.setAttribute('aria-selected', String(i === active));
+      if (i === active) b.scrollIntoView({ block: 'nearest' });
+    });
+  }
+  function openSearch() {
+    closeMenus(); closeDrawer(); closeGloss();
+    openOverlay('search');
+    input.value = ''; renderSearch('');
+    input.focus();
+  }
+  function pick(i) {
+    var it = results[i]; if (!it) return;
+    closeOverlay(searchEl);
+    if (it.type === 'page') { toast(t('onlyThisPage')); return; }
+    if (it.type === 'term') {
+      var term = $('.term[data-term="' + it.key + '"]', article());
+      if (term) { scrollToEl(term); setTimeout(function () { openGloss(term); }, reduceMotion ? 0 : 450); }
+      else toast(it.title + ' — ' + it.text);
+      return;
+    }
+    if (typeof it.hs === 'number') setHs(it.hs);
+    scrollToEl(it.el); flash(it.el);
+  }
+  input.addEventListener('input', function () { renderSearch(input.value); });
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowDown') { e.preventDefault(); active = Math.min(active + 1, results.length - 1); markActive(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); active = Math.max(active - 1, 0); markActive(); }
+    else if (e.key === 'Enter') { e.preventDefault(); pick(active); }
+  });
+  resEl.addEventListener('click', function (e) { var b = e.target.closest('.sr-item'); if (b) pick(Number(b.getAttribute('data-r'))); });
+  searchEl.addEventListener('mousedown', function (e) { if (e.target === searchEl) closeOverlay(searchEl); });
+
+  /* ── Ask AI ──────────────────────────────────────────────────────── */
+  function openAI() { closeMenus(); closeDrawer(); openOverlay('ai'); var m = $('#ai-msgs'); m.scrollTop = m.scrollHeight; $('#ai-input').focus(); }
+  $('#ai').addEventListener('mousedown', function (e) { if (e.target === $('#ai')) closeOverlay($('#ai')); });
+  $('#ai-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var inp = $('#ai-input'), q = inp.value.trim(); if (!q) return;
+    inp.value = '';
+    var live = $('#ai-live'), msgs = $('#ai-msgs');
+    var u = document.createElement('div'); u.className = 'msg user'; u.textContent = q; live.appendChild(u);
+    var b = document.createElement('div'); b.className = 'msg bot'; b.innerHTML = '<span class="typing"><i></i><i></i><i></i></span>'; live.appendChild(b);
+    msgs.scrollTop = msgs.scrollHeight;
+    setTimeout(function () { b.textContent = t('aiCanned'); msgs.scrollTop = msgs.scrollHeight; }, 900);
+  });
+  $('#dlg').addEventListener('mousedown', function (e) { if (e.target === $('#dlg')) closeOverlay($('#dlg')); });
+
+  /* ── Feedback forms ──────────────────────────────────────────────── */
+  $$('.fb-form').forEach(function (f) {
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      f.hidden = true; $('.fb-thanks', f.parentElement).hidden = false;
+    });
+  });
+
+  /* ── One click handler for everything ────────────────────────────── */
+  document.addEventListener('click', function (e) {
+    var el;
+
+    if ((el = e.target.closest('.copy'))) {
+      var code = el.closest('.code').querySelector('pre');
+      copyText(code.textContent).then(function () {
+        var label = el.querySelector('span');
+        el.classList.add('done'); label.textContent = t('copied');
+        setTimeout(function () { el.classList.remove('done'); label.textContent = t('copy'); }, 1600);
+      });
+      return;
+    }
+    if ((el = e.target.closest('[role="tab"]'))) { setTab(el.closest('[data-tabs]').getAttribute('data-tabs'), el.getAttribute('data-tab')); return; }
+    if ((el = e.target.closest('.step-check'))) { toggleStep($$('.step', el.closest('.steps')).indexOf(el.closest('.step'))); return; }
+    if ((el = e.target.closest('.hs-dot'))) { setHs(Number(el.getAttribute('data-i'))); return; }
+    if ((el = e.target.closest('.term'))) { clearTimeout(hoverTimer); if (glossFor === el && !gloss.hidden) closeGloss(); else openGloss(el); return; }
+    if ((el = e.target.closest('.quiz-opt'))) {
+      var quiz = el.closest('.quiz'), ok = el.getAttribute('data-ok') === '1';
+      el.classList.add(ok ? 'is-ok' : 'is-bad');
+      $('.quiz-fb.ok', quiz).hidden = !ok; $('.quiz-fb.bad', quiz).hidden = ok;
+      if (ok) $$('.quiz-opt', quiz).forEach(function (o) { o.disabled = true; });
+      return;
+    }
+    if ((el = e.target.closest('#toc-list a, #toc-mobile-list a'))) {
+      e.preventDefault();
+      $('#toc-mobile-list').hidden = true; $('.toc-bar > button').setAttribute('aria-expanded', 'false');
+      gotoSec(el.getAttribute('data-goto'));
+      return;
+    }
+    if ((el = e.target.closest('[data-page]'))) {
+      e.preventDefault(); closeDrawer(); closeGloss();
+      toast(t('onlyThisPage'));
+      return;
+    }
+
+    el = e.target.closest('[data-action]');
+    if (!el) {
+      if (!e.target.closest('.menu-wrap')) closeMenus();
+      if (!e.target.closest('#gloss')) closeGloss();
+      return;
+    }
+    var act = el.getAttribute('data-action');
+    if (act !== 'lang-menu' && act !== 'pa-menu') closeMenus();
+    switch (act) {
+      case 'search': openSearch(); break;
+      case 'ask': openAI(); break;
+      case 'theme': {
+        var next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next); store.set('theme', next); syncThemeIcon();
+        break;
+      }
+      case 'lang-menu':
+      case 'pa-menu': {
+        var menu = el.parentElement.querySelector('.menu');
+        var open = menu.hidden;
+        closeMenus(menu);
+        menu.hidden = !open; el.setAttribute('aria-expanded', String(open));
+        break;
+      }
+      case 'set-lang': applyLang(el.getAttribute('data-lang'), true); toast(el.textContent.trim()); break;
+      case 'read-en': applyLang('en', true); break;
+      case 'menu': openDrawer(); break;
+      case 'drawer-close': closeDrawer(); break;
+      case 'top': e.preventDefault(); closeDrawer(); window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); break;
+      case 'copy-md': copyText($('#src-' + lang).textContent).then(function () { toast(t('mdCopied')); }); break;
+      case 'source': openDialog('source'); break;
+      case 'mcp': openDialog('mcp'); break;
+      case 'llms': toast(t('llms')); break;
+      case 'anchor': {
+        var h = el.closest('h2');
+        copyText(location.href.split('#')[0] + '#' + h.id).then(function () { toast(t('linkCopied')); });
+        break;
+      }
+      case 'vars-reset': vars = Object.assign({}, VAR_DEFAULTS); store.set('vars', vars); $$('input[data-var]').forEach(function (i) { i.value = vars[i.getAttribute('data-var')]; }); renderVars(true); break;
+      case 'steps-reset': done = []; store.set('steps.first-run', done); renderSteps(); break;
+      case 'hs-prev': setHs(hsIndex - 1); break;
+      case 'hs-next': setHs(hsIndex + 1); break;
+      case 'zoom': {
+        var img = el.closest('.hs-stage').querySelector('img');
+        $('#lb-img').src = img.src; $('#lb-img').alt = img.alt; $('#lb-caption').textContent = t('imgCaption');
+        openOverlay('lightbox'); $('#lightbox .icon-btn').focus();
+        break;
+      }
+      case 'close': closeOverlay(el.closest('.overlay, .lightbox')); break;
+      case 'demo-close': $('#demo-bar').hidden = true; break;
+      case 'toc-toggle': {
+        var ul = $('#toc-mobile-list'), openT = ul.hidden;
+        ul.hidden = !openT; el.setAttribute('aria-expanded', String(openT));
+        break;
+      }
+      case 'goto': closeOverlay(el.closest('.overlay')); gotoSec(el.getAttribute('data-sec')); break;
+      case 'brand': setBrand(el.getAttribute('data-brand')); break;
+      case 'aud': setAud(el.getAttribute('data-aud')); break;
+      case 'fb-yes': case 'fb-no': {
+        var fb = el.closest('.fb');
+        $('.fb-btns', fb).hidden = true;
+        if (act === 'fb-yes') $('.fb-thanks', fb).hidden = false;
+        else { var f = $('.fb-form', fb); f.hidden = false; $('textarea', f).focus(); }
+        break;
+      }
+    }
+  });
+
+  /* Tabs: arrow keys */
+  document.addEventListener('keydown', function (e) {
+    var tab = e.target.closest && e.target.closest('[role="tab"]');
+    if (tab && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+      var list = $$('[role="tab"]', tab.parentElement), i = list.indexOf(tab);
+      var nx = list[(i + (e.key === 'ArrowRight' ? 1 : -1) + list.length) % list.length];
+      nx.focus(); nx.click(); e.preventDefault(); return;
+    }
+    var typing = /INPUT|TEXTAREA/.test(e.target.tagName);
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); if (searchEl.hidden) openSearch(); else closeOverlay(searchEl); return; }
+    if (e.key === '/' && !typing && searchEl.hidden) { e.preventDefault(); openSearch(); return; }
+    if (e.key === 'Escape') {
+      if (!gloss.hidden) { closeGloss(); return; }
+      var openOv = $$('.overlay, .lightbox').filter(function (o) { return !o.hidden; }).pop();
+      if (openOv) { closeOverlay(openOv); return; }
+      if ($$('.menu').some(function (m) { return !m.hidden; })) { closeMenus(); return; }
+      if (root.classList.contains('drawer-open')) closeDrawer();
+    }
+  });
+
+  /* ── Start ───────────────────────────────────────────────────────── */
+  if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) $$('.kbd-k').forEach(function (k) { k.textContent = '⌘K'; });
+  syncThemeIcon();
+  setBrand(store.get('brand', 'teal'));
+  setAud(store.get('aud', 'all'));
+  setTab('install', store.get('tab.install', 'docker'));
+  renderVars(false);
+  renderSteps();
+  setHs(0);
+  applyLang(lang, false);
+})();
+</script>

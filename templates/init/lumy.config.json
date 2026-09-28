@@ -1,0 +1,9 @@
+{
+  "title": "My docs",
+  "languages": ["en"],
+  "theme": { "brand": "#4f46e5" },
+  "nav": [
+    { "group": "Get started", "pages": ["index", "getting-started"] },
+    { "group": "Reference", "pages": ["glossary"] }
+  ]
+}

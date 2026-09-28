@@ -1,0 +1,28 @@
+{
+  "title": "Lumy",
+  "description": "Light, multilingual, interactive documentation. Write Markdown, get a fast static site.",
+  "version": "v0.1",
+  "logo": "assets/lumy.svg",
+  "favicon": "assets/lumy.svg",
+  "languages": ["en", "fr"],
+  "theme": { "brand": "#4f46e5", "brandDark": "#a5b4fc" },
+  "github": "https://github.com/PetitOursManu/Lumy",
+  "editUrl": "https://github.com/PetitOursManu/Lumy/edit/main/site/docs/{path}",
+  "issuesUrl": "https://github.com/PetitOursManu/Lumy/issues",
+  "links": [
+    { "label": { "en": "Writing", "fr": "Rédiger" }, "href": "writing" },
+    { "label": "MCP", "href": "ai" }
+  ],
+  "audiences": [
+    { "id": "writer", "label": { "en": "Writer", "fr": "Rédaction" } },
+    { "id": "admin", "label": "Admin" }
+  ],
+  "feedback": true,
+  "mcp": true,
+  "nav": [
+    { "group": { "en": "Get started", "fr": "Démarrer" }, "pages": ["index", "getting-started"] },
+    { "group": { "en": "Write", "fr": "Rédiger" }, "pages": ["writing", "languages", "ai"] },
+    { "group": { "en": "Run it", "fr": "Mettre en ligne" }, "pages": ["configuration", "deploy", "migrate"] },
+    { "group": { "en": "Reference", "fr": "Référence" }, "pages": ["glossary"] }
+  ]
+}

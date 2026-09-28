@@ -1,0 +1,37 @@
+{
+  "name": "lumy-docs",
+  "version": "0.1.0",
+  "description": "A light, multilingual, interactive documentation site generator. Markdown in, fast static pages out.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "lumy": "bin/lumy.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "theme",
+    "templates",
+    "README.md",
+    "README.fr.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\"",
+    "example": "node bin/lumy.js dev --root examples/mocky",
+    "example:build": "node bin/lumy.js build --root examples/mocky"
+  },
+  "keywords": [
+    "documentation",
+    "static-site-generator",
+    "markdown",
+    "i18n",
+    "mcp"
+  ],
+  "dependencies": {
+    "marked": "^18.0.14"
+  }
+}
