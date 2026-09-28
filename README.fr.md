@@ -79,7 +79,7 @@ Chaque bloc est décrit, avec un exemple vivant, dans la documentation : [`site/
 La documentation de Lumy est écrite avec Lumy, en anglais et en français, dans [`site/`](site/) :
 
 ```bash
-npm run dev        # then open http://localhost:4000
+npm run dev        # puis ouvrez http://localhost:4000
 ```
 
 ## Développement
