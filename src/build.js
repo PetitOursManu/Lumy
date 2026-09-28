@@ -228,7 +228,7 @@ export async function build(config, { outDir, dev = false, quiet = false } = {})
               url: pageUrl(config, lang, i.slug),
               label: i.label ? pickLang(i.label, lang, def) : ver.page.navTitle,
               current: i.slug === slug,
-              audience: ver.page.audience,
+              audience: ver.page.audience.length ? ver.page.audience : i.audience || [],
               badge: ver.page.badge,
             }
           }),
@@ -334,7 +334,7 @@ async function writeNotFound(site, out, assets, dev) {
       label: pickLang(g.label, lang, lang),
       items: g.items.filter((i) => !i.missing && !i.link).map((i) => {
         const ver = versionFor(site, i.slug, lang)
-        return { url: pageUrl(config, lang, i.slug), label: ver.page.navTitle, current: false, audience: ver.page.audience, badge: ver.page.badge }
+        return { url: pageUrl(config, lang, i.slug), label: ver.page.navTitle, current: false, audience: ver.page.audience.length ? ver.page.audience : i.audience || [], badge: ver.page.badge }
       }),
     })),
     prev: null,

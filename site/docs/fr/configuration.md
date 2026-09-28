@@ -2,7 +2,7 @@
 title: Configuration
 description: Chaque réglage de lumy.config.json.
 audience: [admin]
-source_hash: ee1a90e376c1
+source_hash: d920c7bd2c30
 ---
 
 `lumy.config.json` se trouve à la racine du site. Seul `title` est nécessaire ; tout le reste a une valeur par défaut.
@@ -44,6 +44,7 @@ source_hash: ee1a90e376c1
 | `theme.radius` | `12` | Arrondi des blocs, en pixels |
 | `styles` | `[]` | Vos propres feuilles de style, chemins depuis la racine du site |
 | `scripts` | `[]` | Vos propres scripts, pour les blocs propres au site |
+| `public` | `[]` | Dossiers copiés tels quels dans le site, comme les fichiers de données lus par vos widgets |
 
 Le lecteur choisit le thème clair ou sombre ; par défaut, le site suit son système.
 
@@ -53,7 +54,7 @@ Le lecteur choisit le thème clair ou sombre ; par défaut, le site suit son sys
 |---|---|
 | `nav` | Les groupes de pages du menu. Le libellé d’un groupe est un texte, ou un texte par langue. Une page est son slug (`index` pour l’accueil), ou `{ "label", "link" }` pour un lien externe. Sans `nav`, un groupe par dossier. |
 | `links` | Liens de l’en-tête : `{ "label", "href" }`, où `href` est le slug d’une page ou une adresse |
-| `audiences` | Profils de lecteur pour le filtre du menu : `{ "id", "label" }`. Les pages déclarent le leur avec `audience` dans leur en-tête. |
+| `audiences` | Profils de lecteur pour le filtre du menu : `{ "id", "label" }`. Les pages déclarent le leur avec `audience` dans leur en-tête, ou la navigation le fait : `"audience"` sur un groupe ou sur une entrée `{ "slug", "audience" }`. |
 
 ## Langues
 

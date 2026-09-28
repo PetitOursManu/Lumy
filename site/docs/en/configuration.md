@@ -43,6 +43,7 @@ audience: [admin]
 | `theme.radius` | `12` | Corner radius of blocks, in pixels |
 | `styles` | `[]` | Your own stylesheets, paths from the site root |
 | `scripts` | `[]` | Your own scripts, for site widgets |
+| `public` | `[]` | Folders copied as they are into the site, such as the data files your widgets read |
 
 Readers choose light or dark; by default the site follows their system.
 
@@ -52,7 +53,7 @@ Readers choose light or dark; by default the site follows their system.
 |---|---|
 | `nav` | Groups of pages for the sidebar. A group's label is text, or one text per language. A page is its slug (`index` for the home page), or `{ "label", "link" }` for an outside link. Without `nav`, one group per folder. |
 | `links` | Links in the header: `{ "label", "href" }`, where `href` is a page slug or an address |
-| `audiences` | Reader profiles for the sidebar filter: `{ "id", "label" }`. Pages declare theirs with `audience` in their front matter. |
+| `audiences` | Reader profiles for the sidebar filter: `{ "id", "label" }`. Pages declare theirs with `audience` in their front matter, or the navigation does: `"audience"` on a group or on a page entry `{ "slug", "audience" }`. |
 
 ## Languages
 

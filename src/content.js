@@ -204,11 +204,14 @@ export function buildNav(config, pages) {
     return config.nav.map((group, gi) => ({
       id: `g${gi}`,
       label: group.group ?? group.label ?? '',
+      // "audience" on a page entry, or on its group, sets who the page is for
+      // without touching the page itself.
       items: (group.pages || []).map((item) => {
-        if (typeof item === 'string') return { slug: item === 'index' ? '' : item, missing: !pages.has(item === 'index' ? '' : item) }
+        const audience = [].concat(item.audience ?? group.audience ?? []).map(String)
+        if (typeof item === 'string') return { slug: item === 'index' ? '' : item, audience, missing: !pages.has(item === 'index' ? '' : item) }
         if (item.link) return { link: item.link, label: item.label ?? item.link }
         const slug = item.slug === 'index' ? '' : item.slug
-        return { slug, label: item.label, missing: !pages.has(slug) }
+        return { slug, label: item.label, audience, missing: !pages.has(slug) }
       }),
     }))
   }

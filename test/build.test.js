@@ -173,3 +173,28 @@ test('"Updated on" dates come from git, also when the site sits in a sub-folder 
     await cleanup()
   }
 })
+
+test('who a page is for can be set in the navigation, per group or per page', async () => {
+  const { root, cleanup } = await tempSite({
+    'lumy.config.json': JSON.stringify({
+      title: 'Aud',
+      audiences: ['user', 'admin'],
+      nav: [
+        { group: 'Use', audience: ['user'], pages: ['index', { slug: 'deploy', audience: ['admin'] }] },
+        { group: 'Own', pages: ['own'] },
+      ],
+    }),
+    'docs/index.md': '# Home',
+    'docs/deploy.md': '# Deploy',
+    'docs/own.md': '---\naudience: [admin, user]\n---\n# Own',
+  })
+  try {
+    await build(await loadConfig(root), { quiet: true })
+    const html = await readFile(join(root, 'dist/index.html'), 'utf8')
+    assert.match(html, /<li data-aud="user"><a class="lm-nav-a is-current"[^>]*href="\/"/)
+    assert.match(html, /<li data-aud="admin"><a class="lm-nav-a" href="\/deploy\/"/)
+    assert.match(html, /<li data-aud="admin user"><a class="lm-nav-a" href="\/own\/"/)
+  } finally {
+    await cleanup()
+  }
+})
