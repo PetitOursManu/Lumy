@@ -93,6 +93,12 @@ const en = {
   backHome: 'Back to the documentation',
   newBadge: 'New',
   widgetLoading: 'Loading…',
+  signIn: 'Sign in',
+  signOut: 'Sign out',
+  dashboard: 'Dashboard',
+  account: 'Account',
+  assistantWelcome: 'Ask anything about this documentation. Answers come from these pages, with links to them.',
+  assistantStop: 'Stop',
 }
 
 const fr = {
@@ -181,6 +187,12 @@ const fr = {
   backHome: 'Retour à la documentation',
   newBadge: 'Nouveau',
   widgetLoading: 'Chargement…',
+  signIn: 'Se connecter',
+  signOut: 'Se déconnecter',
+  dashboard: 'Tableau de bord',
+  account: 'Compte',
+  assistantWelcome: 'Posez n’importe quelle question sur cette documentation. Les réponses viennent de ces pages, avec des liens vers elles.',
+  assistantStop: 'Arrêter',
 }
 
 const es = {
@@ -197,7 +209,7 @@ const es = {
   stepsReset: 'Empezar de nuevo', stepDone: 'Hecho', tabRemembered: 'Se recuerda en todo el sitio', yourValues: 'Tus valores',
   yourValuesHint: 'Los comandos de esta página se adaptan a lo que escribes.', reset: 'Restablecer', enlarge: 'Ampliar', quizLabel: 'Comprueba lo que has entendido',
   quizOk: 'Correcto.', quizBad: 'No exactamente. Inténtalo de nuevo.', whyLabel: 'Por qué es así', glossary: 'Glosario', audienceLabel: 'Leo como…',
-  audienceAll: 'Todos', poweredBy: 'Documentación creada con {lumy}', notFoundTitle: 'Página no encontrada', backHome: 'Volver a la documentación', newBadge: 'Nuevo',
+  audienceAll: 'Todos', signIn: 'Iniciar sesión', signOut: 'Cerrar sesión', dashboard: 'Panel', assistantWelcome: 'Pregunta lo que quieras sobre esta documentación. Las respuestas vienen de estas páginas, con enlaces.', poweredBy: 'Documentación creada con {lumy}', notFoundTitle: 'Página no encontrada', backHome: 'Volver a la documentación', newBadge: 'Nuevo',
 }
 
 const de = {
@@ -214,7 +226,7 @@ const de = {
   stepsReset: 'Neu beginnen', stepDone: 'Erledigt', tabRemembered: 'Wird auf der ganzen Website gemerkt', yourValues: 'Deine Werte',
   yourValuesHint: 'Die Befehle auf dieser Seite passen sich deiner Eingabe an.', reset: 'Zurücksetzen', enlarge: 'Vergrößern', quizLabel: 'Hast du es verstanden?',
   quizOk: 'Richtig.', quizBad: 'Nicht ganz. Versuche es noch einmal.', whyLabel: 'Warum das so ist', glossary: 'Glossar', audienceLabel: 'Ich lese als…',
-  audienceAll: 'Alle', poweredBy: 'Dokumentation erstellt mit {lumy}', notFoundTitle: 'Seite nicht gefunden', backHome: 'Zurück zur Dokumentation', newBadge: 'Neu',
+  audienceAll: 'Alle', signIn: 'Anmelden', signOut: 'Abmelden', dashboard: 'Dashboard', assistantWelcome: 'Frag alles zu dieser Dokumentation. Die Antworten stammen aus diesen Seiten, mit Links dorthin.', poweredBy: 'Dokumentation erstellt mit {lumy}', notFoundTitle: 'Seite nicht gefunden', backHome: 'Zurück zur Dokumentation', newBadge: 'Neu',
 }
 
 const it = {
@@ -231,7 +243,7 @@ const it = {
   stepsReset: 'Ricomincia', stepDone: 'Fatto', tabRemembered: 'Ricordato in tutto il sito', yourValues: 'I tuoi valori',
   yourValuesHint: 'I comandi di questa pagina si adattano a ciò che scrivi.', reset: 'Reimposta', enlarge: 'Ingrandisci', quizLabel: 'Verifica di aver capito',
   quizOk: 'Esatto.', quizBad: 'Non proprio. Riprova.', whyLabel: 'Perché è così', glossary: 'Glossario', audienceLabel: 'Leggo come…',
-  audienceAll: 'Tutti', poweredBy: 'Documentazione realizzata con {lumy}', notFoundTitle: 'Pagina non trovata', backHome: 'Torna alla documentazione', newBadge: 'Nuovo',
+  audienceAll: 'Tutti', signIn: 'Accedi', signOut: 'Esci', dashboard: 'Pannello', assistantWelcome: 'Chiedi qualsiasi cosa su questa documentazione. Le risposte vengono da queste pagine, con i link.', poweredBy: 'Documentazione realizzata con {lumy}', notFoundTitle: 'Pagina non trovata', backHome: 'Torna alla documentazione', newBadge: 'Nuovo',
 }
 
 const pt = {
@@ -248,7 +260,7 @@ const pt = {
   stepsReset: 'Recomeçar', stepDone: 'Feito', tabRemembered: 'Lembrado em todo o site', yourValues: 'Os seus valores',
   yourValuesHint: 'Os comandos desta página adaptam-se ao que escreve.', reset: 'Repor', enlarge: 'Ampliar', quizLabel: 'Verifique se percebeu',
   quizOk: 'Certo.', quizBad: 'Não exatamente. Tente de novo.', whyLabel: 'Porque é assim', glossary: 'Glossário', audienceLabel: 'Estou a ler como…',
-  audienceAll: 'Todos', poweredBy: 'Documentação feita com {lumy}', notFoundTitle: 'Página não encontrada', backHome: 'Voltar à documentação', newBadge: 'Novo',
+  audienceAll: 'Todos', signIn: 'Entrar', signOut: 'Sair', dashboard: 'Painel', assistantWelcome: 'Pergunte o que quiser sobre esta documentação. As respostas vêm destas páginas, com ligações.', poweredBy: 'Documentação feita com {lumy}', notFoundTitle: 'Página não encontrada', backHome: 'Voltar à documentação', newBadge: 'Novo',
 }
 
 export const BUILT_IN = { en, fr, es, de, it, pt }

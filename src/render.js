@@ -84,6 +84,7 @@ ${links ? `<nav class="lm-topnav">${links}</nav>` : ''}
 ${config.search ? `<button class="lm-search-btn" type="button" data-lm="search" aria-label="${esc(s.search)}">${icon('search')}<span class="lm-search-ph">${esc(s.searchPlaceholder)}</span><kbd class="lm-kbd-k">Ctrl K</kbd></button>` : ''}
 ${config.assistant.enabled ? `<button class="lm-icon-btn lm-ai-btn" type="button" data-lm="ask" aria-label="${esc(s.askAi)}">${icon('sparkles')}<span class="lm-ai-lbl">${esc(s.askAi)}</span></button>` : ''}
 ${langMenu}
+${config.server ? '<div class="lm-menu-wrap lm-account" id="lm-account" hidden></div>' : ''}
 <button class="lm-icon-btn lm-theme-btn" type="button" data-lm="theme" aria-label="${esc(s.theme)}">${icon('moon', 'lm-i-moon')}${icon('sun', 'lm-i-sun')}</button>
 ${config.github ? `<a class="lm-icon-btn lm-gh" href="${esc(config.github)}" target="_blank" rel="noopener" aria-label="GitHub">${icon('github')}</a>` : ''}
 </header>`
@@ -187,7 +188,7 @@ ${config.llms || config.mcp.enabled ? `<button type="button" data-lm="ai-tools">
     ? `<div class="lm-overlay lm-search" id="lm-search" hidden><div class="lm-search-card" role="dialog" aria-modal="true" aria-label="${esc(s.search)}"><div class="lm-search-in">${icon('search')}<input id="lm-search-input" type="search" autocomplete="off" spellcheck="false" placeholder="${esc(s.searchPlaceholder)}" aria-controls="lm-search-res"><kbd>Esc</kbd></div><div class="lm-search-res" id="lm-search-res" role="listbox"></div><div class="lm-search-foot"><span><kbd>↑</kbd><kbd>↓</kbd>${esc(s.searchMove)}</span><span><kbd>↵</kbd>${esc(s.searchOpen)}</span><span class="lm-grow"></span><span>${esc(s.searchTypos)}</span></div></div></div>`
     : ''
   const ai = config.assistant.enabled
-    ? `<div class="lm-overlay lm-sheet-wrap" id="lm-ai" hidden><aside class="lm-sheet" role="dialog" aria-modal="true" aria-labelledby="lm-ai-title"><header class="lm-sheet-head">${icon('sparkles')}<h2 id="lm-ai-title">${esc(s.assistantTitle)}</h2><span class="lm-grow"></span><button class="lm-icon-btn" type="button" data-lm="close" aria-label="${esc(s.close)}">${icon('x')}</button></header><div class="lm-ai-msgs" id="lm-ai-msgs"></div><form class="lm-ai-form" id="lm-ai-form"><input id="lm-ai-input" autocomplete="off" placeholder="${esc(s.assistantPlaceholder)}" aria-label="${esc(s.assistantPlaceholder)}"><button class="lm-btn lm-btn-primary" type="submit" aria-label="${esc(s.send)}">${icon('send')}</button></form><p class="lm-ai-note">${esc(s.assistantNote)}</p></aside></div>`
+    ? `<div class="lm-overlay lm-sheet-wrap" id="lm-ai" hidden><aside class="lm-sheet" role="dialog" aria-modal="true" aria-labelledby="lm-ai-title"><header class="lm-sheet-head">${icon('sparkles')}<h2 id="lm-ai-title">${esc(s.assistantTitle)}</h2><span class="lm-grow"></span><button class="lm-icon-btn" type="button" data-lm="close" aria-label="${esc(s.close)}">${icon('x')}</button></header><div class="lm-ai-msgs" id="lm-ai-msgs"><p class="lm-ai-welcome">${esc(s.assistantWelcome)}</p></div><form class="lm-ai-form" id="lm-ai-form"><input id="lm-ai-input" autocomplete="off" placeholder="${esc(s.assistantPlaceholder)}" aria-label="${esc(s.assistantPlaceholder)}"><button class="lm-btn lm-btn-primary" type="submit" aria-label="${esc(s.send)}">${icon('send')}</button></form><p class="lm-ai-note">${esc(s.assistantNote)}</p></aside></div>`
     : ''
   const overlays = `${search}${ai}
 <div class="lm-overlay" id="lm-dialog" hidden><div class="lm-dialog" role="dialog" aria-modal="true" aria-labelledby="lm-dialog-title"><div class="lm-dialog-head"><h2 id="lm-dialog-title"></h2><button class="lm-icon-btn" type="button" data-lm="close" aria-label="${esc(s.close)}">${icon('x')}</button></div><div class="lm-dialog-body" id="lm-dialog-body"></div></div></div>
@@ -208,6 +209,7 @@ ${config.llms || config.mcp.enabled ? `<button type="button" data-lm="ai-tools">
       glossary: s.glossary, glossaryMore: s.glossaryMore, sourceTitle: s.sourceTitle, sourceIntro: s.sourceIntro,
       aiToolsTitle: s.aiToolsTitle, aiToolsIntro: s.aiToolsIntro, llmsTxt: s.llmsTxt, llmsFull: s.llmsFull, mcpRemote: s.mcpRemote,
       sources: s.sources, assistantError: s.assistantError, feedbackThanks: s.feedbackThanks, stepToggle: s.stepToggle,
+      signIn: s.signIn, signOut: s.signOut, dashboard: s.dashboard, account: s.account,
     },
     glossary: v.glossary,
     glossaryUrl: v.glossaryUrl,
@@ -215,6 +217,7 @@ ${config.llms || config.mcp.enabled ? `<button type="button" data-lm="ai-tools">
     feedback: config.feedback.enabled ? { endpoint: config.feedback.endpoint || `${config.base}_lumy/api/feedback` } : null,
     llms: config.llms ? { index: `${config.base}llms.txt`, full: `${config.base}llms-full.txt` } : null,
     mcp: config.mcp.enabled ? { url: config.mcp.url || (config.url ? `${config.url}${config.base}_lumy/mcp` : `${config.base}_lumy/mcp`) } : null,
+    server: config.server ? { registration: config.server.registration, private: config.server.private } : null,
     dev: v.dev || false,
   }
 

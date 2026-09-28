@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="light dark">
+<title>{{title}} · Lumy</title>
+<link rel="icon" href="{{base}}_lumy/app/lumy.svg">
+<link rel="stylesheet" href="{{base}}_lumy/app/admin.css">
+<script>(function(){var d=document.documentElement;try{var t=JSON.parse(localStorage.getItem('lumy.theme'));if(t==='dark'||t==='light')d.setAttribute('data-theme',t)}catch(e){}})()</script>
+<script defer src="{{base}}_lumy/app/admin.js"></script>
+</head>
+<body>
+<div id="ad-app" class="ad-app"><div class="ad-loading"><span></span></div></div>
+<div class="ad-toast" id="ad-toast" role="status" aria-live="polite"></div>
+<script type="application/json" id="ad-data">{{data}}</script>
+</body>
+</html>

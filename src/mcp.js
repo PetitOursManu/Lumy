@@ -273,6 +273,58 @@ export function createTools(rootDir) {
   return { list: TOOLS, call: (name, args) => (handlers[name] ? handlers[name](args || {}) : Promise.resolve(fail(`Unknown tool "${name}".`))) }
 }
 
+/** Tools that only read. The remote server offers these without a token. */
+export const READ_TOOLS = new Set(['get_guide', 'get_site', 'list_pages', 'read_page', 'search_docs', 'translation_status'])
+/** Tools after which the built site is out of date. */
+export const WRITE_TOOLS = new Set(['write_page', 'set_nav'])
+
+/**
+ * One JSON-RPC message in, one response out (null for a notification). Shared
+ * by the stdio server below and the HTTP one in mcp-http.js.
+ *
+ * @param {object} msg
+ * @param {{ tools, version: string, allow?: (name: string) => boolean, onWrite?: (name: string) => void }} ctx
+ */
+export async function handleRpc(msg, { tools, version, allow = () => true, onWrite }) {
+  const { id, method, params } = msg || {}
+  const reply = (result) => (id === undefined ? null : { jsonrpc: '2.0', id, result })
+  const error = (code, message) => (id === undefined ? null : { jsonrpc: '2.0', id, error: { code, message } })
+  if (msg?.jsonrpc !== '2.0' || typeof method !== 'string') return error(-32600, 'Invalid request')
+  try {
+    switch (method) {
+      case 'initialize': {
+        const asked = params?.protocolVersion
+        return reply({
+          protocolVersion: PROTOCOLS.includes(asked) ? asked : PROTOCOLS[0],
+          capabilities: { tools: { listChanged: false } },
+          serverInfo: { name: 'lumy', version },
+          instructions: 'Tools to read and write this Lumy documentation site. Call get_guide once before writing pages; after writing, act on the problems write_page returns.',
+        })
+      }
+      case 'ping':
+        return reply({})
+      case 'tools/list':
+        return reply({ tools: tools.list.filter((t) => allow(t.name)) })
+      case 'tools/call': {
+        const name = params?.name
+        if (!allow(name)) return reply(fail(`"${name}" needs an access token with write rights. Create one in the Lumy dashboard, under MCP.`))
+        try {
+          const result = await tools.call(name, params?.arguments)
+          if (!result.isError && WRITE_TOOLS.has(name)) onWrite?.(name)
+          return reply(result)
+        } catch (err) {
+          return reply(fail(err.message))
+        }
+      }
+      default:
+        if (method.startsWith('notifications/')) return null
+        return error(-32601, `Method not found: ${method}`)
+    }
+  } catch (err) {
+    return error(-32603, err.message)
+  }
+}
+
 export async function runMcp(rootDir) {
   const root = resolve(rootDir || '.')
   await loadConfig(root) // fail fast, on stderr, if there is no site here
@@ -289,39 +341,9 @@ export async function runMcp(rootDir) {
     } catch {
       return send({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } })
     }
-    const { id, method, params } = msg
-    const reply = (result) => id !== undefined && send({ jsonrpc: '2.0', id, result })
-    const error = (code, message) => id !== undefined && send({ jsonrpc: '2.0', id, error: { code, message } })
-    try {
-      switch (method) {
-        case 'initialize': {
-          const asked = params?.protocolVersion
-          return reply({
-            protocolVersion: PROTOCOLS.includes(asked) ? asked : PROTOCOLS[0],
-            capabilities: { tools: { listChanged: false } },
-            serverInfo: { name: 'lumy', version },
-            instructions: 'Tools to read and write this Lumy documentation site. Call get_guide once before writing pages; after writing, act on the problems write_page returns.',
-          })
-        }
-        case 'ping':
-          return reply({})
-        case 'tools/list':
-          return reply({ tools: tools.list })
-        case 'tools/call':
-          try {
-            return reply(await tools.call(params?.name, params?.arguments))
-          } catch (err) {
-            return reply(fail(err.message))
-          }
-        default:
-          if (method?.startsWith('notifications/')) return
-          return error(-32601, `Method not found: ${method}`)
-      }
-    } catch (err) {
-      return error(-32603, err.message)
-    }
+    const response = await handleRpc(msg, { tools, version })
+    if (response) send(response)
   })
   rl.on('close', () => process.exit(0))
   process.stderr.write(`lumy mcp: serving ${root}\n`)
 }
-

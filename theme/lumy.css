@@ -586,7 +586,24 @@ html:not(.lm-js) .lm-hs-panel, html:not(.lm-js) .lm-hs-zoom { display: none; }
 .lm-typing i:nth-child(2) { animation-delay: .15s; }
 .lm-typing i:nth-child(3) { animation-delay: .3s; }
 @keyframes lm-blink { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+.lm-ai-welcome { margin: auto 0; padding: 18px; text-align: center; color: var(--lm-muted-fg); font-size: 14px; line-height: 1.6; animation: lm-rise var(--lm-d3) var(--lm-ease) both; }
+.lm-msg-bot { white-space: normal; }
+.lm-msg-bot p { margin: 0 0 8px; }
+.lm-msg-bot p:last-of-type { margin-bottom: 0; }
+.lm-msg-bot ul, .lm-msg-bot ol { margin: 0 0 8px; padding-left: 1.3em; }
+.lm-msg-bot pre { margin: 8px 0; padding: 10px 12px; border-radius: 10px; background: var(--lm-card); border: 1px solid var(--lm-border); overflow-x: auto; font: 12.5px/1.6 var(--lm-mono); }
+.lm-msg-bot pre code { border: 0; padding: 0; background: none; }
+.lm-msg-error { background: color-mix(in srgb, var(--lm-bad) 10%, var(--lm-muted)); color: var(--lm-fg); }
+.lm-cite { display: inline-grid; place-items: center; min-width: 17px; height: 17px; padding-inline: 4px; margin-inline: 1px; border-radius: 6px; background: color-mix(in srgb, var(--lm-primary) 16%, transparent); color: var(--lm-primary); font-size: 11px; font-weight: 600; text-decoration: none; vertical-align: 1px; transition: background var(--lm-d1); }
+.lm-cite:hover { background: color-mix(in srgb, var(--lm-primary) 28%, transparent); }
+.lm-sources a b { margin-right: 5px; color: var(--lm-primary); }
+.lm-ai-form.is-busy .lm-btn { opacity: .55; pointer-events: none; }
 .lm-ai-form { display: flex; gap: 8px; padding: 12px 12px 6px; border-top: 1px solid var(--lm-border); flex: none; }
+.lm-account .lm-menu { min-width: 200px; }
+.lm-avatar-btn { padding: 0; }
+.lm-avatar { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--lm-primary); color: var(--lm-on-primary); font-size: 13px; font-weight: 600; }
+.lm-menu-user { margin: 0; padding: 8px 10px 6px; font-size: 12.5px; color: var(--lm-muted-fg); border-bottom: 1px solid var(--lm-border); margin-bottom: 4px; }
+.lm-account > .lm-btn { margin-inline: 4px; }
 .lm-ai-form input { flex: 1; min-width: 0; height: 40px; border: 1px solid var(--lm-border-strong); border-radius: 10px; padding-inline: 12px; background: var(--lm-bg); color: var(--lm-fg); font: inherit; font-size: 14px; transition: border-color var(--lm-d1), box-shadow var(--lm-d2); }
 .lm-ai-form input:focus { outline: none; border-color: var(--lm-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lm-primary) 22%, transparent); }
 .lm-ai-form .lm-btn { height: 40px; }

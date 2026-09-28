@@ -5,7 +5,7 @@
  *   lumy init [folder]            start a new documentation site
  *   lumy dev                      preview with live reload
  *   lumy build                    write the static site to dist/
- *   lumy serve                    serve dist/ (and the feedback endpoint)
+ *   lumy serve                    serve the site with its dashboard, assistant and MCP
  *   lumy check                    report broken links, missing images, unknown blocks
  *   lumy translations [--stamp]   what is missing or out of date in each language
  *   lumy mcp                      let an AI assistant read and write the docs (MCP, stdio)
@@ -29,7 +29,7 @@ const HELP = `
     lumy init [folder] [--lang en,fr] [--title "My app"]
     lumy dev [--root .] [--port 4000] [--host 127.0.0.1]
     lumy build [--root .] [--out dist]
-    lumy serve [--root .] [--port 4000] [--host 127.0.0.1]
+    lumy serve [--root .] [--port 4000] [--host 127.0.0.1] [--watch] [--no-build]
     lumy check [--root .]
     lumy translations [--root .] [--stamp all | <lang> | <lang>/<page>]
     lumy mcp [--root .]
@@ -95,15 +95,9 @@ async function main() {
       if (args.strict && result.warnings.length) process.exitCode = 1
       return
     }
-    case 'serve': {
-      const config = await loadConfig(root)
-      if (!(await exists(join(config.outPath, 'index.html'))) && !(await exists(join(config.outPath, '404.html')))) {
-        console.log('  No build found; building first.')
-        await build(config)
-      }
-      await serve(config, { port: Number(args.port) || 4000, host: args.host || '127.0.0.1' })
+    case 'serve':
+      await serve(root, { port: Number(args.port) || 4000, host: args.host || '127.0.0.1', watch: Boolean(args.watch), build: !args['no-build'] })
       return
-    }
     case 'check': {
       const config = await loadConfig(root)
       const out = await mkdtemp(join(tmpdir(), 'lumy-check-'))

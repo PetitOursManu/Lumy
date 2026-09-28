@@ -837,11 +837,43 @@
   /* ── Assistant ──────────────────────────────────────────────────────── */
   const aiEl = $('#lm-ai')
   const chat = []
-  function renderAnswer(text) {
-    return esc(text).replace(/`([^`\n]+)`/g, '<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+  let asking = null
+
+  /**
+   * The answer as HTML: paragraphs, lists, code blocks, inline code, bold, and
+   * [n] citations turned into links to the sources. Everything is escaped
+   * first; only these few shapes are rebuilt.
+   */
+  function renderAnswer(text, sources) {
+    const inline = (t) =>
+      esc(t)
+        .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+        .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\[(\d{1,2})\]/g, (m, n) => {
+          const src = sources[Number(n) - 1]
+          return src ? `<a class="lm-cite" href="${esc(src.url)}" title="${esc(src.title)}">${n}</a>` : m
+        })
+    const out = []
+    const parts = String(text).split(/```[\w-]*\n?/)
+    parts.forEach((part, i) => {
+      if (i % 2 === 1) {
+        out.push(`<pre><code>${esc(part.replace(/\n$/, ''))}</code></pre>`)
+        return
+      }
+      for (const block of part.split(/\n{2,}/)) {
+        const lines = block.split('\n').filter((l) => l.trim())
+        if (!lines.length) continue
+        if (lines.every((l) => /^\s*[-*]\s+/.test(l))) out.push(`<ul>${lines.map((l) => `<li>${inline(l.replace(/^\s*[-*]\s+/, ''))}</li>`).join('')}</ul>`)
+        else if (lines.every((l) => /^\s*\d+[.)]\s+/.test(l))) out.push(`<ol>${lines.map((l) => `<li>${inline(l.replace(/^\s*\d+[.)]\s+/, ''))}</li>`).join('')}</ol>`)
+        else out.push(`<p>${lines.map(inline).join('<br>')}</p>`)
+      }
+    })
+    return out.join('')
   }
-  function ask(question) {
+
+  async function ask(question) {
     const box = $('#lm-ai-msgs')
+    $('.lm-ai-welcome', box)?.remove()
     const user = d.createElement('div')
     user.className = 'lm-msg lm-msg-user'
     user.textContent = question
@@ -851,35 +883,105 @@
     bot.innerHTML = '<span class="lm-typing"><i></i><i></i><i></i></span>'
     box.appendChild(bot)
     box.scrollTop = box.scrollHeight
-    fetch(DATA.assistant.endpoint, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ question, history: chat.slice(-6), lang: DATA.lang, page: DATA.slug }),
-    })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((res) => {
-        chat.push({ role: 'user', content: question }, { role: 'assistant', content: res.answer || '' })
-        const sources = (res.sources || []).map((s) => `<a href="${esc(s.url)}">${esc(s.title)}</a>`).join('')
-        bot.innerHTML = renderAnswer(res.answer || '') + (sources ? `<div class="lm-sources"><span>${esc(S.sources)}</span>${sources}</div>` : '')
-        fadeIn(bot, 4, 260)
+    const form = $('#lm-ai-form')
+    form.classList.add('is-busy')
+    asking = new AbortController()
+
+    let text = ''
+    let sources = []
+    let frame = 0
+    // Sources appear once the answer is complete: the ones it cited, or all of them if it cited none.
+    const paint = (final) => {
+      frame = 0
+      const cited = new Set([...text.matchAll(/\[(\d{1,2})\]/g)].map((m) => Number(m[1])))
+      const shown = cited.size ? sources.filter((s) => cited.has(s.n)) : sources
+      const links = final && shown.length ? `<div class="lm-sources"><span>${esc(S.sources)}</span>${shown.map((s) => `<a href="${esc(s.url)}"><b>${s.n}</b>${esc(s.title)}</a>`).join('')}</div>` : ''
+      bot.innerHTML = renderAnswer(text, sources) + (text ? '' : '<span class="lm-typing"><i></i><i></i><i></i></span>') + links
+      const nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80
+      if (nearBottom) box.scrollTop = box.scrollHeight
+    }
+    const schedule = () => frame || (frame = requestAnimationFrame(() => paint(false)))
+    try {
+      const res = await fetch(DATA.assistant.endpoint, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ question, history: chat.slice(-6), lang: DATA.lang, page: DATA.slug }),
+        signal: asking.signal,
       })
-      .catch(() => {
-        bot.textContent = S.assistantError
-      })
-      .finally(() => (box.scrollTop = box.scrollHeight))
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error || S.assistantError)
+      }
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      for (;;) {
+        const { value, done } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        let nl
+        while ((nl = buffer.indexOf('\n')) !== -1) {
+          const line = buffer.slice(0, nl)
+          buffer = buffer.slice(nl + 1)
+          if (!line.trim()) continue
+          const msg = JSON.parse(line)
+          if (msg.type === 'sources') sources = msg.sources
+          else if (msg.type === 'text') text += msg.text
+          else if (msg.type === 'error') throw new Error(msg.message)
+          schedule()
+        }
+      }
+      if (frame) cancelAnimationFrame(frame)
+      paint(true)
+      fadeIn(bot.querySelector('.lm-sources'), 4, 260)
+      chat.push({ role: 'user', content: question }, { role: 'assistant', content: text })
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        bot.classList.add('lm-msg-error')
+        bot.textContent = err.message || S.assistantError
+      }
+    } finally {
+      asking = null
+      form.classList.remove('is-busy')
+      if (frame) cancelAnimationFrame(frame)
+    }
   }
   if (aiEl) {
     $('#lm-ai-form').addEventListener('submit', (e) => {
       e.preventDefault()
       const input = $('#lm-ai-input')
       const q = input.value.trim()
-      if (!q) return
+      if (!q || asking) return
       input.value = ''
       ask(q)
     })
     aiEl.addEventListener('mousedown', (e) => {
       if (e.target === aiEl) closeOverlay(aiEl)
     })
+  }
+
+  /* ── Account (only on sites served by `lumy serve`) ─────────────────── */
+  const accountEl = $('#lm-account')
+  if (accountEl && DATA.server) {
+    fetch(`${DATA.base}_lumy/api/me`, { credentials: 'same-origin' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((me) => {
+        if (!me) return
+        const here = encodeURIComponent(location.pathname + location.hash)
+        if (me.user) {
+          const initial = esc(me.user.username.slice(0, 1).toUpperCase())
+          const dash = me.user.role === 'reader' ? '' : `<a href="${DATA.base}_lumy/admin" role="menuitem">${esc(S.dashboard)}</a>`
+          accountEl.innerHTML = `<button class="lm-icon-btn lm-avatar-btn" type="button" data-lm="menu" aria-haspopup="true" aria-expanded="false" aria-label="${esc(S.account)}"><span class="lm-avatar">${initial}</span></button><div class="lm-menu" role="menu" hidden><p class="lm-menu-user">${esc(me.user.username)}</p>${dash}<button type="button" role="menuitem" data-lm="sign-out">${esc(S.signOut)}</button></div>`
+        } else if (me.registration || me.private) {
+          accountEl.innerHTML = `<a class="lm-btn lm-btn-sm" href="${DATA.base}_lumy/login?next=${here}">${esc(S.signIn)}</a>`
+        } else return
+        accountEl.hidden = false
+        fadeIn(accountEl, 0, 220)
+      })
+      .catch(() => {})
+  }
+  function signOut() {
+    fetch(`${DATA.base}_lumy/api/auth/logout`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }).finally(() => location.reload())
   }
 
   /* ── Language switch keeps the reader's place ───────────────────────── */
@@ -1019,6 +1121,8 @@
       }
       case 'zoom':
         return openLightbox($('img', el.closest('.lm-hs-stage')))
+      case 'sign-out':
+        return signOut()
       case 'fb': {
         const box = el.closest('.lm-fb')
         $$('.lm-fb-btns .lm-btn', box).forEach((b) => (b.disabled = true))
