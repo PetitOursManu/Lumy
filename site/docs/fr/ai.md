@@ -2,7 +2,7 @@
 title: Assistants IA
 description: Laissez Claude, ou tout client MCP, lire et écrire votre documentation. Donnez aux lecteurs tout le site en texte brut.
 audience: [writer, admin]
-source_hash: d8326c75299c
+source_hash: c8b81957138c
 ---
 
 ## Écrire la doc avec un assistant
@@ -64,4 +64,8 @@ Chaque site construit sert aussi son contenu sous des formes qu’un assistant l
 
 ## Répondre aux questions des lecteurs
 
-Le panneau d’assistant (« Demander à l’IA ») répond aux lecteurs à partir de votre documentation, avec des liens vers les pages utilisées. Il a besoin d’un serveur qui détient la clé du modèle : il vient donc avec `lumy serve` plutôt qu’avec le site statique, et reste éteint tant que vous ne l’activez pas. Lire la doc ne demande jamais de compte.
+Le panneau d’assistant (« Demander à l’IA ») répond aux lecteurs à partir de votre documentation, avec des liens vers les pages utilisées. Il a besoin d’un serveur qui détient la clé du modèle : il vient donc avec `lumy serve`, et le fournisseur (Ollama, OpenAI, Anthropic, Google, OpenRouter, fal.ai, Mistral, Groq ou tout serveur compatible OpenAI) se choisit dans le tableau de bord. Voir [Serveur et tableau de bord](server.md#lassistant). Lire la doc ne demande jamais de compte.
+
+## Un serveur MCP distant
+
+Un site servi par `lumy serve` répond aussi aux clients MCP en HTTP, à `/_lumy/mcp` : tout le monde peut lire un site public par ce biais, et écrire demande un jeton du tableau de bord. Voir [MCP distant](server.md#mcp-distant).

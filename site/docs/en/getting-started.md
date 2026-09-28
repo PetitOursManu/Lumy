@@ -80,7 +80,7 @@ A site with a single language may put its pages straight into `docs/`.
 | `lumy init [folder]` | Creates a site: configuration and first pages |
 | `lumy dev` | Preview with live reload |
 | `lumy build` | Writes the static site to `dist/` |
-| `lumy serve` | Serves `dist/`, and stores reader feedback |
+| `lumy serve` | Serves the site with its dashboard, assistant and MCP server |
 | `lumy check` | Reports broken links, missing images, unknown blocks |
 | `lumy translations` | Shows missing and outdated translations; `--stamp` marks them current |
 | `lumy mcp` | Lets an AI assistant read and write the docs |

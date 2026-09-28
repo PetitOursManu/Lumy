@@ -63,4 +63,8 @@ Every built site also serves its content in forms an assistant reads well:
 
 ## Answering readers' questions
 
-The assistant panel ("Ask AI") answers readers from your documentation, with links to the pages it used. It needs a server holding the model's key, so it comes with `lumy serve` rather than with the static build; it is off unless you switch it on. Reading the docs never needs an account.
+The assistant panel ("Ask AI") answers readers from your documentation, with links to the pages it used. It needs a server holding the model's key, so it comes with `lumy serve`: choose the provider (Ollama, OpenAI, Anthropic, Google, OpenRouter, fal.ai, Mistral, Groq or any OpenAI-compatible server) in the dashboard. See [Server and dashboard](server.md#the-assistant). Reading the docs never needs an account.
+
+## A remote MCP server
+
+A site served by `lumy serve` also answers MCP clients over HTTP, at `/_lumy/mcp`: anyone can read a public site through it, and writing needs a token from the dashboard. See [Remote MCP](server.md#remote-mcp).

@@ -2,7 +2,7 @@
 title: Configuration
 description: Chaque réglage de lumy.config.json.
 audience: [admin]
-source_hash: ac2c0469fc67
+source_hash: ee1a90e376c1
 ---
 
 `lumy.config.json` se trouve à la racine du site. Seul `title` est nécessaire ; tout le reste a une valeur par défaut.
@@ -77,7 +77,7 @@ Le lecteur choisit le thème clair ou sombre ; par défaut, le site suit son sys
 |---|---|---|
 | `search` | `true` | Champ de recherche et Ctrl K |
 | `llms` | `true` | Écrit `llms.txt` et `llms-full.txt` |
-| `feedback` | `false` | « Cette page vous a-t-elle aidé ? » en fin de page. Les votes sont enregistrés par `lumy serve`, ou envoyés à l’adresse que vous indiquez. |
-| `assistant` | `false` | Le panneau « Demander à l’IA ». Demande `lumy serve`, ou une adresse qui répond. |
-| `mcp` | `false` | Montre aux lecteurs l’adresse d’un serveur MCP distant pour le site |
+| `feedback` | `false` | « Cette page vous a-t-elle aidé ? » en fin de page, pour un site statique qui envoie les votes à votre propre adresse. Avec `lumy serve`, réglez-le plutôt dans le tableau de bord. |
+| `assistant` | `false` | Le panneau « Demander à l’IA », pour un site statique relié à votre propre adresse. Avec `lumy serve`, configurez-le dans le tableau de bord. |
+| `mcp` | `false` | Montre aux lecteurs l’adresse d’un serveur MCP distant. `lumy serve` en fournit un et l’active. |
 | `legacyHashRoutes` | `false` | Envoie les anciennes adresses `#/page`, de Docsify, vers la bonne page |

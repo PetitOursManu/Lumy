@@ -72,11 +72,7 @@ Zip the contents of `dist/` and import the `.zip` in Dashy as a static app. Set 
 
 ## lumy serve
 
-`lumy serve` serves `dist/` and handles the parts a static host cannot:
-
-- **Feedback.** With `"feedback": true`, answers to "Was this page helpful?" are written, one per line, to `.lumy/feedback.jsonl`: the page, the answer, the optional comment and the time. No account, no cookie, and at most 20 votes a minute from one address.
-
-It listens on `127.0.0.1` unless you pass `--host 0.0.0.0`, so it is only reachable from outside when you decide it should be.
+`lumy serve` builds the site and serves it with what a static host cannot do: reader feedback, the assistant, private documentation, a remote MCP server, and a dashboard to run them. It listens on `127.0.0.1` unless you pass `--host 0.0.0.0`, so it is only reachable from outside when you decide it should be. Everything is in [Server and dashboard](server.md), Docker included.
 
 :::why Why do theme files have a hash in their name?
 Browsers keep stylesheets and scripts for a long time. When their content changes, their name changes with it, so a reader never gets a new page with an old stylesheet, and the server can tell browsers to keep the files for a year.

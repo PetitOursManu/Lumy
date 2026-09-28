@@ -21,6 +21,7 @@ Lumy transforme un dossier de fichiers Markdown en un site de documentation qui 
 - **Multilingue.** Un dossier par langue. Le lecteur arrive dans sa langue et garde sa place quand il en change ; une page non traduite s’affiche dans la langue source, et une traduction en retard sur sa source est signalée.
 - **Interactif.** Des blocs qui font agir le lecteur : étapes à cocher, onglets retenus sur tout le site, ses propres valeurs dans les commandes, captures annotées, quiz, glossaire au survol, recherche tolérante aux fautes (Ctrl K).
 - **Ouvert à l’IA.** `lumy mcp` permet à Claude, ou à tout client MCP, de lire et d’écrire la doc ; chaque site publie `llms.txt` et chaque page en Markdown.
+- **Un serveur quand vous en voulez un.** `lumy serve` ajoute un tableau de bord, des comptes et une documentation privée, les avis des lecteurs, un assistant qui répond à partir de la doc (Ollama, OpenAI, Anthropic, Google, OpenRouter, fal.ai, Mistral, Groq ou tout serveur compatible OpenAI), et un serveur MCP distant. Une seule image Docker.
 - **Fluide.** Chaque interaction est animée, et toutes les animations s’arrêtent pour les lecteurs qui demandent moins de mouvement à leur système.
 - **Aucun compte pour lire. Jamais.**
 
@@ -68,11 +69,20 @@ Chaque bloc est décrit, avec un exemple vivant, dans la documentation : [`site/
 | `lumy init [dossier]` | Crée un site |
 | `lumy dev` | Aperçu avec rechargement automatique |
 | `lumy build` | Écrit le site statique dans `dist/` |
-| `lumy serve` | Sert `dist/` et enregistre les avis des lecteurs |
+| `lumy serve` | Sert le site avec son tableau de bord, son assistant et son serveur MCP |
 | `lumy check` | Signale liens cassés, images manquantes, blocs inconnus, traductions en retard |
 | `lumy translations [--stamp]` | État des traductions ; `--stamp` les marque à jour |
 | `lumy mcp` | Serveur MCP pour les assistants IA (stdio) |
 | `lumy import docsify <dossier>` | Convertit un site Docsify |
+
+## Docker
+
+```bash
+cp docker-compose.example.yml /chemin/vers/votre/doc/docker-compose.yml
+cd /chemin/vers/votre/doc && docker compose up -d
+```
+
+Ouvrez ensuite `http://localhost:4000/_lumy/setup` pour créer le compte administrateur.
 
 ## Documentation
 
@@ -90,7 +100,7 @@ npm test               # node:test, aucun autre outil
 npm run dev        # la doc de Lumy, avec rechargement automatique
 ```
 
-Le code est volontairement petit : `src/` contient la construction (Markdown, pages, recherche, langues, MCP), `theme/` la feuille de style et le script côté lecteur. `maquette/` garde la première maquette dont le design est issu.
+Le code est volontairement petit : `src/` contient la construction (Markdown, pages, recherche, langues, MCP) et le serveur (comptes, assistant, API du tableau de bord), `theme/` la feuille de style et le script côté lecteur, et `theme/admin/` le tableau de bord. `maquette/` garde la première maquette dont le design est issu.
 
 ## Licence
 

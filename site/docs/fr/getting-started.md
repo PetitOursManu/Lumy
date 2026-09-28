@@ -2,7 +2,7 @@
 title: Démarrage
 description: Créer un site de documentation, le prévisualiser avec rechargement automatique, puis le construire.
 audience: [writer, admin]
-source_hash: de7a9a0bc9bb
+source_hash: da5f2f747d19
 ---
 
 ## Prérequis
@@ -81,7 +81,7 @@ Un site d’une seule langue peut mettre ses pages directement dans `docs/`.
 | `lumy init [dossier]` | Crée un site : configuration et premières pages |
 | `lumy dev` | Aperçu avec rechargement automatique |
 | `lumy build` | Écrit le site statique dans `dist/` |
-| `lumy serve` | Sert `dist/`, et enregistre les avis des lecteurs |
+| `lumy serve` | Sert le site avec son tableau de bord, son assistant et son serveur MCP |
 | `lumy check` | Signale les liens cassés, images manquantes, blocs inconnus |
 | `lumy translations` | Montre les traductions manquantes ou en retard ; `--stamp` les marque à jour |
 | `lumy mcp` | Permet à un assistant IA de lire et d’écrire la doc |

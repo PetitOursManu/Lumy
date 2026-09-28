@@ -76,7 +76,7 @@ Readers choose light or dark; by default the site follows their system.
 |---|---|---|
 | `search` | `true` | Search box and Ctrl K |
 | `llms` | `true` | Writes `llms.txt` and `llms-full.txt` |
-| `feedback` | `false` | "Was this page helpful?" at the end of pages. Votes are stored by `lumy serve`, or sent to the address you give. |
-| `assistant` | `false` | The "Ask AI" panel. Needs `lumy serve`, or an address that answers. |
-| `mcp` | `false` | Shows readers the address of a remote MCP server for the site |
+| `feedback` | `false` | "Was this page helpful?" at the end of pages, for a static build that sends votes to your own address. With `lumy serve`, switch it in the dashboard instead. |
+| `assistant` | `false` | The "Ask AI" panel, for a static build pointed at your own endpoint. With `lumy serve`, set it up in the dashboard. |
+| `mcp` | `false` | Shows readers the address of a remote MCP server. `lumy serve` provides one and turns this on. |
 | `legacyHashRoutes` | `false` | Sends old `#/page` addresses, from Docsify, to the right page |

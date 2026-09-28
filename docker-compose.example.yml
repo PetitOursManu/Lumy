@@ -1,0 +1,22 @@
+# Copy next to your lumy.config.json as docker-compose.yml, then: docker compose up -d
+services:
+  lumy:
+    build: https://github.com/PetitOursManu/Lumy.git
+    ports:
+      # Reachable from this machine only; put a reverse proxy in front for the web.
+      - "127.0.0.1:4000:4000"
+    volumes:
+      - ./:/site          # lumy.config.json and docs/
+      - lumy-data:/data   # accounts, settings, feedback, built site
+    environment:
+      # Encrypts the assistant's API keys at rest. Any long random string.
+      LUMY_SECRET: change-me-to-a-long-random-string
+      # Optional: create the administrator on first start instead of in the browser.
+      # LUMY_ADMIN_USER: admin
+      # LUMY_ADMIN_PASSWORD: a-long-password
+      # Behind a reverse proxy: trust X-Forwarded-For for rate limits.
+      # LUMY_TRUST_PROXY: "1"
+    restart: unless-stopped
+
+volumes:
+  lumy-data:

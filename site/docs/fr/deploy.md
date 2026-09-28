@@ -2,7 +2,7 @@
 title: Mise en ligne
 description: Publier le site construit sur n’importe quel hébergeur statique, ou le servir soi-même avec lumy serve.
 audience: [admin]
-source_hash: 91e0321d32ac
+source_hash: 4c41ba314b31
 ---
 
 `lumy build` écrit un dossier de fichiers simples. Tout ce qui sait servir des fichiers peut l’héberger.
@@ -73,11 +73,7 @@ Zippez le contenu de `dist/` et importez le `.zip` dans Dashy comme application 
 
 ## lumy serve
 
-`lumy serve` sert `dist/` et s’occupe de ce qu’un hébergeur statique ne sait pas faire :
-
-- **Les avis.** Avec `"feedback": true`, les réponses à « Cette page vous a-t-elle aidé ? » sont écrites, une par ligne, dans `.lumy/feedback.jsonl` : la page, la réponse, le commentaire éventuel et l’heure. Pas de compte, pas de cookie, et au plus 20 votes par minute depuis une même adresse.
-
-Il écoute sur `127.0.0.1` sauf si vous passez `--host 0.0.0.0` : il n’est joignable de l’extérieur que lorsque vous l’avez décidé.
+`lumy serve` construit le site et le sert avec ce qu’un hébergeur statique ne sait pas faire : avis des lecteurs, assistant, documentation privée, serveur MCP distant, et un tableau de bord pour piloter le tout. Il écoute sur `127.0.0.1` sauf si vous passez `--host 0.0.0.0` : il n’est joignable de l’extérieur que lorsque vous l’avez décidé. Tout est dans [Serveur et tableau de bord](server.md), Docker compris.
 
 :::why Pourquoi les fichiers du thème ont-ils une empreinte dans leur nom ?
 Les navigateurs gardent longtemps les feuilles de style et les scripts. Quand leur contenu change, leur nom change avec lui : un lecteur ne reçoit jamais une nouvelle page avec une ancienne feuille de style, et le serveur peut demander aux navigateurs de garder les fichiers un an.
