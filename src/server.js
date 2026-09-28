@@ -238,7 +238,7 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
       [config.docsPath, 'docs'],
       [join(root, 'lumy.config.json'), 'config'],
       ...(dev ? [[join(LUMY_ROOT, 'theme'), 'theme']] : []),
-      ...[...(config.scripts || []), ...(config.styles || [])].filter((p) => !/^https?:/.test(p)).map((p) => [resolve(root, p), p]),
+      ...[...(config.scripts || []), ...(config.styles || []), ...[].concat(config.public || [])].filter((p) => !/^https?:/.test(p)).map((p) => [resolve(root, p), p]),
     ]
     for (const [path, label] of paths) {
       try {

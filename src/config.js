@@ -32,6 +32,7 @@ const DEFAULTS = {
   issuesUrl: '',
   scripts: [],
   styles: [],
+  public: [],
   ui: {},
   search: true,
   llms: true,

@@ -20,7 +20,7 @@ import { loadSite, pageUrl, versionFor, groupLabel, slugFromPath } from './conte
 import { renderMarkdown } from './markdown.js'
 import { renderPage, renderRedirect } from './render.js'
 import { stringsFor } from './i18n.js'
-import { esc, hash, stripTags, pickLang, readingMinutes, writeFileSafe, copyFileSafe, exists } from './util.js'
+import { esc, hash, stripTags, pickLang, readingMinutes, writeFileSafe, copyFileSafe, exists, walk } from './util.js'
 
 export const LUMY_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const MARKER = '.lumy-output'
@@ -189,6 +189,12 @@ export async function build(config, { outDir, dev = false, quiet = false } = {})
   const buildId = hash([version, JSON.stringify(config.nav), ...[...site.pages.values()].flatMap((e) => Object.values(e.versions).map((p) => p.hash))].join('|'), 8)
   const assets = await copyTheme(out, config)
   for (const rel of site.assets) await copyFileSafe(join(config.docsPath, rel), join(out, rel))
+  // Folders listed under "public" are copied as they are, under their own name:
+  // data files for a site's widgets, downloads, anything that is not a page.
+  for (const folder of [].concat(config.public || [])) {
+    const from = resolve(config.root, folder)
+    for (const rel of await walk(from)) await copyFileSafe(join(from, rel), join(out, basename(from), rel))
+  }
   const assetUrl = (rel) => (!rel ? '' : /^https?:\/\//.test(rel) ? rel : config.base + rel.replace(/^\//, ''))
   assets.logo = assetUrl(config.logo)
   assets.favicon = assetUrl(config.favicon)

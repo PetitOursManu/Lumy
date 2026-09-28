@@ -16,7 +16,7 @@
  *
  * A single-language site may put its pages straight into docs/.
  */
-import { join, posix } from 'node:path'
+import { join, posix, relative } from 'node:path'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { parseFrontmatter } from './frontmatter.js'
@@ -75,17 +75,23 @@ export function parseGlossary(body) {
   return entries
 }
 
-async function gitDates(root, docsDir) {
+/**
+ * The date of the last commit that touched each page, keyed by its path
+ * inside the docs folder. Git reports paths from the top of the repository,
+ * which is not always the site's folder (a docs site inside an app's repo).
+ */
+async function gitDates(root, docsPath) {
   const dates = new Map()
   try {
-    const { stdout } = await run('git', ['-C', root, 'log', '--format=%x00%cI', '--name-only', '--', docsDir], {
+    const top = (await run('git', ['-C', root, 'rev-parse', '--show-toplevel'])).stdout.trim()
+    const { stdout } = await run('git', ['-C', top, 'log', '--format=%x00%cI', '--name-only', '--', relative(top, docsPath) || '.'], {
       maxBuffer: 64 * 1024 * 1024,
     })
     let current = null
     for (const line of stdout.split('\n')) {
       if (line.startsWith('\0')) current = line.slice(1).trim()
       else if (line.trim() && current) {
-        const rel = toPosix(line.trim())
+        const rel = toPosix(relative(docsPath, join(top, line.trim())))
         if (!dates.has(rel)) dates.set(rel, current)
       }
     }
@@ -99,24 +105,26 @@ export async function loadSite(config) {
   const { docsPath, langCodes, defaultLanguage } = config
   const files = await walk(docsPath, { skip: (rel, entry) => entry.name.startsWith('.') || entry.name === 'node_modules' })
 
-  // Where does each language live? "docs/<lang>/" when that folder exists;
-  // a one-language site without it reads docs/ directly.
+  // Where does each language live? "docs/<lang>/" when that folder exists.
+  // Without its own folder, the source language lives at the root of docs/,
+  // beside the other languages' folders (the layout Docsify uses).
   const langDirs = {}
   for (const code of langCodes) {
     if (await exists(join(docsPath, code))) langDirs[code] = code + '/'
   }
-  if (!Object.keys(langDirs).length && langCodes.length === 1) langDirs[langCodes[0]] = ''
+  if (!langDirs[defaultLanguage]) langDirs[defaultLanguage] = ''
 
-  const dates = await gitDates(config.root, toPosix(posix.normalize(config.docsDir)))
-  const docsRel = toPosix(posix.normalize(config.docsDir)).replace(/^\.\/?/, '')
+  const dates = await gitDates(config.root, docsPath)
 
   const pages = new Map() // slug → { slug, versions: { lang: page } }
   const glossaries = {}
   for (const [lang, prefix] of Object.entries(langDirs)) {
     for (const rel of files) {
       if (!rel.endsWith('.md') || !rel.startsWith(prefix)) continue
+      // "_sidebar.md" and other files starting with "_" are not pages.
+      if (posix.basename(rel).startsWith('_')) continue
       const inLang = rel.slice(prefix.length)
-      // In a one-language site, skip folders named like another language.
+      // At the root, folders named like another language belong to that language.
       if (!prefix && langCodes.some((c) => inLang.startsWith(c + '/'))) continue
       const raw = await readText(join(docsPath, rel))
       const { data, body: afterFm } = parseFrontmatter(raw)
@@ -139,7 +147,7 @@ export async function loadSite(config) {
         order: typeof data.order === 'number' ? data.order : null,
         body,
         hash: sourceHash(afterFm),
-        updated: dates.get(`${docsRel ? docsRel + '/' : ''}${rel}`) || null,
+        updated: dates.get(rel) || null,
       }
       if (!pages.has(slug)) pages.set(slug, { slug, versions: {} })
       pages.get(slug).versions[lang] = page

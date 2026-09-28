@@ -129,3 +129,47 @@ test('a one-language site may keep its pages straight in docs/', async () => {
     await cleanup()
   }
 })
+
+test('Docsify layout: the source language at the root of docs/, others in folders; "_" files are not pages; public folders are copied', async () => {
+  const { root, cleanup } = await tempSite({
+    'lumy.config.json': JSON.stringify({ title: 'Root', languages: ['en', 'fr'], public: ['data'] }),
+    'data/presets.json': '[1,2,3]',
+    'docs/README.md': '# Home\n\nSee [setup](guide/setup.md).',
+    'docs/_sidebar.md': '- [Home](/)',
+    'docs/guide/setup.md': '# Setup\n\nDone.',
+    'docs/fr/README.md': '# Accueil\n\nVoir [la mise en place](guide/setup.md) et [l’anglais](../guide/setup.md).',
+    'docs/fr/_sidebar.md': '- [Accueil](fr/)',
+  })
+  try {
+    const config = await loadConfig(root)
+    const site = await loadSite(config)
+    assert.deepEqual([...site.pages.keys()].sort(), ['', 'guide/setup'])
+    const result = await build(config, { quiet: true })
+    assert.deepEqual(result.warnings, [])
+    assert.match(await readFile(join(root, 'dist/en/index.html'), 'utf8'), /href="\/en\/guide\/setup\/"/)
+    const fr = await readFile(join(root, 'dist/fr/index.html'), 'utf8')
+    // Both links reach the page; the reader stays in French.
+    assert.equal((fr.match(/href="\/fr\/guide\/setup\/"/g) || []).length >= 2, true)
+    assert.equal(await readFile(join(root, 'dist/data/presets.json'), 'utf8'), '[1,2,3]')
+  } finally {
+    await cleanup()
+  }
+})
+
+test('"Updated on" dates come from git, also when the site sits in a sub-folder of the repository', async () => {
+  const { execFileSync } = await import('node:child_process')
+  const { root, cleanup } = await tempSite({
+    'site/lumy.config.json': JSON.stringify({ title: 'Sub', docsDir: '../docs' }),
+    'docs/index.md': '# Home\n\nHello.',
+  })
+  try {
+    const git = (...args) => execFileSync('git', ['-C', root, ...args], { stdio: 'pipe' })
+    git('init', '-q')
+    git('-c', 'user.name=t', '-c', 'user.email=t@t', 'add', '-A')
+    git('-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '-m', 'docs', '--date', '2026-01-02T10:00:00Z')
+    const site = await loadSite(await loadConfig(join(root, 'site')))
+    assert.match(site.pages.get('').versions.en.updated, /^\d{4}-\d{2}-\d{2}T/)
+  } finally {
+    await cleanup()
+  }
+})

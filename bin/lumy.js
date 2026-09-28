@@ -34,7 +34,7 @@ const HELP = `
     lumy translations [--root .] [--stamp all | <lang> | <lang>/<page>]
     lumy mcp [--root .]
     lumy import docsify <docs-folder> --out <site-folder> [--lang en,fr] [--title "My app"]
-                        [--why "Why it works this way,Pourquoi c'est ainsi"]
+                        [--why "Why it works this way,Pourquoi c'est ainsi"] [--layout root]
 
   Every command reads lumy.config.json from --root (default: the current folder).
 `
@@ -137,7 +137,7 @@ async function main() {
       if (!args.out) throw new Error('Choose where the new site goes with --out <folder>.')
       const langs = args.lang ? String(args.lang).split(',').map((s) => s.trim()) : ['en']
       const why = args.why ? String(args.why).split(',').map((s) => s.trim()).filter(Boolean) : []
-      await importDocsify(resolve(src), resolve(args.out), { langs, why, title: args.title ? String(args.title) : 'Documentation' })
+      await importDocsify(resolve(src), resolve(args.out), { langs, why, layout: args.layout === 'root' ? 'root' : 'folders', title: args.title ? String(args.title) : 'Documentation' })
       return
     }
     default:

@@ -54,7 +54,13 @@ function whyBlocks(lines, prefixes) {
   return out
 }
 
-export async function importDocsify(srcDir, outDir, { langs = ['en'], title = 'Documentation', why = [], log = console.log } = {}) {
+/**
+ * @param {object} options
+ * @param {'folders'|'root'} [options.layout] "folders": docs/en/, docs/fr/… "root": the
+ *   source language stays at the root of docs/ and the others in their folders,
+ *   as Docsify had them, so the files keep their paths.
+ */
+export async function importDocsify(srcDir, outDir, { langs = ['en'], title = 'Documentation', why = [], layout = 'folders', log = console.log } = {}) {
   const def = langs[0]
   const others = langs.slice(1)
   const files = await walk(srcDir, { skip: (rel, e) => e.name.startsWith('.') || e.name === 'node_modules' })
@@ -85,12 +91,14 @@ export async function importDocsify(srcDir, outDir, { langs = ['en'], title = 'D
         if (owner) lang = owner
       }
     }
-    rel = rel.replace(/(^|\/)README\.md$/i, '$1index.md')
+    // Lumy reads README.md as the home page too; "root" keeps every file name.
+    if (layout !== 'root') rel = rel.replace(/(^|\/)README\.md$/i, '$1index.md')
     placement.set(f, { lang, rel })
   }
 
   const targetOf = new Map() // "lang|slug" → new path under docs/
-  for (const { lang, rel } of placement.values()) targetOf.set(`${lang}|${slugFromPath(rel)}`, `${lang}/${rel}`)
+  const newPath = (lang, rel) => (layout === 'root' && lang === def ? rel : `${lang}/${rel}`)
+  for (const { lang, rel } of placement.values()) targetOf.set(`${lang}|${slugFromPath(rel)}`, newPath(lang, rel))
 
   /** A Docsify link target (root-relative) → { lang, slug }. */
   function pageOf(target) {
@@ -185,7 +193,7 @@ export async function importDocsify(srcDir, outDir, { langs = ['en'], title = 'D
   const docsOut = join(outDir, 'docs')
   let pages = 0
   for (const [src, { lang, rel }] of placement) {
-    const newFile = `${lang}/${rel}`
+    const newFile = newPath(lang, rel)
     const text = await readFile(join(srcDir, src), 'utf8')
     await mkdir(dirname(join(docsOut, newFile)), { recursive: true })
     await writeFile(join(docsOut, newFile), convert(text, src, newFile))

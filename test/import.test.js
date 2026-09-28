@@ -53,3 +53,26 @@ test('a Docsify site becomes a Lumy site that builds without broken links', asyn
     await out.cleanup()
   }
 })
+
+test('import with layout "root" keeps the source language where Docsify had it', async () => {
+  const src = await tempSite({
+    'README.md': '# Home\n\nSee [setup](guide/setup.md).\n',
+    'guide/setup.md': '# Setup\n\nBack to [home](/) and [notes](guide/notes.md).\n',
+    'guide/notes.md': '# Notes\n',
+    'fr/README.md': '# Accueil\n\nVoir [la mise en place](fr/guide/setup.md).\n',
+    'fr/guide/setup.md': '# Mise en place\n',
+  })
+  const out = await tempSite({})
+  try {
+    await importDocsify(src.root, out.root, { langs: ['en', 'fr'], layout: 'root', log: () => {} })
+    assert.match(await readFile(join(out.root, 'docs/README.md'), 'utf8'), /\[setup\]\(guide\/setup\.md\)/)
+    // A root-relative Docsify link inside a sub-folder becomes relative to the file.
+    assert.match(await readFile(join(out.root, 'docs/guide/setup.md'), 'utf8'), /\[notes\]\(notes\.md\)/)
+    assert.match(await readFile(join(out.root, 'docs/fr/README.md'), 'utf8'), /\(guide\/setup\.md\)/)
+    const result = await build(await loadConfig(out.root), { quiet: true })
+    assert.deepEqual(result.warnings, [])
+  } finally {
+    await src.cleanup()
+    await out.cleanup()
+  }
+})
