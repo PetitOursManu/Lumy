@@ -9,7 +9,7 @@
  */
 import { join } from 'node:path'
 import { writeFile } from 'node:fs/promises'
-import { loadSite } from './content.js'
+import { loadSite, slugFromPath } from './content.js'
 import { setFrontmatterField } from './frontmatter.js'
 import { readText } from './util.js'
 
@@ -33,13 +33,14 @@ export async function translationReport(config, site) {
 
 /**
  * Mark translations as up to date with their source. `target` is "all", a
- * language ("fr") or one page ("fr/getting-started", "fr/" for the home page).
+ * language ("fr") or one page ("fr/getting-started"; "fr/" or "fr/index" for the
+ * home page, the name the report gives it).
  */
 export async function stampTranslations(config, target) {
   const site = await loadSite(config)
   const def = config.defaultLanguage
   const [lang, ...rest] = String(target).split('/')
-  const slug = rest.join('/')
+  const slug = slugFromPath(rest.join('/'))
   const stamped = []
   for (const entry of site.pages.values()) {
     const source = entry.versions[def]

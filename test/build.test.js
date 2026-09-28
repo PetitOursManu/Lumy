@@ -107,6 +107,10 @@ test('translations: missing, unverified, stamped, then outdated when the source 
     assert.equal(site.pages.get('').versions.fr.translation, 'outdated')
     await build(config, { quiet: true })
     assert.match(await readFile(join(root, 'dist/fr/index.html'), 'utf8'), /a changé depuis cette traduction/)
+
+    // The report names the home page "index", so stamping accepts that name too.
+    assert.deepEqual(await stampTranslations(config, 'fr/index'), ['fr/'])
+    assert.deepEqual((await translationReport(config)).fr.outdated, [])
   } finally {
     await cleanup()
   }
