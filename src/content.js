@@ -163,6 +163,12 @@ export async function loadSite(config) {
         page.translation = 'source'
         continue
       }
+      // "generated: true": a script writes both languages at once (a changelog
+      // from git history, say), so this version cannot fall behind its source.
+      if (page.data.generated === true) {
+        page.translation = 'current'
+        continue
+      }
       const stamp = page.data.source_hash ? String(page.data.source_hash) : ''
       page.translation = !stamp ? 'unverified' : stamp === source.hash ? 'current' : 'outdated'
     }

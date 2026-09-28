@@ -2,7 +2,7 @@
 title: Langues
 description: Un dossier par langue, des lecteurs dans leur langue, et une alerte quand une traduction prend du retard.
 audience: [writer, admin]
-source_hash: 3c906aad7096
+source_hash: fea51405da42
 ---
 
 ## Choisir les langues
@@ -55,6 +55,8 @@ Une traduction enregistre la version de sa source à partir de laquelle elle a �
 | en retard (outdated) | La source a changé depuis ; le lecteur voit une note |
 | non vérifiée (unverified) | Pas encore de `source_hash` : Lumy ne peut pas savoir |
 | manquante (missing) | Aucun fichier dans cette langue ; le lecteur reçoit le texte source |
+
+Une page qu’un script écrit dans toutes les langues à la fois, comme un journal des modifications tiré de l’historique git, ne peut pas prendre de retard : mettez `generated: true` dans son en-tête et elle compte toujours comme à jour.
 
 :::why Pourquoi une empreinte plutôt que les dates des fichiers ?
 Les dates changent quand on clone un dépôt, qu’on copie un fichier, ou qu’on corrige une faute dans la traduction elle-même. Une empreinte du texte source ne change que lorsque le texte source change, et elle survit à toutes les copies.

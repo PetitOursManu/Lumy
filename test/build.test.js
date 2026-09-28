@@ -198,3 +198,17 @@ test('who a page is for can be set in the navigation, per group or per page', as
     await cleanup()
   }
 })
+
+test('a translation written by a script with its source ("generated: true") is always current', async () => {
+  const { root, cleanup } = await tempSite({
+    'lumy.config.json': JSON.stringify({ title: 'Gen', languages: ['en', 'fr'] }),
+    'docs/en/changelog.md': '# Changelog\n\nToday.',
+    'docs/fr/changelog.md': '---\ngenerated: true\n---\n# Journal\n\nAujourd’hui.',
+  })
+  try {
+    const report = await translationReport(await loadConfig(root))
+    assert.deepEqual(report.fr.current, ['changelog'])
+  } finally {
+    await cleanup()
+  }
+})

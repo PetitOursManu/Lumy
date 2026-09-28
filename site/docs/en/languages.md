@@ -55,6 +55,8 @@ A translation records which version of its source it was made from, as `source_h
 | unverified | No `source_hash` yet: Lumy cannot tell |
 | missing | No file in that language; readers get the source text |
 
+A page that a script writes in every language at once, such as a changelog built from the git history, cannot fall behind: put `generated: true` in its front matter and it always counts as current.
+
 :::why Why a hash and not the file dates?
 Dates change when a repository is cloned, when a file is copied, or when someone fixes a typo in the translation itself. A hash of the source text changes only when the source text does, and it survives every copy.
 :::
