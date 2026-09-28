@@ -20,9 +20,10 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "node --test \"test/**/*.test.js\"",
-    "example": "node bin/lumy.js dev --root examples/mocky",
-    "example:build": "node bin/lumy.js build --root examples/mocky"
+    "dev": "node bin/lumy.js dev --root site",
+    "build": "node bin/lumy.js build --root site",
+    "check": "node bin/lumy.js check --root site",
+    "test": "node --test \"test/**/*.test.js\""
   },
   "keywords": [
     "documentation",
@@ -33,5 +34,13 @@
   ],
   "dependencies": {
     "marked": "^18.0.14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PetitOursManu/Lumy.git"
+  },
+  "homepage": "https://github.com/PetitOursManu/Lumy#readme",
+  "bugs": {
+    "url": "https://github.com/PetitOursManu/Lumy/issues"
   }
 }

@@ -79,7 +79,7 @@ Chaque bloc est décrit, avec un exemple vivant, dans la documentation : [`site/
 La documentation de Lumy est écrite avec Lumy, en anglais et en français, dans [`site/`](site/) :
 
 ```bash
-npx lumy dev --root site
+npm run dev        # then open http://localhost:4000
 ```
 
 ## Développement
@@ -87,7 +87,7 @@ npx lumy dev --root site
 ```bash
 npm install
 npm test               # node:test, aucun autre outil
-node bin/lumy.js dev --root site
+npm run dev        # la doc de Lumy, avec rechargement automatique
 ```
 
 Le code est volontairement petit : `src/` contient la construction (Markdown, pages, recherche, langues, MCP), `theme/` la feuille de style et le script côté lecteur. `maquette/` garde la première maquette dont le design est issu.
