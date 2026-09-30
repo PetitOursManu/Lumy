@@ -7,8 +7,8 @@
   'use strict'
   const d = document
   const html = d.documentElement
-  const D = JSON.parse(d.getElementById('ad-data').textContent)
-  const app = d.getElementById('ad-app')
+  const D = JSON.parse(d.getElementById('lmd-data').textContent)
+  const app = d.getElementById('lmd-app')
   const API = D.base + '_lumy/api/'
   const reduced = matchMedia('(prefers-reduced-motion: reduce)')
   if (D.brand) {
@@ -123,7 +123,7 @@
     refresh: '<path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/>',
     logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
   }
-  const icon = (n) => `<svg class="ad-i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`
+  const icon = (n) => `<svg class="lmd-i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`
 
   /* ── Talking to the server ──────────────────────────────────────────── */
   async function api(path, { method = 'GET', body } = {}) {
@@ -147,7 +147,7 @@
     return data
   }
 
-  const toastEl = d.getElementById('ad-toast')
+  const toastEl = d.getElementById('lmd-toast')
   let toastTimer
   function toast(msg, bad) {
     toastEl.textContent = msg
@@ -210,18 +210,18 @@
   /* ── Screens without the dashboard frame ────────────────────────────── */
   const logo = D.logo || `${D.base}_lumy/app/lumy.svg`
   function authScreen({ title, text, fields, submit, foot = '', id }) {
-    app.innerHTML = `<main class="ad-auth"><form class="ad-auth-card ad-form" data-form="${id}" novalidate>
-      <img class="ad-auth-logo" src="${esc(logo)}" alt="">
-      <div><h1>${esc(title)}</h1><p class="ad-muted" style="margin:0">${esc(text)}</p></div>
+    app.innerHTML = `<main class="lmd-auth"><form class="lmd-auth-card lmd-form" data-form="${id}" novalidate>
+      <img class="lmd-auth-logo" src="${esc(logo)}" alt="">
+      <div><h1>${esc(title)}</h1><p class="lmd-muted" style="margin:0">${esc(text)}</p></div>
       ${fields}
-      <p class="ad-error" hidden></p>
-      <button class="ad-btn ad-btn-primary" type="submit">${esc(submit)}</button>
-      ${foot ? `<p class="ad-auth-foot">${foot}</p>` : ''}
+      <p class="lmd-error" hidden></p>
+      <button class="lmd-btn lmd-btn-primary" type="submit">${esc(submit)}</button>
+      ${foot ? `<p class="lmd-auth-foot">${foot}</p>` : ''}
     </form></main>`
     app.querySelector('input')?.focus()
   }
   const field = (name, label, type = 'text', extra = '') =>
-    `<label class="ad-field">${esc(label)}<input class="ad-input" name="${name}" type="${type}" ${extra}></label>`
+    `<label class="lmd-field">${esc(label)}<input class="lmd-input" name="${name}" type="${type}" ${extra}></label>`
 
   function nextUrl(user) {
     const next = new URLSearchParams(location.search).get('next')
@@ -229,7 +229,7 @@
     return user?.role === 'reader' ? D.home : `${D.base}_lumy/admin`
   }
   function showError(form, message) {
-    const p = form.querySelector('.ad-error')
+    const p = form.querySelector('.lmd-error')
     p.hidden = false
     p.textContent = message
     p.style.animation = 'none'
@@ -267,7 +267,7 @@
     })
   }
   function renderReader() {
-    app.innerHTML = `<main class="ad-auth"><div class="ad-auth-card"><img class="ad-auth-logo" src="${esc(logo)}" alt=""><h1>${esc(t('readerTitle'))}</h1><p>${esc(t('readerText'))}</p><div class="ad-row"><a class="ad-btn ad-btn-primary" href="${esc(D.home)}">${esc(t('toDocs'))}</a><button class="ad-btn" type="button" data-act="sign-out">${esc(t('signOut'))}</button></div></div></main>`
+    app.innerHTML = `<main class="lmd-auth"><div class="lmd-auth-card"><img class="lmd-auth-logo" src="${esc(logo)}" alt=""><h1>${esc(t('readerTitle'))}</h1><p>${esc(t('readerText'))}</p><div class="lmd-row"><a class="lmd-btn lmd-btn-primary" href="${esc(D.home)}">${esc(t('toDocs'))}</a><button class="lmd-btn" type="button" data-act="sign-out">${esc(t('signOut'))}</button></div></div></main>`
   }
 
   /* ── The dashboard frame ────────────────────────────────────────────── */
@@ -284,30 +284,30 @@
 
   function renderShell() {
     const me = state.me
-    app.innerHTML = `<div class="ad-shell">
-      <aside class="ad-side">
-        <a class="ad-brand" href="${esc(D.home)}"><img src="${esc(logo)}" alt=""><span>${esc(D.title)}<small>${esc(t('dashboard'))}</small></span></a>
-        <nav class="ad-nav" aria-label="${esc(t('dashboard'))}"><span class="ad-nav-ind" aria-hidden="true"></span>${allowed()
+    app.innerHTML = `<div class="lmd-shell">
+      <aside class="lmd-side">
+        <a class="lmd-brand" href="${esc(D.home)}"><img src="${esc(logo)}" alt=""><span>${esc(D.title)}<small>${esc(t('dashboard'))}</small></span></a>
+        <nav class="lmd-nav" aria-label="${esc(t('dashboard'))}"><span class="lmd-nav-ind" aria-hidden="true"></span>${allowed()
           .map((s) => `<a href="#${s.id}" data-section="${s.id}">${icon(s.icon)}<span>${esc(t(s.id))}</span></a>`)
           .join('')}</nav>
-        <div class="ad-side-foot">
-          <div class="ad-me"><span class="ad-avatar">${esc(me.username.slice(0, 1).toUpperCase())}</span><div><strong>${esc(me.username)}</strong><span>${esc(t(me.role))}</span></div></div>
-          <div class="ad-side-actions">
-            <a class="ad-btn ad-btn-sm" href="${esc(D.home)}" title="${esc(t('viewSite'))}">${icon('external')}<span class="ad-label">${esc(t('viewSite'))}</span></a>
-            <button class="ad-btn ad-btn-sm" type="button" data-act="theme" title="${esc(t('theme'))}" aria-label="${esc(t('theme'))}">${icon(themeNow() === 'dark' ? 'sun' : 'moon')}</button>
-            <button class="ad-btn ad-btn-sm" type="button" data-act="sign-out" title="${esc(t('signOut'))}" aria-label="${esc(t('signOut'))}">${icon('logout')}</button>
+        <div class="lmd-side-foot">
+          <div class="lmd-me"><span class="lmd-avatar">${esc(me.username.slice(0, 1).toUpperCase())}</span><div><strong>${esc(me.username)}</strong><span>${esc(t(me.role))}</span></div></div>
+          <div class="lmd-side-actions">
+            <a class="lmd-btn lmd-btn-sm" href="${esc(D.home)}" title="${esc(t('viewSite'))}">${icon('external')}<span class="lmd-label">${esc(t('viewSite'))}</span></a>
+            <button class="lmd-btn lmd-btn-sm" type="button" data-act="theme" title="${esc(t('theme'))}" aria-label="${esc(t('theme'))}">${icon(themeNow() === 'dark' ? 'sun' : 'moon')}</button>
+            <button class="lmd-btn lmd-btn-sm" type="button" data-act="sign-out" title="${esc(t('signOut'))}" aria-label="${esc(t('signOut'))}">${icon('logout')}</button>
           </div>
         </div>
       </aside>
-      <main class="ad-main" id="ad-main"></main>
+      <main class="lmd-main" id="lmd-main"></main>
     </div>`
     showSection()
   }
 
   function placeNavIndicator() {
-    const nav = app.querySelector('.ad-nav')
+    const nav = app.querySelector('.lmd-nav')
     const current = nav?.querySelector('[aria-current="page"]')
-    const ind = nav?.querySelector('.ad-nav-ind')
+    const ind = nav?.querySelector('.lmd-nav-ind')
     if (!current || !ind) return
     const horizontal = getComputedStyle(nav).display === 'flex'
     ind.style.width = horizontal ? current.offsetWidth + 'px' : ''
@@ -320,65 +320,65 @@
   async function showSection() {
     const list = allowed()
     const id = list.some((s) => s.id === location.hash.slice(1)) ? location.hash.slice(1) : list[0].id
-    app.querySelectorAll('.ad-nav a').forEach((a) => (a.dataset.section === id ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')))
+    app.querySelectorAll('.lmd-nav a').forEach((a) => (a.dataset.section === id ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')))
     placeNavIndicator()
-    const main = d.getElementById('ad-main')
-    main.innerHTML = `<div class="ad-loading" style="height:40vh"><span></span></div>`
+    const main = d.getElementById('lmd-main')
+    main.innerHTML = `<div class="lmd-loading" style="height:40vh"><span></span></div>`
     try {
-      main.innerHTML = `<div class="ad-view">${await VIEWS[id]()}</div>`
+      main.innerHTML = `<div class="lmd-view">${await VIEWS[id]()}</div>`
       afterRender(main)
     } catch (err) {
       if (err.status === 401) return location.reload()
-      main.innerHTML = `<div class="ad-view"><div class="ad-empty">${esc(err.message)}</div></div>`
+      main.innerHTML = `<div class="lmd-view"><div class="lmd-empty">${esc(err.message)}</div></div>`
     }
   }
   addEventListener('hashchange', () => state.me && state.me.role !== 'reader' && showSection())
 
   function afterRender(root) {
-    root.querySelectorAll('.ad-seg').forEach(placeSeg)
-    root.querySelectorAll('.ad-card, .ad-stat, .ad-comment').forEach((el, i) => el.style.setProperty('--i', i))
+    root.querySelectorAll('.lmd-seg').forEach(placeSeg)
+    root.querySelectorAll('.lmd-card, .lmd-stat, .lmd-comment').forEach((el, i) => el.style.setProperty('--i', i))
   }
   function placeSeg(seg) {
     const on = seg.querySelector('[aria-pressed="true"]')
-    const ind = seg.querySelector('.ad-seg-ind')
+    const ind = seg.querySelector('.lmd-seg-ind')
     if (!on || !ind) return
     ind.style.width = on.offsetWidth + 'px'
     ind.style.transform = `translateX(${on.offsetLeft}px)`
   }
   const seg = (name, value, options) =>
-    `<div class="ad-seg" role="group" data-seg="${name}"><span class="ad-seg-ind"></span>${options
+    `<div class="lmd-seg" role="group" data-seg="${name}"><span class="lmd-seg-ind"></span>${options
       .map(([v, label]) => `<button type="button" data-value="${v}" aria-pressed="${v === value}">${esc(label)}</button>`)
       .join('')}</div>`
   const sw = (name, checked, title, text) =>
-    `<label class="ad-switch"><input type="checkbox" data-switch="${name}" ${checked ? 'checked' : ''}><span class="ad-switch-track"></span><span class="ad-switch-text"><strong>${esc(title)}</strong><span>${esc(text)}</span></span></label>`
-  const head = (id, text, action = '') => `<header class="ad-head"><div><h1>${esc(t(id))}</h1><p>${esc(text)}</p></div>${action}</header>`
+    `<label class="lmd-switch"><input type="checkbox" data-switch="${name}" ${checked ? 'checked' : ''}><span class="lmd-switch-track"></span><span class="lmd-switch-text"><strong>${esc(title)}</strong><span>${esc(text)}</span></span></label>`
+  const head = (id, text, action = '') => `<header class="lmd-head"><div><h1>${esc(t(id))}</h1><p>${esc(text)}</p></div>${action}</header>`
 
   /* ── Sections ───────────────────────────────────────────────────────── */
   const VIEWS = {
     async overview() {
       const o = await api('admin/overview')
       const stats = []
-      stats.push(`<div class="ad-stat"><span>${esc(t('pages'))}</span><strong>${o.build?.pages ?? '—'}</strong><small>${esc(o.languages.map((l) => l.toUpperCase()).join(' · '))}</small></div>`)
+      stats.push(`<div class="lmd-stat"><span>${esc(t('pages'))}</span><strong>${o.build?.pages ?? '—'}</strong><small>${esc(o.languages.map((l) => l.toUpperCase()).join(' · '))}</small></div>`)
       for (const [code, r] of Object.entries(o.translations || {})) {
         const total = r.current.length + r.outdated.length + r.unverified.length + r.missing.length
         const pct = total ? Math.round((r.current.length / total) * 100) : 0
-        stats.push(`<div class="ad-stat"><span>${esc(t('translated', { lang: code.toUpperCase() }))}</span><strong>${r.current.length}/${total}</strong><small>${esc(t('outdatedMissing', { outdated: r.outdated.length, missing: r.missing.length }))}</small><div class="ad-bar"><i style="width:${pct}%"></i></div></div>`)
+        stats.push(`<div class="lmd-stat"><span>${esc(t('translated', { lang: code.toUpperCase() }))}</span><strong>${r.current.length}/${total}</strong><small>${esc(t('outdatedMissing', { outdated: r.outdated.length, missing: r.missing.length }))}</small><div class="lmd-bar"><i style="width:${pct}%"></i></div></div>`)
       }
       const votes = o.feedback.yes + o.feedback.no
       const helpful = votes ? Math.round((o.feedback.yes / votes) * 100) : 0
-      stats.push(`<div class="ad-stat"><span>${esc(t('helpful'))} · ${esc(t('last30'))}</span><strong>${votes ? helpful + ' %' : '—'}</strong><small>${esc(t('votes', { n: votes }))}</small>${votes ? `<div class="ad-bar"><i style="width:${helpful}%"></i></div>` : ''}</div>`)
-      stats.push(`<div class="ad-stat"><span>${esc(t('assistant'))}</span><strong style="font-size:18px">${esc(o.assistant.enabled ? t('on') : t('off'))}</strong><small>${esc(o.assistant.provider || '—')}</small></div>`)
-      stats.push(`<div class="ad-stat"><span>${esc(t('access'))}</span><strong style="font-size:18px">${esc(t(o.access))}</strong><small>${esc(o.registration === 'open' ? t('signupsOpen') : t('signupsClosed'))}</small></div>`)
+      stats.push(`<div class="lmd-stat"><span>${esc(t('helpful'))} · ${esc(t('last30'))}</span><strong>${votes ? helpful + ' %' : '—'}</strong><small>${esc(t('votes', { n: votes }))}</small>${votes ? `<div class="lmd-bar"><i style="width:${helpful}%"></i></div>` : ''}</div>`)
+      stats.push(`<div class="lmd-stat"><span>${esc(t('assistant'))}</span><strong style="font-size:18px">${esc(o.assistant.enabled ? t('on') : t('off'))}</strong><small>${esc(o.assistant.provider || '—')}</small></div>`)
+      stats.push(`<div class="lmd-stat"><span>${esc(t('access'))}</span><strong style="font-size:18px">${esc(t(o.access))}</strong><small>${esc(o.registration === 'open' ? t('signupsOpen') : t('signupsClosed'))}</small></div>`)
       const w = o.build?.warnings || []
       const build = o.build
-        ? `<p class="ad-muted" style="margin:0 0 12px">${esc(t('builtIn', { pages: o.build.pages, ms: o.build.ms, time: date(o.build.at, true) }))}</p>${
+        ? `<p class="lmd-muted" style="margin:0 0 12px">${esc(t('builtIn', { pages: o.build.pages, ms: o.build.ms, time: date(o.build.at, true) }))}</p>${
             w.length
-              ? `<div class="ad-table-wrap"><table class="ad-table"><tbody>${w.slice(0, 20).map((x) => `<tr><td><code>${esc(x.file)}</code></td><td>${esc(x.message)}</td></tr>`).join('')}</tbody></table></div>`
-              : `<p style="margin:0"><span class="ad-pill ad-pill-ok">${icon('check')}${esc(t('noWarnings'))}</span></p>`
+              ? `<div class="lmd-table-wrap"><table class="lmd-table"><tbody>${w.slice(0, 20).map((x) => `<tr><td><code>${esc(x.file)}</code></td><td>${esc(x.message)}</td></tr>`).join('')}</tbody></table></div>`
+              : `<p style="margin:0"><span class="lmd-pill lmd-pill-ok">${icon('check')}${esc(t('noWarnings'))}</span></p>`
           }`
         : ''
-      return `${head('overview', t('overviewText'))}<div class="ad-grid">${stats.join('')}</div>
-        <section class="ad-card"><div class="ad-card-row"><h2 style="margin:0">${esc(t('build'))}${w.length ? ` <span class="ad-pill ad-pill-warn">${esc(t('warnings', { n: w.length }))}</span>` : ''}</h2><button class="ad-btn ad-btn-sm" type="button" data-act="rebuild">${icon('refresh')}${esc(t('rebuild'))}</button></div><hr class="ad-sep">${build}</section>`
+      return `${head('overview', t('overviewText'))}<div class="lmd-grid">${stats.join('')}</div>
+        <section class="lmd-card"><div class="lmd-card-row"><h2 style="margin:0">${esc(t('build'))}${w.length ? ` <span class="lmd-pill lmd-pill-warn">${esc(t('warnings', { n: w.length }))}</span>` : ''}</h2><button class="lmd-btn lmd-btn-sm" type="button" data-act="rebuild">${icon('refresh')}${esc(t('rebuild'))}</button></div><hr class="lmd-sep">${build}</section>`
     },
 
     async feedback() {
@@ -388,20 +388,20 @@
         .map((p) => {
           const total = p.yes + p.no
           const pct = total ? Math.round((p.yes / total) * 100) : 0
-          return `<tr><td><code>${esc(p.page || 'index')}</code> <span class="ad-pill">${esc(p.lang.toUpperCase())}</span></td><td class="ad-num">${p.yes}</td><td class="ad-num">${p.no}</td><td><div class="ad-helpful"><div class="ad-bar"><i style="width:${pct}%"></i></div><span class="ad-muted">${pct} %</span></div></td><td class="ad-muted">${esc(date(p.last))}</td></tr>`
+          return `<tr><td><code>${esc(p.page || 'index')}</code> <span class="lmd-pill">${esc(p.lang.toUpperCase())}</span></td><td class="lmd-num">${p.yes}</td><td class="lmd-num">${p.no}</td><td><div class="lmd-helpful"><div class="lmd-bar"><i style="width:${pct}%"></i></div><span class="lmd-muted">${pct} %</span></div></td><td class="lmd-muted">${esc(date(p.last))}</td></tr>`
         })
         .join('')
       const comments = f.comments
-        .map((c) => `<article class="ad-comment"><header><code>${esc(c.page || 'index')}</code><span class="ad-pill ${c.value === 'yes' ? 'ad-pill-ok' : 'ad-pill-bad'}">${c.value === 'yes' ? '👍' : '👎'}</span><span>${esc(date(c.at, true))}</span></header><p>${esc(c.comment)}</p></article>`)
+        .map((c) => `<article class="lmd-comment"><header><code>${esc(c.page || 'index')}</code><span class="lmd-pill ${c.value === 'yes' ? 'lmd-pill-ok' : 'lmd-pill-bad'}">${c.value === 'yes' ? '👍' : '👎'}</span><span>${esc(date(c.at, true))}</span></header><p>${esc(c.comment)}</p></article>`)
         .join('')
       return `${head('feedback', t('feedbackText'))}
-        ${settingsOff ? `<div class="ad-empty" style="margin-bottom:16px">${esc(t('feedbackOff'))}</div>` : ''}
-        <section class="ad-card">${
+        ${settingsOff ? `<div class="lmd-empty" style="margin-bottom:16px">${esc(t('feedbackOff'))}</div>` : ''}
+        <section class="lmd-card">${
           rows
-            ? `<div class="ad-table-wrap"><table class="ad-table"><thead><tr><th>${esc(t('page'))}</th><th class="ad-num">👍</th><th class="ad-num">👎</th><th>${esc(t('helpful'))}</th><th>${esc(t('lastVote'))}</th></tr></thead><tbody>${rows}</tbody></table></div>`
-            : `<div class="ad-empty">${esc(t('noFeedback'))}</div>`
+            ? `<div class="lmd-table-wrap"><table class="lmd-table"><thead><tr><th>${esc(t('page'))}</th><th class="lmd-num">👍</th><th class="lmd-num">👎</th><th>${esc(t('helpful'))}</th><th>${esc(t('lastVote'))}</th></tr></thead><tbody>${rows}</tbody></table></div>`
+            : `<div class="lmd-empty">${esc(t('noFeedback'))}</div>`
         }</section>
-        ${comments ? `<section class="ad-card"><h2>${esc(t('comments'))}</h2><p></p><div class="ad-comments">${comments}</div></section>` : ''}`
+        ${comments ? `<section class="lmd-card"><h2>${esc(t('comments'))}</h2><p></p><div class="lmd-comments">${comments}</div></section>` : ''}`
     },
 
     async assistant() {
@@ -415,16 +415,16 @@
       const { users } = await api('admin/users')
       const roleOptions = (current) => ['admin', 'editor', 'reader'].map((r) => `<option value="${r}" ${r === current ? 'selected' : ''}>${esc(t(r))}</option>`).join('')
       const rows = users
-        .map((u) => `<tr data-user="${u.id}"><td><strong>${esc(u.username)}</strong>${u.id === state.me.id ? ' <span class="ad-pill">✓</span>' : ''}</td><td><select class="ad-select" data-role="${u.id}" style="height:32px;width:auto" aria-label="${esc(t('role'))}">${roleOptions(u.role)}</select></td><td class="ad-muted">${esc(date(u.createdAt))}</td><td class="ad-num"><span class="ad-del">${u.id === state.me.id ? '' : `<button class="ad-btn ad-btn-sm ad-btn-danger" type="button" data-act="ask-remove">${esc(t('remove'))}</button>`}</span></td></tr>`)
+        .map((u) => `<tr data-user="${u.id}"><td><strong>${esc(u.username)}</strong>${u.id === state.me.id ? ' <span class="lmd-pill">✓</span>' : ''}</td><td><select class="lmd-select" data-role="${u.id}" style="height:32px;width:auto" aria-label="${esc(t('role'))}">${roleOptions(u.role)}</select></td><td class="lmd-muted">${esc(date(u.createdAt))}</td><td class="lmd-num"><span class="lmd-del">${u.id === state.me.id ? '' : `<button class="lmd-btn lmd-btn-sm lmd-btn-danger" type="button" data-act="ask-remove">${esc(t('remove'))}</button>`}</span></td></tr>`)
         .join('')
       return `${head('access', t('accessText'))}
-        <section class="ad-card"><h2>${esc(t('visibility'))}</h2><p>${esc(t('visibilityText'))}</p>${seg('access', s.access, [['public', t('public')], ['private', t('private')]])}</section>
-        <section class="ad-card"><h2>${esc(t('signups'))}</h2><p>${esc(t('signupsText'))}</p><div class="ad-row" style="align-items:center">${seg('registration', s.registration, [['closed', t('closed')], ['open', t('open')]])}<span class="ad-muted" style="font-size:13px">${esc(t('newRole'))}</span>${seg('defaultRole', s.defaultRole, [['reader', t('reader')], ['editor', t('editor')]])}</div></section>
-        <section class="ad-card">${sw('feedback', s.feedback, t('readerFeatures'), t('readerFeaturesText'))}</section>
-        <section class="ad-card"><h2>${esc(t('accounts'))}</h2><p></p>
-          <div class="ad-table-wrap"><table class="ad-table"><thead><tr><th>${esc(t('username'))}</th><th>${esc(t('role'))}</th><th>${esc(t('created'))}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
-          <hr class="ad-sep"><h2 style="font-size:14.5px;margin:0 0 12px">${esc(t('addAccount'))}</h2>
-          <form class="ad-row" data-form="add-user" novalidate>${field('username', t('username'), 'text', 'autocomplete="off"')}${field('password', t('password'), 'password', 'autocomplete="new-password"')}<label class="ad-field" style="flex:0 1 160px">${esc(t('role'))}<select class="ad-select" name="role">${roleOptions('editor')}</select></label><button class="ad-btn ad-btn-primary" type="submit">${esc(t('add'))}</button><p class="ad-error" hidden style="flex-basis:100%"></p></form>
+        <section class="lmd-card"><h2>${esc(t('visibility'))}</h2><p>${esc(t('visibilityText'))}</p>${seg('access', s.access, [['public', t('public')], ['private', t('private')]])}</section>
+        <section class="lmd-card"><h2>${esc(t('signups'))}</h2><p>${esc(t('signupsText'))}</p><div class="lmd-row" style="align-items:center">${seg('registration', s.registration, [['closed', t('closed')], ['open', t('open')]])}<span class="lmd-muted" style="font-size:13px">${esc(t('newRole'))}</span>${seg('defaultRole', s.defaultRole, [['reader', t('reader')], ['editor', t('editor')]])}</div></section>
+        <section class="lmd-card">${sw('feedback', s.feedback, t('readerFeatures'), t('readerFeaturesText'))}</section>
+        <section class="lmd-card"><h2>${esc(t('accounts'))}</h2><p></p>
+          <div class="lmd-table-wrap"><table class="lmd-table"><thead><tr><th>${esc(t('username'))}</th><th>${esc(t('role'))}</th><th>${esc(t('created'))}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+          <hr class="lmd-sep"><h2 style="font-size:14.5px;margin:0 0 12px">${esc(t('addAccount'))}</h2>
+          <form class="lmd-row" data-form="add-user" novalidate>${field('username', t('username'), 'text', 'autocomplete="off"')}${field('password', t('password'), 'password', 'autocomplete="new-password"')}<label class="lmd-field" style="flex:0 1 160px">${esc(t('role'))}<select class="lmd-select" name="role">${roleOptions('editor')}</select></label><button class="lmd-btn lmd-btn-primary" type="submit">${esc(t('add'))}</button><p class="lmd-error" hidden style="flex-basis:100%"></p></form>
         </section>`
     },
 
@@ -434,26 +434,26 @@
       const abs = new URL(url, location.href).href
       const snippet = `claude mcp add --transport http ${slug(D.title)} ${abs} --header "Authorization: Bearer <token>"`
       const rows = tokens
-        .map((tk) => `<tr><td><strong>${esc(tk.name)}</strong></td><td><span class="ad-pill">${esc(tk.scope === 'read' ? t('read') : t('write'))}</span></td><td>${esc(tk.owner)}</td><td class="ad-muted">${esc(date(tk.createdAt))}</td><td class="ad-muted">${esc(tk.lastUsed ? date(tk.lastUsed, true) : t('never'))}</td><td class="ad-num"><button class="ad-btn ad-btn-sm ad-btn-danger" type="button" data-act="revoke" data-id="${tk.id}">${esc(t('revoke'))}</button></td></tr>`)
+        .map((tk) => `<tr><td><strong>${esc(tk.name)}</strong></td><td><span class="lmd-pill">${esc(tk.scope === 'read' ? t('read') : t('write'))}</span></td><td>${esc(tk.owner)}</td><td class="lmd-muted">${esc(date(tk.createdAt))}</td><td class="lmd-muted">${esc(tk.lastUsed ? date(tk.lastUsed, true) : t('never'))}</td><td class="lmd-num"><button class="lmd-btn lmd-btn-sm lmd-btn-danger" type="button" data-act="revoke" data-id="${tk.id}">${esc(t('revoke'))}</button></td></tr>`)
         .join('')
       return `${head('mcp', t('mcpText'))}
-        ${s ? `<section class="ad-card" style="display:grid;gap:14px">${sw('mcp.enabled', s.mcp.enabled, t('mcpOn'), t('mcpOnText'))}${sw('mcp.publicRead', s.mcp.publicRead, t('mcpPublic'), t('mcpPublicText'))}</section>` : ''}
-        <section class="ad-card"><h2>${esc(t('endpoint'))}</h2><p></p><div class="ad-secret" style="animation:none"><code>${esc(abs)}</code><button class="ad-btn ad-btn-sm" type="button" data-copy="${esc(abs)}">${icon('copy')}${esc(t('copy'))}</button></div>
-          <hr class="ad-sep"><h2 style="font-size:14.5px;margin:0 0 10px">${esc(t('connect'))}</h2><pre class="ad-pre">${esc(snippet)}</pre></section>
-        <section class="ad-card"><h2>${esc(t('tokens'))}</h2><p>${esc(t('tokensText'))}</p>
-          <div id="ad-new-token"></div>
-          ${rows ? `<div class="ad-table-wrap"><table class="ad-table"><thead><tr><th>${esc(t('name'))}</th><th>${esc(t('scope'))}</th><th>${esc(t('owner'))}</th><th>${esc(t('created'))}</th><th>${esc(t('lastUsed'))}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : `<div class="ad-empty">${esc(t('noTokens'))}</div>`}
-          <hr class="ad-sep"><h2 style="font-size:14.5px;margin:0 0 12px">${esc(t('newToken'))}</h2>
-          <form class="ad-row" data-form="token" novalidate>${field('name', t('name'), 'text', `placeholder="${esc(t('tokenName'))}"`)}<div class="ad-field" style="flex:0 0 auto">${esc(t('scope'))}${seg('scope', 'write', [['write', t('write')], ['read', t('read')]])}</div><button class="ad-btn ad-btn-primary" type="submit">${esc(t('createToken'))}</button></form>
+        ${s ? `<section class="lmd-card" style="display:grid;gap:14px">${sw('mcp.enabled', s.mcp.enabled, t('mcpOn'), t('mcpOnText'))}${sw('mcp.publicRead', s.mcp.publicRead, t('mcpPublic'), t('mcpPublicText'))}</section>` : ''}
+        <section class="lmd-card"><h2>${esc(t('endpoint'))}</h2><p></p><div class="lmd-secret" style="animation:none"><code>${esc(abs)}</code><button class="lmd-btn lmd-btn-sm" type="button" data-copy="${esc(abs)}">${icon('copy')}${esc(t('copy'))}</button></div>
+          <hr class="lmd-sep"><h2 style="font-size:14.5px;margin:0 0 10px">${esc(t('connect'))}</h2><pre class="lmd-pre">${esc(snippet)}</pre></section>
+        <section class="lmd-card"><h2>${esc(t('tokens'))}</h2><p>${esc(t('tokensText'))}</p>
+          <div id="lmd-new-token"></div>
+          ${rows ? `<div class="lmd-table-wrap"><table class="lmd-table"><thead><tr><th>${esc(t('name'))}</th><th>${esc(t('scope'))}</th><th>${esc(t('owner'))}</th><th>${esc(t('created'))}</th><th>${esc(t('lastUsed'))}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : `<div class="lmd-empty">${esc(t('noTokens'))}</div>`}
+          <hr class="lmd-sep"><h2 style="font-size:14.5px;margin:0 0 12px">${esc(t('newToken'))}</h2>
+          <form class="lmd-row" data-form="token" novalidate>${field('name', t('name'), 'text', `placeholder="${esc(t('tokenName'))}"`)}<div class="lmd-field" style="flex:0 0 auto">${esc(t('scope'))}${seg('scope', 'write', [['write', t('write')], ['read', t('read')]])}</div><button class="lmd-btn lmd-btn-primary" type="submit">${esc(t('createToken'))}</button></form>
         </section>`
     },
 
     async account() {
       return `${head('account', t('accountText'))}
-        <section class="ad-card"><h2>${esc(t('changePassword'))}</h2><p></p>
-          <form class="ad-form" data-form="password" novalidate style="max-width:420px">${field('current', t('current'), 'password', 'autocomplete="current-password"')}${field('password', t('newPassword'), 'password', 'autocomplete="new-password"')}${field('confirm', t('confirm'), 'password', 'autocomplete="new-password"')}<p class="ad-error" hidden></p><div><button class="ad-btn ad-btn-primary" type="submit">${esc(t('save'))}</button></div></form>
+        <section class="lmd-card"><h2>${esc(t('changePassword'))}</h2><p></p>
+          <form class="lmd-form" data-form="password" novalidate style="max-width:420px">${field('current', t('current'), 'password', 'autocomplete="current-password"')}${field('password', t('newPassword'), 'password', 'autocomplete="new-password"')}${field('confirm', t('confirm'), 'password', 'autocomplete="new-password"')}<p class="lmd-error" hidden></p><div><button class="lmd-btn lmd-btn-primary" type="submit">${esc(t('save'))}</button></div></form>
         </section>
-        <section class="ad-card"><div class="ad-card-row"><div><h2 style="margin:0">${esc(state.me.username)}</h2><span class="ad-muted">${esc(t(state.me.role))}</span></div><button class="ad-btn" type="button" data-act="sign-out">${icon('logout')}${esc(t('signOut'))}</button></div></section>`
+        <section class="lmd-card"><div class="lmd-card-row"><div><h2 style="margin:0">${esc(state.me.username)}</h2><span class="lmd-muted">${esc(t(state.me.role))}</span></div><button class="lmd-btn" type="button" data-act="sign-out">${icon('logout')}${esc(t('signOut'))}</button></div></section>`
     },
   }
 
@@ -468,29 +468,29 @@
     const a = state.draft
     const def = s.catalog.find((p) => p.id === a.provider)
     const cards = s.catalog
-      .map((p) => `<button class="ad-provider" type="button" data-provider="${p.id}" aria-pressed="${p.id === a.provider}"><strong>${esc(p.label)}</strong><span>${esc(a.providers[p.id]?.model || p.model || '—')}</span>${a.providers[p.id]?.hasKey ? '<em title="✓"></em>' : ''}</button>`)
+      .map((p) => `<button class="lmd-provider" type="button" data-provider="${p.id}" aria-pressed="${p.id === a.provider}"><strong>${esc(p.label)}</strong><span>${esc(a.providers[p.id]?.model || p.model || '—')}</span>${a.providers[p.id]?.hasKey ? '<em title="✓"></em>' : ''}</button>`)
       .join('')
     const cfg = def ? a.providers[def.id] : null
     const keyPlaceholder = def?.keyOptional && !cfg?.hasKey ? t('keyOptional') : cfg?.hasKey ? t('keySaved') : t('keyNone')
     const fields = def
-      ? `<div class="ad-form">
-          ${def.hint ? `<p class="ad-muted" style="margin:0;font-size:13px">${esc(STRINGS[lang]['hint_' + def.id] || def.hint)}</p>` : ''}
-          <div class="ad-row">
-            <label class="ad-field">${esc(t('baseUrl'))}<input class="ad-input ad-mono" data-draft="baseUrl" value="${esc(cfg.baseUrl)}" placeholder="${esc(def.baseUrl || 'https://…')}" spellcheck="false"></label>
-            <label class="ad-field">${esc(t('model'))}<input class="ad-input ad-mono" data-draft="model" value="${esc(cfg.model)}" placeholder="${esc(def.model)}" spellcheck="false"></label>
+      ? `<div class="lmd-form">
+          ${def.hint ? `<p class="lmd-muted" style="margin:0;font-size:13px">${esc(STRINGS[lang]['hint_' + def.id] || def.hint)}</p>` : ''}
+          <div class="lmd-row">
+            <label class="lmd-field">${esc(t('baseUrl'))}<input class="lmd-input lmd-mono" data-draft="baseUrl" value="${esc(cfg.baseUrl)}" placeholder="${esc(def.baseUrl || 'https://…')}" spellcheck="false"></label>
+            <label class="lmd-field">${esc(t('model'))}<input class="lmd-input lmd-mono" data-draft="model" value="${esc(cfg.model)}" placeholder="${esc(def.model)}" spellcheck="false"></label>
           </div>
-          <label class="ad-field">${esc(t('apiKey'))}<input class="ad-input ad-mono" data-draft="apiKey" type="password" autocomplete="off" placeholder="${esc(keyPlaceholder)}" spellcheck="false"></label>
-          ${cfg.hasKey ? `<div><button class="ad-link" type="button" data-act="remove-key">${esc(t('removeKey'))}</button></div>` : ''}
-          <div class="ad-row" style="align-items:center"><button class="ad-btn" type="button" data-act="test">${esc(t('test'))}</button><p class="ad-test" id="ad-test" hidden></p></div>
+          <label class="lmd-field">${esc(t('apiKey'))}<input class="lmd-input lmd-mono" data-draft="apiKey" type="password" autocomplete="off" placeholder="${esc(keyPlaceholder)}" spellcheck="false"></label>
+          ${cfg.hasKey ? `<div><button class="lmd-link" type="button" data-act="remove-key">${esc(t('removeKey'))}</button></div>` : ''}
+          <div class="lmd-row" style="align-items:center"><button class="lmd-btn" type="button" data-act="test">${esc(t('test'))}</button><p class="lmd-test" id="lmd-test" hidden></p></div>
         </div>`
       : ''
-    return `<section class="ad-card">${sw('assistant.enabled', a.enabled, t('assistantOn'), t('assistantOnText'))}</section>
-      <section class="ad-card"><h2>${esc(t('provider'))}</h2><p>${esc(t('keysNote'))}</p><div class="ad-providers">${cards}</div>${fields}</section>
-      <section class="ad-card"><div class="ad-row"><label class="ad-field" style="flex:0 1 260px">${esc(t('perHour'))}<input class="ad-input" type="number" min="1" max="1000" data-draft-root="perHour" value="${esc(a.perHour)}"></label><span style="flex:1"></span><button class="ad-btn ad-btn-primary" type="button" data-act="save-assistant">${esc(t('save'))}</button></div></section>`
+    return `<section class="lmd-card">${sw('assistant.enabled', a.enabled, t('assistantOn'), t('assistantOnText'))}</section>
+      <section class="lmd-card"><h2>${esc(t('provider'))}</h2><p>${esc(t('keysNote'))}</p><div class="lmd-providers">${cards}</div>${fields}</section>
+      <section class="lmd-card"><div class="lmd-row"><label class="lmd-field" style="flex:0 1 260px">${esc(t('perHour'))}<input class="lmd-input" type="number" min="1" max="1000" data-draft-root="perHour" value="${esc(a.perHour)}"></label><span style="flex:1"></span><button class="lmd-btn lmd-btn-primary" type="button" data-act="save-assistant">${esc(t('save'))}</button></div></section>`
   }
 
   function redrawAssistant() {
-    const view = app.querySelector('.ad-view')
+    const view = app.querySelector('.lmd-view')
     view.innerHTML = `${head('assistant', t('assistantText'))}${assistantBody(state.settings)}`
     afterRender(view)
   }
@@ -503,13 +503,13 @@
 
   /* ── Events ─────────────────────────────────────────────────────────── */
   app.addEventListener('click', async (e) => {
-    const el = e.target.closest('[data-act], [data-copy], [data-provider], .ad-seg button, .ad-nav a')
+    const el = e.target.closest('[data-act], [data-copy], [data-provider], .lmd-seg button, .lmd-nav a')
     if (!el) return
-    if (el.matches('.ad-nav a')) return // the hash change does the rest
+    if (el.matches('.lmd-nav a')) return // the hash change does the rest
     if (el.dataset.copy) return copy(el.dataset.copy)
 
-    if (el.matches('.ad-seg button')) {
-      const group = el.closest('.ad-seg')
+    if (el.matches('.lmd-seg button')) {
+      const group = el.closest('.lmd-seg')
       group.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === el)))
       placeSeg(group)
       const name = group.dataset.seg
@@ -543,12 +543,12 @@
         return showSection()
       }
       if (act === 'test') {
-        const out = d.getElementById('ad-test')
+        const out = d.getElementById('lmd-test')
         const a = state.draft
         const cfg = a.providers[a.provider]
         const r = await busy(el, () => api('admin/assistant/test', { method: 'POST', body: { provider: a.provider, baseUrl: cfg.baseUrl, model: cfg.model, apiKey: cfg.newKey || undefined } }))
         out.hidden = false
-        out.className = `ad-test ${r.ok ? 'ok' : 'bad'}`
+        out.className = `lmd-test ${r.ok ? 'ok' : 'bad'}`
         out.innerHTML = r.ok ? `${icon('check')}${esc(t('testOk', { ms: r.ms }))}` : `${icon('x')}${esc(r.error)}`
         return
       }
@@ -567,8 +567,8 @@
         return redrawAssistant()
       }
       if (act === 'ask-remove') {
-        const cell = el.closest('.ad-del')
-        cell.innerHTML = `<span class="ad-confirm">${esc(t('sure'))} <button class="ad-btn ad-btn-sm ad-btn-danger" type="button" data-act="remove-user">${esc(t('yes'))}</button><button class="ad-btn ad-btn-sm" type="button" data-act="keep-user">${esc(t('no'))}</button></span>`
+        const cell = el.closest('.lmd-del')
+        cell.innerHTML = `<span class="lmd-confirm">${esc(t('sure'))} <button class="lmd-btn lmd-btn-sm lmd-btn-danger" type="button" data-act="remove-user">${esc(t('yes'))}</button><button class="lmd-btn lmd-btn-sm" type="button" data-act="keep-user">${esc(t('no'))}</button></span>`
         return
       }
       if (act === 'keep-user') return showSection()
@@ -653,12 +653,12 @@
         const scope = form.querySelector('[data-seg="scope"] [aria-pressed="true"]')?.dataset.value || 'write'
         const { token } = await busy(button, () => api('admin/tokens', { method: 'POST', body: { name: data.name || t('tokenName'), scope } }))
         await showSection()
-        const box = d.getElementById('ad-new-token')
-        box.innerHTML = `<p class="ad-muted" style="margin:0 0 8px">${esc(t('tokenOnce'))}</p><div class="ad-secret"><code>${esc(token.token)}</code><button class="ad-btn ad-btn-sm" type="button" data-copy="${esc(token.token)}">${icon('copy')}${esc(t('copy'))}</button></div><hr class="ad-sep">`
+        const box = d.getElementById('lmd-new-token')
+        box.innerHTML = `<p class="lmd-muted" style="margin:0 0 8px">${esc(t('tokenOnce'))}</p><div class="lmd-secret"><code>${esc(token.token)}</code><button class="lmd-btn lmd-btn-sm" type="button" data-copy="${esc(token.token)}">${icon('copy')}${esc(t('copy'))}</button></div><hr class="lmd-sep">`
         return
       }
     } catch (err) {
-      const p = form.querySelector('.ad-error')
+      const p = form.querySelector('.lmd-error')
       if (p) showError(form, err.message)
       else toast(err.message, true)
       if (/password|mot de passe/i.test(err.message)) form.querySelector('[name="password"]')?.classList.add('is-bad')
@@ -670,7 +670,7 @@
     try {
       state.info = await api('me')
     } catch (err) {
-      app.innerHTML = `<main class="ad-auth"><div class="ad-auth-card"><h1>Lumy</h1><p>${esc(err.message)}</p></div></main>`
+      app.innerHTML = `<main class="lmd-auth"><div class="lmd-auth-card"><h1>Lumy</h1><p>${esc(err.message)}</p></div></main>`
       return
     }
     state.me = state.info.user
