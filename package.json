@@ -1,6 +1,6 @@
 {
   "name": "lumy-docs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A light, multilingual, interactive documentation site generator. Markdown in, fast static pages out.",
   "type": "module",
   "license": "MIT",
