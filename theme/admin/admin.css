@@ -3,10 +3,10 @@
 @font-face { font-family: 'Geist Mono'; src: url('../fonts/GeistMono-Variable.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
 
 :root {
-  --brand-l: #4f46e5; --brand-d: #a5b4fc;
+  --brand-l: #18181b; --brand-d: #fafafa;
   --bg: #ffffff; --bg-subtle: #fafafa; --card: #ffffff; --fg: #0b0b0d; --fg-2: #3b3b43;
   --muted: #f4f4f5; --muted-fg: #6b6b74; --border: #e7e7ea; --border-strong: #d4d4d8;
-  --primary: var(--brand-l); --on-primary: #fff;
+  --primary: var(--brand-l); --on-primary: var(--on-brand-l, #fff);
   --ok: #15803d; --bad: #dc2626; --warn: #b45309;
   --shadow: 0 1px 2px rgb(0 0 0 / .06), 0 4px 16px -8px rgb(0 0 0 / .12);
   --shadow-lg: 0 24px 64px -18px rgb(0 0 0 / .28), 0 2px 6px rgb(0 0 0 / .06);
@@ -20,7 +20,7 @@
     color-scheme: dark;
     --bg: #09090b; --bg-subtle: #0e0e11; --card: #111114; --fg: #f4f4f5; --fg-2: #d0d0d6;
     --muted: #1a1a1e; --muted-fg: #a1a1aa; --border: #232328; --border-strong: #34343b;
-    --primary: var(--brand-d); --on-primary: #0b0b0d; --ok: #4ade80; --bad: #f87171; --warn: #fbbf24;
+    --primary: var(--brand-d); --on-primary: var(--on-brand-d, #0b0b0d); --ok: #4ade80; --bad: #f87171; --warn: #fbbf24;
     --shadow: 0 1px 2px rgb(0 0 0 / .4), 0 4px 16px -8px rgb(0 0 0 / .6);
     --shadow-lg: 0 24px 64px -18px rgb(0 0 0 / .75), 0 2px 6px rgb(0 0 0 / .4);
   }
@@ -29,7 +29,7 @@
   color-scheme: dark;
   --bg: #09090b; --bg-subtle: #0e0e11; --card: #111114; --fg: #f4f4f5; --fg-2: #d0d0d6;
   --muted: #1a1a1e; --muted-fg: #a1a1aa; --border: #232328; --border-strong: #34343b;
-  --primary: var(--brand-d); --on-primary: #0b0b0d; --ok: #4ade80; --bad: #f87171; --warn: #fbbf24;
+  --primary: var(--brand-d); --on-primary: var(--on-brand-d, #0b0b0d); --ok: #4ade80; --bad: #f87171; --warn: #fbbf24;
   --shadow: 0 1px 2px rgb(0 0 0 / .4), 0 4px 16px -8px rgb(0 0 0 / .6);
   --shadow-lg: 0 24px 64px -18px rgb(0 0 0 / .75), 0 2px 6px rgb(0 0 0 / .4);
 }
@@ -69,7 +69,7 @@ code, .ad-mono { font-family: var(--mono); font-size: .9em; }
 .ad-btn:active { transform: scale(.97); }
 .ad-btn[disabled] { opacity: .5; pointer-events: none; }
 .ad-btn-primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
-.ad-btn-primary:hover { background: color-mix(in srgb, var(--primary) 86%, var(--fg)); }
+.ad-btn-primary:hover { background: color-mix(in srgb, var(--primary) 88%, var(--bg)); border-color: color-mix(in srgb, var(--primary) 88%, var(--bg)); }
 .ad-btn-danger { color: var(--bad); }
 .ad-btn-danger:hover { background: color-mix(in srgb, var(--bad) 10%, var(--card)); border-color: color-mix(in srgb, var(--bad) 40%, var(--border)); }
 .ad-btn-sm { height: 30px; padding-inline: 10px; font-size: 13px; border-radius: 8px; }

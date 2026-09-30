@@ -9,8 +9,8 @@
     "fr"
   ],
   "theme": {
-    "brand": "#4f46e5",
-    "brandDark": "#a5b4fc"
+    "brand": "#18181b",
+    "brandDark": "#fafafa"
   },
   "github": "https://github.com/PetitOursManu/Lumy",
   "editUrl": "https://github.com/PetitOursManu/Lumy/edit/main/site/docs/{path}",

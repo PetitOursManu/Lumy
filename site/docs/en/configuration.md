@@ -38,8 +38,8 @@ audience: [admin]
 
 | Key | Default | What it does |
 |---|---|---|
-| `theme.brand` | `#20796c` | The one colour of the interface: links, current page, buttons |
-| `theme.brandDark` | derived | The same colour for the dark theme; lightened from `brand` when absent |
+| `theme.brand` | `#18181b` | The one colour of the interface: links, current page, buttons. Near-black by default, like Lumy's logo |
+| `theme.brandDark` | derived | The same colour for the dark theme; lightened from `brand` when absent, and white when `brand` is black or grey |
 | `theme.radius` | `12` | Corner radius of blocks, in pixels |
 | `styles` | `[]` | Your own stylesheets, paths from the site root |
 | `scripts` | `[]` | Your own scripts, for site widgets |

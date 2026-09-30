@@ -23,8 +23,8 @@
 
 /* ── Tokens ───────────────────────────────────────────────────────────── */
 :root {
-  --lm-brand-l: #20796c;
-  --lm-brand-d: #2dc7b0;
+  --lm-brand-l: #18181b;
+  --lm-brand-d: #fafafa;
   --lm-on-brand-l: #fff;
   --lm-on-brand-d: #0b0b0d;
   --lm-radius: 12px;
@@ -128,7 +128,7 @@ kbd { font: 500 11px/1 var(--lm-mono); padding: 3px 5px; border: 1px solid var(-
 .lm-btn:active { transform: scale(.97); }
 .lm-btn-sm { height: 30px; padding-inline: 10px; font-size: 13px; }
 .lm-btn-primary { background: var(--lm-primary); border-color: var(--lm-primary); color: var(--lm-on-primary) !important; }
-.lm-btn-primary:hover { background: color-mix(in srgb, var(--lm-primary) 86%, var(--lm-fg)); }
+.lm-btn-primary:hover { background: color-mix(in srgb, var(--lm-primary) 88%, var(--lm-bg)); border-color: color-mix(in srgb, var(--lm-primary) 88%, var(--lm-bg)); }
 .lm-icon-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; min-width: 36px; padding-inline: 9px;
   border: 1px solid transparent; border-radius: 10px; background: none; cursor: pointer; color: var(--lm-fg-2);
@@ -331,7 +331,7 @@ kbd { font: 500 11px/1 var(--lm-mono); padding: 3px 5px; border: 1px solid var(-
 .lm-line:empty::after { content: ' '; }
 .lm-line-hl { background: color-mix(in srgb, var(--lm-primary) 10%, transparent); box-shadow: inset 2px 0 0 var(--lm-primary); }
 .tok-c { color: var(--lm-muted-fg); font-style: italic; }
-.tok-k, .tok-t { color: var(--lm-primary); }
+.tok-k, .tok-t { color: var(--lm-code-kw, var(--lm-primary)); }
 .tok-s { color: var(--lm-str); }
 .tok-f, .tok-a { color: var(--lm-flag); }
 .tok-n { color: var(--lm-note); }

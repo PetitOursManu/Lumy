@@ -2,7 +2,7 @@
 title: Configuration
 description: Chaque réglage de lumy.config.json.
 audience: [admin]
-source_hash: d920c7bd2c30
+source_hash: 77d795b5abcc
 ---
 
 `lumy.config.json` se trouve à la racine du site. Seul `title` est nécessaire ; tout le reste a une valeur par défaut.
@@ -39,8 +39,8 @@ source_hash: d920c7bd2c30
 
 | Clé | Par défaut | Ce qu’elle fait |
 |---|---|---|
-| `theme.brand` | `#20796c` | La seule couleur de l’interface : liens, page courante, boutons |
-| `theme.brandDark` | déduite | La même couleur pour le thème sombre ; éclaircie à partir de `brand` si absente |
+| `theme.brand` | `#18181b` | La seule couleur de l’interface : liens, page courante, boutons. Presque noire par défaut, comme le logo de Lumy |
+| `theme.brandDark` | déduite | La même couleur pour le thème sombre ; éclaircie à partir de `brand` si absente, et blanche quand `brand` est noire ou grise |
 | `theme.radius` | `12` | Arrondi des blocs, en pixels |
 | `styles` | `[]` | Vos propres feuilles de style, chemins depuis la racine du site |
 | `scripts` | `[]` | Vos propres scripts, pour les blocs propres au site |

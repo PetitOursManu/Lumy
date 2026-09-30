@@ -21,7 +21,7 @@ import { answer } from './assistant.js'
 import { testProvider, providerById } from './providers.js'
 import { mcpHandler } from './mcp-http.js'
 import { translationReport } from './translations.js'
-import { esc } from './util.js'
+import { esc, onColor } from './util.js'
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -275,7 +275,7 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
   async function dashboardPage(res, view) {
     const shell = await readFile(join(LUMY_ROOT, 'theme', 'admin', 'index.html'), 'utf8')
     const logo = config.logo ? (/^https?:/.test(config.logo) ? config.logo : config.base + config.logo.replace(/^\//, '')) : ''
-    const data = { view, base: config.base, title: config.title, logo, version, brand: config.theme.brand, brandDark: config.theme.brandDark, defaultLanguage: config.defaultLanguage, home: pageUrl(config, config.defaultLanguage, '') }
+    const data = { view, base: config.base, title: config.title, logo, version, brand: config.theme.brand, brandDark: config.theme.brandDark, onBrand: onColor(config.theme.brand), onBrandDark: onColor(config.theme.brandDark), defaultLanguage: config.defaultLanguage, home: pageUrl(config, config.defaultLanguage, '') }
     const html = shell
       .replaceAll('{{title}}', esc(config.title))
       .replaceAll('{{base}}', esc(config.base))

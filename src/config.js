@@ -6,7 +6,7 @@
  */
 import { resolve, join } from 'node:path'
 import { readFile } from 'node:fs/promises'
-import { exists, liftForDark } from './util.js'
+import { exists, liftForDark, isNeutral } from './util.js'
 import { LANGUAGE_NAMES } from './i18n.js'
 
 export const CONFIG_FILE = 'lumy.config.json'
@@ -82,8 +82,10 @@ export function normalizeConfig(raw, root) {
   }
 
   // Theme: one brand colour is enough; the dark one is derived when absent.
-  const theme = { brand: '#20796c', radius: 12, ...config.theme }
-  theme.brandDark = theme.brandDark || liftForDark(theme.brand)
+  // Neutral by default, like Lumy's logo: near-black, which turns white in the
+  // dark theme — a lifted black would only be grey.
+  const theme = { brand: '#18181b', radius: 12, ...config.theme }
+  theme.brandDark = theme.brandDark || (isNeutral(theme.brand) ? '#fafafa' : liftForDark(theme.brand))
   config.theme = theme
 
   config.audiences = (config.audiences || []).map((a) => (typeof a === 'string' ? { id: a, label: a } : a))

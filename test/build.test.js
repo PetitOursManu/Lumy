@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile, writeFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import { loadConfig } from '../src/config.js'
+import { loadConfig, normalizeConfig } from '../src/config.js'
 import { build } from '../src/build.js'
 import { loadSite, parseGlossary, slugFromPath } from '../src/content.js'
 import { parseFrontmatter, setFrontmatterField } from '../src/frontmatter.js'
@@ -212,6 +212,24 @@ test('a translation written by a script with its source ("generated: true") is a
   try {
     const report = await translationReport(await loadConfig(root))
     assert.deepEqual(report.fr.current, ['changelog'])
+  } finally {
+    await cleanup()
+  }
+})
+
+test('theme: neutral by default, white in the dark theme, and code keywords keep a hue', async () => {
+  const neutral = normalizeConfig({}, '.')
+  assert.equal(neutral.theme.brand, '#18181b')
+  assert.equal(neutral.theme.brandDark, '#fafafa')
+  const teal = normalizeConfig({ theme: { brand: '#20796c' } }, '.')
+  assert.notEqual(teal.theme.brandDark, '#fafafa')
+
+  const { root, cleanup } = await tempSite(SAMPLE)
+  try {
+    await build(await loadConfig(root), { quiet: true })
+    const page = await readFile(join(root, 'dist/en/index.html'), 'utf8')
+    assert.match(page, /--lm-brand-d:#fafafa;--lm-on-brand-l:#ffffff;--lm-on-brand-d:#0b0b0d/)
+    assert.match(page, /--lm-code-kw:var\(--lm-danger\)/)
   } finally {
     await cleanup()
   }

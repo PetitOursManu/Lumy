@@ -159,6 +159,17 @@ export function liftForDark(hex) {
   return hslToHex([h, Math.min(1, s * 1.05), Math.max(l, 0.62)])
 }
 
+/** Black, white or a grey: a colour with no hue worth keeping. */
+export function isNeutral(hex) {
+  const rgb = hexToRgb(hex)
+  return Boolean(rgb) && Math.max(...rgb) - Math.min(...rgb) < 20
+}
+
+/** Text on a colour: near-black on a light one, white on a dark one. */
+export function onColor(hex) {
+  return luminance(hex) > 0.45 ? '#0b0b0d' : '#ffffff'
+}
+
 /** Relative luminance, for choosing black or white text on a colour. */
 export function luminance(hex) {
   const rgb = hexToRgb(hex)

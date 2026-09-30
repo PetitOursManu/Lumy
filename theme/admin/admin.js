@@ -14,6 +14,8 @@
   if (D.brand) {
     html.style.setProperty('--brand-l', D.brand)
     html.style.setProperty('--brand-d', D.brandDark || D.brand)
+    if (D.onBrand) html.style.setProperty('--on-brand-l', D.onBrand)
+    if (D.onBrandDark) html.style.setProperty('--on-brand-d', D.onBrandDark)
   }
 
   /* ── Words ──────────────────────────────────────────────────────────── */

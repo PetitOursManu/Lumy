@@ -4,7 +4,7 @@
  * Everything a reader needs is in the markup, so a page reads fine with
  * JavaScript off; lumy.js only adds behaviour and motion on top.
  */
-import { esc, pickLang, luminance } from './util.js'
+import { esc, pickLang, isNeutral, onColor } from './util.js'
 import { icon, sprite } from './icons.js'
 import { fill, RTL } from './i18n.js'
 
@@ -14,10 +14,6 @@ function formatDate(iso, lang) {
   } catch {
     return iso.slice(0, 10)
   }
-}
-
-function onColor(hex) {
-  return luminance(hex) > 0.45 ? '#0b0b0d' : '#ffffff'
 }
 
 /** Inline script in <head>: theme before first paint, so a dark page never flashes white. */
@@ -32,6 +28,9 @@ export function renderPage(v) {
   const title = v.isHome ? config.title : `${v.page.title} — ${config.title}`
   const description = v.page.description || config.description || ''
   const theme = config.theme
+  // A black-and-white brand would leave code keywords the colour of plain code,
+  // so they take a hue of their own.
+  const neutral = isNeutral(theme.brand) && isNeutral(theme.brandDark)
   const absolute = (path) => (config.url ? config.url + path : path)
 
   const alternates = multiLang
@@ -59,7 +58,7 @@ ${v.assets.favicon ? `<link rel="icon" href="${esc(v.assets.favicon)}">` : ''}
 <link rel="preload" href="${esc(v.assets.fontSans)}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${esc(v.assets.css)}">
 ${v.assets.styles.map((href) => `<link rel="stylesheet" href="${esc(href)}">`).join('\n')}
-<style>:root{--lm-brand-l:${theme.brand};--lm-brand-d:${theme.brandDark};--lm-on-brand-l:${onColor(theme.brand)};--lm-on-brand-d:${onColor(theme.brandDark)};--lm-radius:${Number(theme.radius) || 12}px}</style>
+<style>:root{--lm-brand-l:${theme.brand};--lm-brand-d:${theme.brandDark};--lm-on-brand-l:${onColor(theme.brand)};--lm-on-brand-d:${onColor(theme.brandDark)};--lm-radius:${Number(theme.radius) || 12}px${neutral ? ';--lm-code-kw:var(--lm-danger)' : ''}}</style>
 <script>${HEAD_SCRIPT}</script>
 <script defer src="${esc(v.assets.js)}"></script>
 ${v.assets.scripts.map((src) => `<script defer src="${esc(src)}"></script>`).join('\n')}
