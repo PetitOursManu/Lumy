@@ -118,6 +118,8 @@ code, .lmd-mono { font-family: var(--mono); font-size: .9em; }
 .lmd-auth-card > p { margin: 0 0 20px; color: var(--muted-fg); }
 .lmd-auth-logo { width: 40px; height: 40px; border-radius: 10px; display: block; }
 .lmd-auth-foot { margin: 18px 0 0; font-size: 13px; color: var(--muted-fg); text-align: center; }
+.lmd-or { display: flex; align-items: center; gap: 10px; color: var(--muted-fg); font-size: 12px; }
+.lmd-or::before, .lmd-or::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
 /* Layout */
 .lmd-shell { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: 100vh; }

@@ -43,7 +43,7 @@ There is nobody else to ask. That is also why `lumy serve` listens on `127.0.0.1
 - [Assistant](#the-assistant) The provider, the model, the key, and a test button.
 - [Access](#accounts-and-access) Who can read, who can sign up, the accounts.
 - [MCP](#remote-mcp) The server's address and access tokens.
-- [Account](#the-dashboard) Your password.
+- [Account](#sign-in-with-kosmy-board) Your password, and the link to Kosmy Board.
 :::
 
 ## Accounts and access
@@ -58,6 +58,20 @@ There is nobody else to ask. That is also why `lumy serve` listens on `127.0.0.1
 - **Sign-ups.** Closed by default: the administrator adds accounts. Open: anyone can create one, with the role you choose (reader or editor).
 
 Passwords are hashed with scrypt, sessions last 30 days and are extended while used, and sign-in attempts are limited to ten a minute per address.
+
+## Sign in with Kosmy Board
+
+[Kosmy Board](https://github.com/PetitOursManu/Kosmy-Board) gathers the admin pages of your self-hosted apps and signs you in to them, with OpenID Connect. Its **Open** button then lands on Lumy's dashboard already signed in.
+
+:::steps
+1. **In Kosmy Board.** Add the Lumy instance, with the base path if the site has one (`https://example.com/docs`). Under **Edit → Single sign-on**, turn it on: the redirect URI `{instance}/auth/kosmy-board/callback` and the initiate login URI `{instance}/auth/kosmy-board/login` are filled in for Lumy.
+2. **In Lumy's dashboard.** Under **Access → Kosmy Board**, paste the issuer, the client ID and the client secret. The card also shows the two addresses Lumy expects, to compare.
+3. **For each person.** Signed in with their password, they open **Account → Link to Kosmy Board** once.
+:::
+
+Accounts are matched on Kosmy Board's `sub`, never on the email, which Kosmy Board does not verify. A Kosmy Board account nobody linked opens nothing; a linked one opens its Lumy account, with that account's role. An administrator can undo someone's link from the list of accounts, but only its owner can make one.
+
+The client secret is encrypted like the assistant's keys and never sent back to a browser. Signing out of Lumy ends the Lumy session only: **Open** in Kosmy Board signs back in with one click.
 
 ## The assistant
 
@@ -124,7 +138,7 @@ Put a reverse proxy in front for `{{site}}`, and set `LUMY_TRUST_PROXY: "1"` so 
 |---|---|
 | `LUMY_DATA_DIR` | Where accounts, settings and feedback live. Default: `.lumy/` beside the site |
 | `LUMY_OUT_DIR` | Where the served site is built. Default: `outDir` from the configuration |
-| `LUMY_SECRET` | Encrypts API keys at rest. Set it to keep keys readable when the data folder moves |
+| `LUMY_SECRET` | Encrypts API keys and the Kosmy Board client secret at rest. Set it to keep them readable when the data folder moves |
 | `LUMY_ADMIN_USER`, `LUMY_ADMIN_PASSWORD` | Creates the administrator on first start |
 | `LUMY_TRUST_PROXY` | `1` behind a reverse proxy |
 

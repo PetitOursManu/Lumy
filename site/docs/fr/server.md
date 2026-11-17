@@ -3,7 +3,7 @@ title: Serveur et tableau de bord
 navTitle: Serveur et tableau de bord
 description: lumy serve ajoute un tableau de bord, des comptes, une documentation privée, l’assistant des lecteurs et un serveur MCP distant.
 audience: [admin]
-source_hash: 505b1f266f4c
+source_hash: 0061f97abe38
 ---
 
 Un site statique suffit pour une documentation publique. `lumy serve` ajoute ce qu’un hébergeur statique ne sait pas faire, le tout réglé depuis un tableau de bord dans le navigateur :
@@ -44,7 +44,7 @@ Il n’y a personne d’autre à qui le demander. C’est aussi pour cela que `l
 - [Assistant](#lassistant) Le fournisseur, le modèle, la clé, et un bouton de test.
 - [Accès](#comptes-et-acces) Qui peut lire, qui peut s’inscrire, les comptes.
 - [MCP](#mcp-distant) L’adresse du serveur et les jetons d’accès.
-- [Compte](#le-tableau-de-bord) Votre mot de passe.
+- [Compte](#se-connecter-avec-kosmy-board) Votre mot de passe, et le lien avec Kosmy Board.
 :::
 
 ## Comptes et accès
@@ -59,6 +59,20 @@ Il n’y a personne d’autre à qui le demander. C’est aussi pour cela que `l
 - **Inscriptions.** Fermées par défaut : l’administrateur ajoute les comptes. Ouvertes : tout le monde peut en créer un, avec le rôle que vous choisissez (lecteur ou rédacteur).
 
 Les mots de passe sont hachés avec scrypt, les sessions durent 30 jours et se prolongent tant qu’on s’en sert, et les tentatives de connexion sont limitées à dix par minute et par adresse.
+
+## Se connecter avec Kosmy Board
+
+[Kosmy Board](https://github.com/PetitOursManu/Kosmy-Board) rassemble les pages d’administration de vos applis auto-hébergées et vous y connecte, en OpenID Connect. Son bouton **Ouvrir** arrive alors sur le tableau de bord de Lumy, déjà connecté.
+
+:::steps
+1. **Dans Kosmy Board.** Ajoutez l’instance Lumy, avec le chemin de base si le site en a un (`https://exemple.fr/docs`). Dans **Modifier → Connexion unique**, activez-la : l’adresse de retour `{instance}/auth/kosmy-board/callback` et l’adresse de lancement `{instance}/auth/kosmy-board/login` sont remplies pour Lumy.
+2. **Dans le tableau de bord de Lumy.** Dans **Accès → Kosmy Board**, collez l’émetteur, l’identifiant client et le secret client. La carte affiche aussi les deux adresses qu’attend Lumy, pour comparer.
+3. **Pour chaque personne.** Connectée avec son mot de passe, elle ouvre une fois **Compte → Relier à Kosmy Board**.
+:::
+
+Les comptes sont reliés par le `sub` de Kosmy Board, jamais par l’e-mail, que Kosmy Board ne vérifie pas. Un compte Kosmy Board que personne n’a relié n’ouvre rien ; un compte relié ouvre son compte Lumy, avec le rôle de ce compte. Un administrateur peut défaire le lien de quelqu’un depuis la liste des comptes, mais seul son propriétaire peut le créer.
+
+Le secret client est chiffré comme les clés de l’assistant et n’est jamais renvoyé à un navigateur. Se déconnecter de Lumy ne ferme que la session Lumy : **Ouvrir** dans Kosmy Board reconnecte d’un clic.
 
 ## L’assistant
 
@@ -125,7 +139,7 @@ Placez un reverse proxy devant `{{site}}`, et indiquez `LUMY_TRUST_PROXY: "1"` p
 |---|---|
 | `LUMY_DATA_DIR` | Où vivent les comptes, les réglages et les avis. Par défaut : `.lumy/` à côté du site |
 | `LUMY_OUT_DIR` | Où le site servi est construit. Par défaut : `outDir` de la configuration |
-| `LUMY_SECRET` | Chiffre les clés d’API au repos. Définissez-la pour garder les clés lisibles quand le dossier de données change de place |
+| `LUMY_SECRET` | Chiffre au repos les clés d’API et le secret client de Kosmy Board. Définissez-la pour les garder lisibles quand le dossier de données change de place |
 | `LUMY_ADMIN_USER`, `LUMY_ADMIN_PASSWORD` | Crée l’administrateur au premier démarrage |
 | `LUMY_TRUST_PROXY` | `1` derrière un reverse proxy |
 

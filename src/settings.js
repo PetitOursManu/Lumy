@@ -5,6 +5,7 @@
  * never land in a repository.
  */
 import { PROVIDERS, providerById } from './providers.js'
+import { normalizeIssuer } from './kosmy-board.js'
 
 const FILE = 'settings.json'
 
@@ -21,6 +22,8 @@ export function defaultSettings(config) {
       providers: Object.fromEntries(PROVIDERS.map((p) => [p.id, { baseUrl: p.baseUrl, model: p.model, apiKey: '' }])),
     },
     mcp: { enabled: true, publicRead: true },
+    // Sign in with Kosmy Board (OpenID Connect). On when all three are set.
+    kosmyBoard: { issuer: '', clientId: '', clientSecret: '' },
   }
 }
 
@@ -38,6 +41,7 @@ export async function loadSettings(store, config) {
       ),
     },
     mcp: { ...base.mcp, ...(saved.mcp || {}) },
+    kosmyBoard: { ...base.kosmyBoard, ...(saved.kosmyBoard || {}) },
   }
 }
 
@@ -51,6 +55,7 @@ export function publicSettings(settings) {
         Object.entries(settings.assistant.providers).map(([id, p]) => [id, { baseUrl: p.baseUrl, model: p.model, hasKey: Boolean(p.apiKey) }]),
       ),
     },
+    kosmyBoard: { issuer: settings.kosmyBoard.issuer, clientId: settings.kosmyBoard.clientId, hasSecret: Boolean(settings.kosmyBoard.clientSecret), enabled: kosmyEnabled(settings) },
     catalog: PROVIDERS.map(({ id, label, baseUrl, model, keyOptional, hint }) => ({ id, label, baseUrl, model, keyOptional: Boolean(keyOptional), hint: hint || '' })),
   }
 }
@@ -88,8 +93,33 @@ export async function patchSettings(store, config, patch = {}) {
       apiKey: p.apiKey === null ? '' : typeof p.apiKey === 'string' && p.apiKey.trim() ? store.encrypt(p.apiKey.trim()) : cur.apiKey,
     }
   }
+  if (patch.kosmyBoard && typeof patch.kosmyBoard === 'object') {
+    const k = patch.kosmyBoard
+    const cur = current.kosmyBoard
+    let issuer = cur.issuer
+    if (typeof k.issuer === 'string') {
+      issuer = k.issuer.trim() ? normalizeIssuer(k.issuer) : ''
+      if (issuer === null) throw Object.assign(new Error('issuer'), { code: 'issuer' })
+    }
+    next.kosmyBoard = {
+      issuer,
+      clientId: typeof k.clientId === 'string' ? k.clientId.trim().slice(0, 200) : cur.clientId,
+      // Like API keys: replaced only when a new one is typed, removed with null, never sent back.
+      clientSecret: k.clientSecret === null ? '' : typeof k.clientSecret === 'string' && k.clientSecret.trim() ? store.encrypt(k.clientSecret.trim()) : cur.clientSecret,
+    }
+  }
   await store.set(FILE, next)
   return next
+}
+
+export const kosmyEnabled = (settings) => Boolean(settings.kosmyBoard.issuer && settings.kosmyBoard.clientId && settings.kosmyBoard.clientSecret)
+
+/** The Kosmy Board client settings, secret decrypted, or null when sign-in with Kosmy Board is off. */
+export function kosmySettings(store, settings) {
+  if (!kosmyEnabled(settings)) return null
+  const clientSecret = store.decrypt(settings.kosmyBoard.clientSecret)
+  if (!clientSecret) return null
+  return { issuer: settings.kosmyBoard.issuer, clientId: settings.kosmyBoard.clientId, clientSecret }
 }
 
 /** The provider settings the assistant calls with, key decrypted. */

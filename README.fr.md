@@ -84,6 +84,16 @@ cd /chemin/vers/votre/doc && docker compose up -d
 
 Ouvrez ensuite `http://localhost:4000/_lumy/setup` pour créer le compte administrateur.
 
+## Se connecter avec Kosmy Board
+
+[Kosmy Board](https://github.com/PetitOursManu/Kosmy-Board) rassemble les pages d’administration de vos applis auto-hébergées et vous y connecte. `lumy serve` l’accepte comme fournisseur OpenID Connect :
+
+1. Dans Kosmy Board, ajoutez l’instance Lumy (son adresse, avec le chemin de base s’il y en a un, par exemple `https://exemple.fr/docs`), puis **Modifier → Connexion unique** et activez-la. L’adresse de retour `{instance}/auth/kosmy-board/callback` et l’adresse de lancement `{instance}/auth/kosmy-board/login` sont remplies pour vous.
+2. Dans le tableau de bord de Lumy, **Accès → Kosmy Board** : collez l’émetteur, l’identifiant client et le secret client. Le secret est chiffré sur le serveur et n’est plus jamais affiché.
+3. Chaque personne qui doit entrer relie une fois son propre compte, dans **Compte → Relier à Kosmy Board**.
+
+Ensuite, **Se connecter avec Kosmy Board** sur la page de connexion, ou **Ouvrir** dans Kosmy Board, ouvre le compte Lumy de cette personne, avec son rôle. Les comptes sont reliés par le `sub` de Kosmy Board uniquement, jamais par l’e-mail (Kosmy Board ne le vérifie pas) : un compte Kosmy Board que personne n’a relié n’ouvre rien, et personne n’obtient le rôle d’administrateur par Kosmy Board sans qu’un administrateur y ait relié son propre compte. Le parcours utilise `state`, `nonce` et PKCE (S256), `client_secret_basic`, et vérifie la signature RS256 de l’ID token, `iss`, `aud`, `exp` et `nonce`, sans dépendance ajoutée.
+
 ## Documentation
 
 La documentation de Lumy est écrite avec Lumy, en anglais et en français, dans [`site/`](site/) :
