@@ -51,6 +51,17 @@
       err_password: 'A password has at least 8 characters.', err_taken: 'This username is already taken.', 'err_last-admin': 'The site needs at least one administrator.',
       'err_setup-done': 'The administrator already exists. Sign in instead.', 'err_signups-closed': 'Sign-ups are closed on this site.', 'err_current-password': 'The current password is wrong.',
       err_forbidden: 'Your account cannot do this.', err_signin: 'Sign in first.',
+      or: 'or', kosmySignIn: 'Sign in with Kosmy Board', kosmyBoard: 'Kosmy Board',
+      kosmyText: 'Let people sign in from Kosmy Board, the page that gathers your self-hosted apps. An account opens only once its owner has linked it, under Account.',
+      issuer: 'Issuer', clientId: 'Client ID', clientSecret: 'Client secret', secretSaved: 'Saved. Type a new secret to replace it.', secretNone: 'Paste the secret Kosmy Board shows once',
+      kosmyAddresses: 'Addresses to give Kosmy Board', redirectUri: 'Redirect URI', loginUri: 'Initiate login URI', kosmyAddressesText: 'Kosmy Board fills them in for Lumy from the instance address {url}.', turnOff: 'Turn off', turnedOff: 'Turned off',
+      kosmyAccountText: 'Sign in from Kosmy Board without your password, once your Kosmy Board account is linked to this one.', kosmyLink: 'Link to Kosmy Board', kosmyLinkedTo: 'Linked to {who}', kosmyUnlink: 'Unlink', kosmyNotLinked: 'Not linked yet.', kosmyLinkedPill: 'Kosmy Board',
+      err_issuer: 'The issuer is an http(s) address, such as https://board.example.com/oidc.',
+      kosmy_linked: 'Linked to Kosmy Board.', kosmy_off: 'Sign-in with Kosmy Board is not set up on this site.', kosmy_issuer: 'This Kosmy Board is not the one this site trusts.',
+      kosmy_expired: 'The sign-in took too long or was already used. Try again.', kosmy_denied: 'Kosmy Board refused: this site is not in your Board.',
+      kosmy_failed: 'Signing in with Kosmy Board failed. Try again; if it goes on, check the settings under Access.', kosmy_unreachable: 'Kosmy Board cannot be reached.',
+      'kosmy_not-linked': 'This Kosmy Board account is linked to no account here. Sign in with your password, then link it under Account.',
+      kosmy_taken: 'This Kosmy Board account is already linked to another account here.', kosmy_session: 'Your session ended before the link was made. Sign in and try again.',
       hint_ollama: 'Ollama Cloud, or http://localhost:11434 for a local Ollama (no key).', hint_fal: 'fal routes chat models through OpenRouter: use ids such as openai/gpt-4o-mini.', hint_custom: 'Any server with /v1/chat/completions: LM Studio, vLLM, LocalAI, Together…',
     },
     fr: {
@@ -84,6 +95,17 @@
       err_password: 'Un mot de passe contient au moins 8 caractères.', err_taken: 'Ce nom d’utilisateur est déjà pris.', 'err_last-admin': 'Le site doit garder au moins un administrateur.',
       'err_setup-done': 'L’administrateur existe déjà. Connectez-vous.', 'err_signups-closed': 'Les inscriptions sont fermées sur ce site.', 'err_current-password': 'Le mot de passe actuel est incorrect.',
       err_forbidden: 'Votre compte ne peut pas faire cela.', err_signin: 'Connectez-vous d’abord.',
+      or: 'ou', kosmySignIn: 'Se connecter avec Kosmy Board', kosmyBoard: 'Kosmy Board',
+      kosmyText: 'Permettre de se connecter depuis Kosmy Board, la page qui rassemble vos applis auto-hébergées. Un compte ne s’ouvre que si son propriétaire l’a relié, dans Compte.',
+      issuer: 'Émetteur', clientId: 'Identifiant client', clientSecret: 'Secret client', secretSaved: 'Enregistré. Tapez un nouveau secret pour le remplacer.', secretNone: 'Collez le secret que Kosmy Board affiche une fois',
+      kosmyAddresses: 'Adresses à donner à Kosmy Board', redirectUri: 'Adresse de retour', loginUri: 'Adresse de lancement', kosmyAddressesText: 'Kosmy Board les remplit pour Lumy à partir de l’adresse de l’instance {url}.', turnOff: 'Désactiver', turnedOff: 'Désactivé',
+      kosmyAccountText: 'Se connecter depuis Kosmy Board sans mot de passe, une fois votre compte Kosmy Board relié à celui-ci.', kosmyLink: 'Relier à Kosmy Board', kosmyLinkedTo: 'Relié à {who}', kosmyUnlink: 'Délier', kosmyNotLinked: 'Pas encore relié.', kosmyLinkedPill: 'Kosmy Board',
+      err_issuer: 'L’émetteur est une adresse http(s), par exemple https://board.exemple.fr/oidc.',
+      kosmy_linked: 'Relié à Kosmy Board.', kosmy_off: 'La connexion avec Kosmy Board n’est pas réglée sur ce site.', kosmy_issuer: 'Ce Kosmy Board n’est pas celui auquel ce site fait confiance.',
+      kosmy_expired: 'La connexion a pris trop de temps ou a déjà servi. Réessayez.', kosmy_denied: 'Kosmy Board a refusé : ce site n’est pas dans votre Board.',
+      kosmy_failed: 'La connexion avec Kosmy Board a échoué. Réessayez ; si cela continue, vérifiez les réglages dans Accès.', kosmy_unreachable: 'Kosmy Board est injoignable.',
+      'kosmy_not-linked': 'Ce compte Kosmy Board n’est relié à aucun compte ici. Connectez-vous avec votre mot de passe, puis reliez-le dans Compte.',
+      kosmy_taken: 'Ce compte Kosmy Board est déjà relié à un autre compte ici.', kosmy_session: 'Votre session a pris fin avant la liaison. Connectez-vous et réessayez.',
       hint_ollama: 'Ollama Cloud, ou http://localhost:11434 pour un Ollama local (sans clé).', hint_fal: 'fal passe les modèles de chat par OpenRouter : utilisez des identifiants comme openai/gpt-4o-mini.', hint_custom: 'Tout serveur avec /v1/chat/completions : LM Studio, vLLM, LocalAI, Together…',
     },
   }
@@ -122,6 +144,7 @@
     copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
     refresh: '<path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5"/>',
     logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+    board: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
   }
   const icon = (n) => `<svg class="lmd-i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`
 
@@ -209,13 +232,14 @@
 
   /* ── Screens without the dashboard frame ────────────────────────────── */
   const logo = D.logo || `${D.base}_lumy/app/lumy.svg`
-  function authScreen({ title, text, fields, submit, foot = '', id }) {
+  function authScreen({ title, text, fields, submit, foot = '', id, after = '' }) {
     app.innerHTML = `<main class="lmd-auth"><form class="lmd-auth-card lmd-form" data-form="${id}" novalidate>
       <img class="lmd-auth-logo" src="${esc(logo)}" alt="">
       <div><h1>${esc(title)}</h1><p class="lmd-muted" style="margin:0">${esc(text)}</p></div>
       ${fields}
       <p class="lmd-error" hidden></p>
       <button class="lmd-btn lmd-btn-primary" type="submit">${esc(submit)}</button>
+      ${after}
       ${foot ? `<p class="lmd-auth-foot">${foot}</p>` : ''}
     </form></main>`
     app.querySelector('input')?.focus()
@@ -253,9 +277,25 @@
       text: t('loginText', { site: D.title }),
       fields: field('username', t('username'), 'text', 'autocomplete="username" required') + field('password', t('password'), 'password', 'autocomplete="current-password" required'),
       submit: t('signIn'),
+      after: state.info.kosmyBoard ? `<div class="lmd-or"><span>${esc(t('or'))}</span></div><a class="lmd-btn" href="${esc(kosmyLoginUrl())}">${icon('board')}${esc(t('kosmySignIn'))}</a>` : '',
       foot: `${state.info.registration ? `${esc(t('noAccount'))} <a href="${D.base}_lumy/register${location.search}">${esc(t('register'))}</a> · ` : ''}<a href="${esc(D.home)}">${esc(t('viewSite'))}</a>`,
     })
   }
+  /** The Kosmy Board flow comes back with ?kosmy=<code>: say what happened, in the reader's language. */
+  function kosmyNotice() {
+    const params = new URLSearchParams(location.search)
+    const code = params.get('kosmy')
+    if (!code) return null
+    params.delete('kosmy')
+    history.replaceState(null, '', location.pathname + (params.size ? '?' + params : '') + location.hash)
+    return { ok: code === 'linked', message: STRINGS[lang]['kosmy_' + code] || STRINGS.en['kosmy_' + code] || t('kosmy_failed') }
+  }
+  function kosmyLoginUrl() {
+    const next = new URLSearchParams(location.search).get('next')
+    const target = next && next.startsWith(D.base) && !next.startsWith('//') ? next : ''
+    return `${D.base}auth/kosmy-board/login${target ? '?target_link_uri=' + encodeURIComponent(target) : ''}`
+  }
+
   function renderRegister() {
     authScreen({
       id: 'register',
@@ -415,12 +455,13 @@
       const { users } = await api('admin/users')
       const roleOptions = (current) => ['admin', 'editor', 'reader'].map((r) => `<option value="${r}" ${r === current ? 'selected' : ''}>${esc(t(r))}</option>`).join('')
       const rows = users
-        .map((u) => `<tr data-user="${u.id}"><td><strong>${esc(u.username)}</strong>${u.id === state.me.id ? ' <span class="lmd-pill">✓</span>' : ''}</td><td><select class="lmd-select" data-role="${u.id}" style="height:32px;width:auto" aria-label="${esc(t('role'))}">${roleOptions(u.role)}</select></td><td class="lmd-muted">${esc(date(u.createdAt))}</td><td class="lmd-num"><span class="lmd-del">${u.id === state.me.id ? '' : `<button class="lmd-btn lmd-btn-sm lmd-btn-danger" type="button" data-act="ask-remove">${esc(t('remove'))}</button>`}</span></td></tr>`)
+        .map((u) => `<tr data-user="${u.id}"><td><strong>${esc(u.username)}</strong>${u.id === state.me.id ? ' <span class="lmd-pill">✓</span>' : ''}${u.kosmyBoard ? ` <span class="lmd-pill" title="${esc([u.kosmyBoard.name, u.kosmyBoard.email].filter(Boolean).join(' · '))}">${icon('board')}${esc(t('kosmyLinkedPill'))}${u.id === state.me.id ? '' : ` <button class="lmd-link" type="button" data-act="unlink-user" title="${esc(t('kosmyUnlink'))}" aria-label="${esc(t('kosmyUnlink'))}">×</button>`}</span>` : ''}</td><td><select class="lmd-select" data-role="${u.id}" style="height:32px;width:auto" aria-label="${esc(t('role'))}">${roleOptions(u.role)}</select></td><td class="lmd-muted">${esc(date(u.createdAt))}</td><td class="lmd-num"><span class="lmd-del">${u.id === state.me.id ? '' : `<button class="lmd-btn lmd-btn-sm lmd-btn-danger" type="button" data-act="ask-remove">${esc(t('remove'))}</button>`}</span></td></tr>`)
         .join('')
       return `${head('access', t('accessText'))}
         <section class="lmd-card"><h2>${esc(t('visibility'))}</h2><p>${esc(t('visibilityText'))}</p>${seg('access', s.access, [['public', t('public')], ['private', t('private')]])}</section>
         <section class="lmd-card"><h2>${esc(t('signups'))}</h2><p>${esc(t('signupsText'))}</p><div class="lmd-row" style="align-items:center">${seg('registration', s.registration, [['closed', t('closed')], ['open', t('open')]])}<span class="lmd-muted" style="font-size:13px">${esc(t('newRole'))}</span>${seg('defaultRole', s.defaultRole, [['reader', t('reader')], ['editor', t('editor')]])}</div></section>
         <section class="lmd-card">${sw('feedback', s.feedback, t('readerFeatures'), t('readerFeaturesText'))}</section>
+        ${kosmyCard(s.kosmyBoard)}
         <section class="lmd-card"><h2>${esc(t('accounts'))}</h2><p></p>
           <div class="lmd-table-wrap"><table class="lmd-table"><thead><tr><th>${esc(t('username'))}</th><th>${esc(t('role'))}</th><th>${esc(t('created'))}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
           <hr class="lmd-sep"><h2 style="font-size:14.5px;margin:0 0 12px">${esc(t('addAccount'))}</h2>
@@ -453,8 +494,28 @@
         <section class="lmd-card"><h2>${esc(t('changePassword'))}</h2><p></p>
           <form class="lmd-form" data-form="password" novalidate style="max-width:420px">${field('current', t('current'), 'password', 'autocomplete="current-password"')}${field('password', t('newPassword'), 'password', 'autocomplete="new-password"')}${field('confirm', t('confirm'), 'password', 'autocomplete="new-password"')}<p class="lmd-error" hidden></p><div><button class="lmd-btn lmd-btn-primary" type="submit">${esc(t('save'))}</button></div></form>
         </section>
+        ${state.info.kosmyBoard || state.me.kosmyBoard ? `<section class="lmd-card"><h2>${esc(t('kosmyBoard'))}</h2><p>${esc(t('kosmyAccountText'))}</p><div class="lmd-card-row">${
+          state.me.kosmyBoard
+            ? `<span>${esc(t('kosmyLinkedTo', { who: [state.me.kosmyBoard.name, state.me.kosmyBoard.email && `(${state.me.kosmyBoard.email})`].filter(Boolean).join(' ') || t('kosmyBoard') }))}</span><button class="lmd-btn" type="button" data-act="kosmy-unlink">${esc(t('kosmyUnlink'))}</button>`
+            : `<span class="lmd-muted">${esc(t('kosmyNotLinked'))}</span><a class="lmd-btn lmd-btn-primary" href="${D.base}auth/kosmy-board/link">${icon('board')}${esc(t('kosmyLink'))}</a>`
+        }</div></section>` : ''}
         <section class="lmd-card"><div class="lmd-card-row"><div><h2 style="margin:0">${esc(state.me.username)}</h2><span class="lmd-muted">${esc(t(state.me.role))}</span></div><button class="lmd-btn" type="button" data-act="sign-out">${icon('logout')}${esc(t('signOut'))}</button></div></section>`
     },
+  }
+
+  function kosmyCard(k) {
+    const copyRow = (label, value) => `<div class="lmd-field">${esc(label)}<div class="lmd-secret" style="animation:none"><code>${esc(value)}</code><button class="lmd-btn lmd-btn-sm" type="button" data-copy="${esc(value)}">${icon('copy')}${esc(t('copy'))}</button></div></div>`
+    return `<section class="lmd-card" id="kosmy-board"><div class="lmd-card-row"><h2 style="margin:0">${esc(t('kosmyBoard'))} <span class="lmd-pill ${k.enabled ? 'lmd-pill-ok' : ''}">${esc(k.enabled ? t('on') : t('off'))}</span></h2></div><p>${esc(t('kosmyText'))}</p>
+      <form class="lmd-form" data-form="kosmy" novalidate>
+        <label class="lmd-field">${esc(t('issuer'))}<input class="lmd-input lmd-mono" name="issuer" value="${esc(k.issuer)}" placeholder="https://board.example.com/oidc" spellcheck="false" autocomplete="off"></label>
+        <label class="lmd-field">${esc(t('clientId'))}<input class="lmd-input lmd-mono" name="clientId" value="${esc(k.clientId)}" spellcheck="false" autocomplete="off"></label>
+        <label class="lmd-field">${esc(t('clientSecret'))}<input class="lmd-input lmd-mono" name="clientSecret" type="password" autocomplete="new-password" placeholder="${esc(k.hasSecret ? t('secretSaved') : t('secretNone'))}" spellcheck="false"></label>
+        <p class="lmd-error" hidden></p>
+        <div class="lmd-row"><button class="lmd-btn lmd-btn-primary" type="submit">${esc(t('save'))}</button>${k.issuer || k.clientId || k.hasSecret ? `<button class="lmd-btn lmd-btn-danger" type="button" data-act="kosmy-off">${esc(t('turnOff'))}</button>` : ''}</div>
+      </form>
+      <hr class="lmd-sep"><h2 style="font-size:14.5px;margin:0 0 6px">${esc(t('kosmyAddresses'))}</h2><p class="lmd-muted" style="margin:0 0 12px;font-size:13px">${esc(t('kosmyAddressesText', { url: k.instance }))}</p>
+      <div class="lmd-form">${copyRow(t('redirectUri'), k.redirectUri)}${copyRow(t('loginUri'), k.loginUri)}</div>
+    </section>`
   }
 
   const slug = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'docs'
@@ -579,6 +640,23 @@
         toast(t('removed'))
         return
       }
+      if (act === 'kosmy-off') {
+        await busy(el, () => saveSettings({ kosmyBoard: { issuer: '', clientId: '', clientSecret: null } }, true))
+        state.info.kosmyBoard = false
+        toast(t('turnedOff'))
+        return showSection()
+      }
+      if (act === 'kosmy-unlink') {
+        await busy(el, () => api('account/kosmy-board', { method: 'DELETE' }))
+        state.me.kosmyBoard = null
+        toast(t('saved'))
+        return showSection()
+      }
+      if (act === 'unlink-user') {
+        await api(`admin/users/${el.closest('tr').dataset.user}`, { method: 'PATCH', body: { kosmyBoard: null } })
+        toast(t('saved'))
+        return showSection()
+      }
       if (act === 'revoke') {
         await api(`admin/tokens/${el.dataset.id}`, { method: 'DELETE' })
         toast(t('removed'))
@@ -644,6 +722,11 @@
         form.reset()
         return toast(t('passwordChanged'))
       }
+      if (kind === 'kosmy') {
+        const s = await busy(button, () => saveSettings({ kosmyBoard: { issuer: data.issuer, clientId: data.clientId, ...(data.clientSecret.trim() ? { clientSecret: data.clientSecret } : {}) } }))
+        state.info.kosmyBoard = s.kosmyBoard.enabled
+        return showSection()
+      }
       if (kind === 'add-user') {
         await busy(button, () => api('admin/users', { method: 'POST', body: data }))
         toast(t('saved'))
@@ -674,8 +757,15 @@
       return
     }
     state.me = state.info.user
+    const notice = kosmyNotice()
     if (state.info.setup) return renderSetup()
-    if (!state.me) return D.view === 'register' && state.info.registration ? renderRegister() : renderLogin()
+    if (!state.me) {
+      if (D.view === 'register' && state.info.registration) return renderRegister()
+      renderLogin()
+      if (notice) showError(app.querySelector('form'), notice.message)
+      return
+    }
+    if (notice) setTimeout(() => toast(notice.message, !notice.ok), 300)
     if (D.view !== 'admin') {
       location.replace(nextUrl(state.me))
       return

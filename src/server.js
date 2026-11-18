@@ -16,7 +16,8 @@ import { loadConfig } from './config.js'
 import { pageUrl } from './content.js'
 import { openStore } from './store.js'
 import { createAuth, createTokens, rateLimiter, publicUser, ROLES } from './auth.js'
-import { loadSettings, patchSettings, publicSettings, activeProvider } from './settings.js'
+import { loadSettings, patchSettings, publicSettings, activeProvider, kosmyEnabled, kosmySettings } from './settings.js'
+import { createKosmyBoard, LOGIN as KOSMY_LOGIN, CALLBACK as KOSMY_CALLBACK } from './kosmy-board.js'
 import { answer } from './assistant.js'
 import { testProvider, providerById } from './providers.js'
 import { mcpHandler } from './mcp-http.js'
@@ -130,6 +131,7 @@ const ERRORS = {
   'last-admin': 'The site needs at least one administrator.',
   missing: 'This account does not exist.',
   role: 'Unknown role.',
+  issuer: 'The issuer is an http(s) address, such as https://board.example.com/oidc.',
 }
 
 /**
@@ -266,9 +268,35 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
     onWrite: (tool) => rebuild(`MCP ${tool}`),
   })
 
-  async function sessionCookie(res, req, token, maxAge = 30 * 86400) {
-    const secure = isHttps(req, config) ? '; Secure' : ''
-    res.setHeader('set-cookie', `lumy_session=${token}; Path=${config.base}; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure}`)
+  const sessionCookieValue = (req, token, maxAge = 30 * 86400) =>
+    `lumy_session=${token}; Path=${config.base}; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${isHttps(req, config) ? '; Secure' : ''}`
+  async function sessionCookie(res, req, token, maxAge) {
+    res.setHeader('set-cookie', sessionCookieValue(req, token, maxAge))
+  }
+
+  /**
+   * This site's address as Kosmy Board knows it ("the instance address"), no
+   * trailing slash: the configured url when serving, the address the browser
+   * used in dev (where the configured url is the production one).
+   */
+  function instance(req) {
+    const origin = (!dev && config.url) || `${req.socket.encrypted || req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http'}://${req.headers.host}`
+    return origin + config.base.replace(/\/$/, '')
+  }
+  const kosmy = createKosmyBoard({
+    settings: async () => kosmySettings(store, settings),
+    instance,
+    auth,
+    base: () => config.base,
+    cookie,
+    sessionCookie: sessionCookieValue,
+    secure: (req) => isHttps(req, config),
+    log,
+  })
+  /** The settings for the dashboard, with the two addresses to give Kosmy Board. */
+  const dashboardSettings = (req) => {
+    const s = publicSettings(settings)
+    return { ...s, kosmyBoard: { ...s.kosmyBoard, redirectUri: `${instance(req)}/${KOSMY_CALLBACK}`, loginUri: `${instance(req)}/${KOSMY_LOGIN}`, instance: instance(req) } }
   }
 
   /* ── The dashboard page (one HTML shell, the app draws the rest) ──── */
@@ -354,6 +382,7 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
         setup: !(await auth.users()).length,
         registration: settings.registration === 'open',
         private: settings.access === 'private',
+        kosmyBoard: kosmyEnabled(settings),
       })
     }
 
@@ -404,6 +433,12 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
       } catch (err) {
         return fail(err)
       }
+    }
+
+    if (route === 'account/kosmy-board' && method === 'DELETE') {
+      if (!need(ROLES)) return
+      await auth.unlinkKosmy(user.id)
+      return json(res, 200, { ok: true })
     }
 
     if (route === 'feedback' && method === 'POST') {
@@ -480,11 +515,15 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
 
     if (route === 'admin/settings') {
       if (!need(['admin'])) return
-      if (method === 'GET') return json(res, 200, publicSettings(settings))
+      if (method === 'GET') return json(res, 200, dashboardSettings(req))
       if (method === 'PUT') {
-        settings = await patchSettings(store, config, body)
+        try {
+          settings = await patchSettings(store, config, body)
+        } catch (err) {
+          return fail(err)
+        }
         rebuild('settings')
-        return json(res, 200, publicSettings(settings))
+        return json(res, 200, dashboardSettings(req))
       }
     }
 
@@ -521,7 +560,11 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
     if (userRoute) {
       if (!need(['admin'])) return
       try {
-        if (method === 'PATCH') return json(res, 200, { user: publicUser(await auth.updateUser(userRoute[1], { role: body.role, password: body.password })) })
+        if (method === 'PATCH') {
+          // An administrator can undo a link to Kosmy Board, not make one: only its owner can.
+          if (body.kosmyBoard === null) await auth.unlinkKosmy(userRoute[1])
+          return json(res, 200, { user: publicUser(await auth.updateUser(userRoute[1], { role: body.role, password: body.password })) })
+        }
         if (method === 'DELETE') {
           await auth.deleteUser(userRoute[1])
           return json(res, 200, { ok: true })
@@ -589,6 +632,8 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
       // Accounts are only looked up where they matter, not for every image.
       const user = () => auth.userFor(cookie(req, 'lumy_session'))
       if (sub.startsWith('_lumy/api/')) return await api(req, res, sub.slice('_lumy/api/'.length), await user())
+      // Sign in with Kosmy Board: open even on a private site, like the sign-in page.
+      if (await kosmy.handle(req, res, sub, user)) return
       if (sub.startsWith('_lumy/app/')) return await dashboardAsset(res, sub.slice('_lumy/app/'.length))
       const view = sub.match(/^_lumy\/(admin|login|setup|register)(\/.*)?$/)
       if (view) return await dashboardPage(res, view[1])

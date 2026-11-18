@@ -36,8 +36,9 @@ export function validateCredentials(username, password) {
   return null
 }
 
-/** Public view of an account: never the password hash. */
-export const publicUser = (u) => (u ? { id: u.id, username: u.username, role: u.role, createdAt: u.createdAt } : null)
+/** Public view of an account: never the password hash, never the Kosmy Board `sub`. */
+export const publicUser = (u) =>
+  u ? { id: u.id, username: u.username, role: u.role, createdAt: u.createdAt, kosmyBoard: u.kosmy ? { name: u.kosmy.name, email: u.kosmy.email, linkedAt: u.kosmy.linkedAt } : null } : null
 
 export function createAuth(store) {
   const USERS = 'users.json'
@@ -136,7 +137,33 @@ export function createAuth(store) {
     await store.update(SESSIONS, [], (list) => ({ value: list.filter((s) => s.userId !== id) }))
   }
 
-  return { users, createUser, login, checkPassword, openSession, userFor, logout, updateUser, deleteUser }
+  /** The account linked to this Kosmy Board account. Matched on `sub` only: Kosmy Board does not verify emails. */
+  async function findByKosmy(sub) {
+    if (!sub) return null
+    return (await users()).find((u) => u.kosmy?.sub === sub) || null
+  }
+
+  /** Link a Kosmy Board account to a Lumy account. One Kosmy Board account opens one Lumy account. */
+  async function linkKosmy(id, { sub, name = '', email = '' }) {
+    return store.update(USERS, [], (list) => {
+      const user = list.find((u) => u.id === id)
+      if (!user) throw Object.assign(new Error('missing'), { code: 'missing' })
+      if (list.some((u) => u.id !== id && u.kosmy?.sub === sub)) throw Object.assign(new Error('kosmy-taken'), { code: 'kosmy-taken' })
+      const next = { ...user, kosmy: { sub, name, email, linkedAt: new Date().toISOString() } }
+      return { value: list.map((u) => (u.id === id ? next : u)), returns: next }
+    })
+  }
+
+  async function unlinkKosmy(id) {
+    return store.update(USERS, [], (list) => {
+      const user = list.find((u) => u.id === id)
+      if (!user) throw Object.assign(new Error('missing'), { code: 'missing' })
+      const { kosmy, ...next } = user
+      return { value: list.map((u) => (u.id === id ? next : u)), returns: next }
+    })
+  }
+
+  return { users, createUser, login, checkPassword, openSession, userFor, logout, updateUser, deleteUser, findByKosmy, linkKosmy, unlinkKosmy }
 }
 
 /** Tokens for the remote MCP server: shown once, stored as hashes. */

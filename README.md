@@ -84,6 +84,16 @@ cd /path/to/your/docs && docker compose up -d
 
 Then open `http://localhost:4000/_lumy/setup` to create the administrator account.
 
+## Sign in with Kosmy Board
+
+[Kosmy Board](https://github.com/PetitOursManu/Kosmy-Board) gathers the admin pages of your self-hosted apps and signs you in to them. `lumy serve` accepts it as an OpenID Connect provider:
+
+1. In Kosmy Board, add the Lumy instance (its address, with the base path if any, such as `https://example.com/docs`), then **Edit → Single sign-on** and turn it on. The redirect URI `{instance}/auth/kosmy-board/callback` and the initiate login URI `{instance}/auth/kosmy-board/login` are filled in for you.
+2. In Lumy's dashboard, **Access → Kosmy Board**: paste the issuer, the client ID and the client secret. The secret is encrypted on the server and never shown again.
+3. Each person who should get in links their own account once, under **Account → Link to Kosmy Board**.
+
+From then on, **Sign in with Kosmy Board** on the sign-in page, or **Open** in Kosmy Board, opens that person's Lumy account with its role. Accounts are matched on the Kosmy Board `sub` only, never on the email (Kosmy Board does not verify it): a Kosmy Board account that nobody linked opens nothing, and no one gets the administrator role through Kosmy Board unless an administrator linked their own account. The flow uses `state`, `nonce` and PKCE (S256), `client_secret_basic`, and checks the ID token's RS256 signature, `iss`, `aud`, `exp` and `nonce`, with no added dependency.
+
 ## Documentation
 
 Lumy's documentation is written with Lumy, in English and French, in [`site/`](site/):
