@@ -17,7 +17,8 @@ import { pageUrl } from './content.js'
 import { openStore } from './store.js'
 import { createAuth, createTokens, rateLimiter, publicUser, ROLES } from './auth.js'
 import { loadSettings, patchSettings, publicSettings, activeProvider, kosmyEnabled, kosmySettings } from './settings.js'
-import { createKosmyBoard, LOGIN as KOSMY_LOGIN, CALLBACK as KOSMY_CALLBACK } from './kosmy-board.js'
+import { createKosmyBoard, createOidcClient, LOGIN as KOSMY_LOGIN, CALLBACK as KOSMY_CALLBACK } from './kosmy-board.js'
+import { createBoardAdmin } from './board-admin.js'
 import { answer } from './assistant.js'
 import { testProvider, providerById } from './providers.js'
 import { mcpHandler } from './mcp-http.js'
@@ -283,6 +284,8 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
     const origin = (!dev && config.url) || `${req.socket.encrypted || req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http'}://${req.headers.host}`
     return origin + config.base.replace(/\/$/, '')
   }
+  // One OpenID Connect client, so sign-in and the admin in Kosmy Board share the discovery and the keys.
+  const oidc = createOidcClient()
   const kosmy = createKosmyBoard({
     settings: async () => kosmySettings(store, settings),
     instance,
@@ -292,12 +295,87 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
     sessionCookie: sessionCookieValue,
     secure: (req) => isHttps(req, config),
     log,
+    client: oidc,
   })
   /** The settings for the dashboard, with the two addresses to give Kosmy Board. */
   const dashboardSettings = (req) => {
     const s = publicSettings(settings)
     return { ...s, kosmyBoard: { ...s.kosmyBoard, redirectUri: `${instance(req)}/${KOSMY_CALLBACK}`, loginUri: `${instance(req)}/${KOSMY_LOGIN}`, instance: instance(req) } }
   }
+
+  /* ── What the dashboard and the admin in Kosmy Board both do ─────── */
+
+  /** Apply a settings patch (same checks, same rebuild, wherever it comes from). */
+  async function applySettings(patch) {
+    settings = await patchSettings(store, config, patch)
+    rebuild('settings')
+    return settings
+  }
+
+  /** The state of the documentation at a glance. */
+  async function overview() {
+    const report = await translationReport(config).catch(() => ({}))
+    const feedback = await feedbackEntries()
+    const since = Date.now() - 30 * 86400_000
+    const recent = feedback.filter((f) => Date.parse(f.at) > since)
+    const provider = providerById(settings.assistant.provider)
+    return {
+      title: config.title,
+      languages: config.langCodes,
+      build: lastBuild,
+      translations: report,
+      feedback: { yes: recent.filter((f) => f.value === 'yes').length, no: recent.filter((f) => f.value === 'no').length },
+      assistant: { enabled: settings.assistant.enabled, provider: provider?.label || '' },
+      access: settings.access,
+      registration: settings.registration,
+      users: (await auth.users()).length,
+    }
+  }
+
+  /** Readers' votes, per page, and the last comments. */
+  async function feedbackSummary() {
+    const byPage = new Map()
+    const entries = await feedbackEntries()
+    for (const f of entries) {
+      const key = `${f.lang}|${f.page}`
+      const row = byPage.get(key) || { page: f.page, lang: f.lang, yes: 0, no: 0, last: f.at }
+      row[f.value === 'yes' ? 'yes' : 'no']++
+      if (f.at > row.last) row.last = f.at
+      byPage.set(key, row)
+    }
+    const comments = entries.filter((f) => f.comment).slice(-100).reverse()
+    return { pages: [...byPage.values()].sort((a, b) => b.no - a.no || b.yes - a.yes), comments }
+  }
+
+  /** The MCP tokens this account may see (all of them for an administrator), with their owner's name. */
+  async function tokenList(user) {
+    const list = await tokens.list()
+    const names = new Map((await auth.users()).map((u) => [u.id, u.username]))
+    return list.filter((t) => user.role === 'admin' || t.userId === user.id).map((t) => ({ ...t, owner: names.get(t.userId) || '—' }))
+  }
+
+  const boardAdmin = createBoardAdmin({
+    oidc,
+    kosmySettings: () => kosmySettings(store, settings),
+    auth,
+    tokens,
+    store,
+    version,
+    readBody,
+    log,
+    instance,
+    config: () => config,
+    settings: () => settings,
+    dashboardSettings,
+    applySettings,
+    overview,
+    feedbackSummary,
+    tokenList,
+    rebuild: async () => {
+      await rebuild('Kosmy Board')
+      return lastBuild
+    },
+  })
 
   /* ── The dashboard page (one HTML shell, the app draws the rest) ──── */
   async function dashboardPage(res, view) {
@@ -480,37 +558,12 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
     /* Dashboard */
     if (route === 'admin/overview' && method === 'GET') {
       if (!need(['admin', 'editor'])) return
-      const report = await translationReport(config).catch(() => ({}))
-      const feedback = await feedbackEntries()
-      const since = Date.now() - 30 * 86400_000
-      const recent = feedback.filter((f) => Date.parse(f.at) > since)
-      const provider = providerById(settings.assistant.provider)
-      return json(res, 200, {
-        title: config.title,
-        languages: config.langCodes,
-        build: lastBuild,
-        translations: report,
-        feedback: { yes: recent.filter((f) => f.value === 'yes').length, no: recent.filter((f) => f.value === 'no').length },
-        assistant: { enabled: settings.assistant.enabled, provider: provider?.label || '' },
-        access: settings.access,
-        registration: settings.registration,
-        users: (await auth.users()).length,
-      })
+      return json(res, 200, await overview())
     }
 
     if (route === 'admin/feedback' && method === 'GET') {
       if (!need(['admin', 'editor'])) return
-      const byPage = new Map()
-      const entries = await feedbackEntries()
-      for (const f of entries) {
-        const key = `${f.lang}|${f.page}`
-        const row = byPage.get(key) || { page: f.page, lang: f.lang, yes: 0, no: 0, last: f.at }
-        row[f.value === 'yes' ? 'yes' : 'no']++
-        if (f.at > row.last) row.last = f.at
-        byPage.set(key, row)
-      }
-      const comments = entries.filter((f) => f.comment).slice(-100).reverse()
-      return json(res, 200, { pages: [...byPage.values()].sort((a, b) => b.no - a.no || b.yes - a.yes), comments })
+      return json(res, 200, await feedbackSummary())
     }
 
     if (route === 'admin/settings') {
@@ -518,11 +571,10 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
       if (method === 'GET') return json(res, 200, dashboardSettings(req))
       if (method === 'PUT') {
         try {
-          settings = await patchSettings(store, config, body)
+          await applySettings(body)
         } catch (err) {
           return fail(err)
         }
-        rebuild('settings')
         return json(res, 200, dashboardSettings(req))
       }
     }
@@ -576,14 +628,7 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
 
     if (route === 'admin/tokens') {
       if (!need(['admin', 'editor'])) return
-      if (method === 'GET') {
-        const list = await tokens.list()
-        const names = new Map((await auth.users()).map((u) => [u.id, u.username]))
-        return json(res, 200, {
-          tokens: list.filter((t) => user.role === 'admin' || t.userId === user.id).map((t) => ({ ...t, owner: names.get(t.userId) || '—' })),
-          url: `${config.url}${config.base}_lumy/mcp`,
-        })
-      }
+      if (method === 'GET') return json(res, 200, { tokens: await tokenList(user), url: `${config.url}${config.base}_lumy/mcp` })
       if (method === 'POST') return json(res, 200, { token: await tokens.create({ name: body.name, userId: user.id, scope: body.scope === 'read' ? 'read' : 'write' }) })
     }
     const tokenRoute = route.match(/^admin\/tokens\/([\w-]+)$/)
@@ -629,6 +674,9 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
         if (!settings.mcp.enabled) return json(res, 404, { error: 'MCP is off on this site.' })
         return await mcp(req, res)
       }
+      // The admin in Kosmy Board: called by Kosmy Board's server with its own token,
+      // never with a session, so it comes before sessions, sign-in pages and private pages.
+      if (await boardAdmin.handle(req, res, sub)) return
       // Accounts are only looked up where they matter, not for every image.
       const user = () => auth.userFor(cookie(req, 'lumy_session'))
       if (sub.startsWith('_lumy/api/')) return await api(req, res, sub.slice('_lumy/api/'.length), await user())

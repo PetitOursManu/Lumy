@@ -94,6 +94,12 @@ Then open `http://localhost:4000/_lumy/setup` to create the administrator accoun
 
 From then on, **Sign in with Kosmy Board** on the sign-in page, or **Open** in Kosmy Board, opens that person's Lumy account with its role. Accounts are matched on the Kosmy Board `sub` only, never on the email (Kosmy Board does not verify it): a Kosmy Board account that nobody linked opens nothing, and no one gets the administrator role through Kosmy Board unless an administrator linked their own account. The flow uses `state`, `nonce` and PKCE (S256), `client_secret_basic`, and checks the ID token's RS256 signature, `iss`, `aud`, `exp` and `nonce`, with no added dependency.
 
+### Admin in Kosmy Board
+
+Once sign-in with Kosmy Board is set up, an administrator can also run Lumy's dashboard **from Kosmy Board**, with its **Admin** button, without opening Lumy: the overview (pages, translations, reader feedback, last build and its warnings, rebuild), reader feedback per page and comments, the assistant (on/off, provider, address, model, API key, test), access (who can read, sign-ups, reader feedback, the Kosmy Board connection), accounts (add, change role, set a password, unlink from Kosmy Board, remove), MCP (switches, address, access tokens) and your own password.
+
+Kosmy Board's server calls `{instance}/api/kosmy-board/admin` with a 60-second token signed by its OpenID Connect key, made for one request and used once. Lumy checks it (RS256, `typ`, `iss`, `aud`, `exp`, `htm`, `htu`, `jti`), then opens only the Lumy account **linked** to that Kosmy Board account, under Account, and only if it is an **administrator**: Kosmy Board gives no rights. Every action goes through the same checks as the dashboard, and saved secrets (API keys, client secret) are never sent back; a new MCP token is shown once. Uploading files and editing pages stay in Lumy and in the documentation's source. The protocol: [kosmy.board-admin.v1](https://github.com/PetitOursManu/Kosmy-Board/blob/main/docs/admin-api.md).
+
 ## Documentation
 
 Lumy's documentation is written with Lumy, in English and French, in [`site/`](site/):
