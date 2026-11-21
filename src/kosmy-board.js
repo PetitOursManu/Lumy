@@ -24,6 +24,10 @@ const FLOW_TTL = 10 * 60_000
 const MAX_FLOWS = 1000
 const DISCOVERY_TTL = 3600_000
 const CLOCK_SKEW = 60
+// Admin tokens (kosmy.board-admin.v1): 60 seconds of life, 30 seconds of clock tolerance.
+const ADMIN_TYP = 'kb-admin+jwt'
+const ADMIN_SKEW = 30
+const ADMIN_MAX_AGE = 120
 
 /* ── Small pieces ───────────────────────────────────────────────────── */
 
@@ -125,7 +129,7 @@ export function createOidcClient({ fetchImpl = fetch, now = () => Date.now() } =
       entry.keysAt = now()
       jwk = find()
     }
-    if (!jwk) throw new OidcError('token', 'ID token signed with an unknown key')
+    if (!jwk) throw new OidcError('token', 'token signed with an unknown key')
     return createPublicKey({ key: jwk, format: 'jwk' })
   }
 
@@ -157,21 +161,28 @@ export function createOidcClient({ fetchImpl = fetch, now = () => Date.now() } =
     return body.id_token
   }
 
-  /** The whole ID token check: RS256 signature, iss, aud, exp, nonce. */
-  async function verifyIdToken(idToken, { issuer, clientId, nonce }) {
-    const parts = String(idToken).split('.')
-    if (parts.length !== 3) throw new OidcError('token', 'ID token: not a JWT')
+  /** A JWT signed by the issuer's keys, RS256 only: its header and claims, signature checked. */
+  async function verifySigned(jwt, issuer, what) {
+    const parts = String(jwt).split('.')
+    if (parts.length !== 3) throw new OidcError('token', `${what}: not a JWT`)
     let header, payload
     try {
       header = JSON.parse(Buffer.from(parts[0], 'base64url').toString('utf8'))
       payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8'))
     } catch {
-      throw new OidcError('token', 'ID token: unreadable')
+      throw new OidcError('token', `${what}: unreadable`)
     }
-    if (header.alg !== 'RS256') throw new OidcError('token', `ID token: algorithm ${header.alg} refused`)
+    if (!header || !payload || typeof header !== 'object' || typeof payload !== 'object') throw new OidcError('token', `${what}: unreadable`)
+    if (header.alg !== 'RS256') throw new OidcError('token', `${what}: algorithm ${header.alg} refused`)
     const key = await signingKey(issuer, header.kid)
     const ok = verifySignature('RSA-SHA256', Buffer.from(`${parts[0]}.${parts[1]}`), key, Buffer.from(parts[2], 'base64url'))
-    if (!ok) throw new OidcError('token', 'ID token: bad signature')
+    if (!ok) throw new OidcError('token', `${what}: bad signature`)
+    return { header, payload }
+  }
+
+  /** The whole ID token check: RS256 signature, iss, aud, exp, nonce. */
+  async function verifyIdToken(idToken, { issuer, clientId, nonce }) {
+    const { payload } = await verifySigned(idToken, issuer, 'ID token')
     if (payload.iss !== issuer) throw new OidcError('token', 'ID token: wrong issuer')
     const aud = Array.isArray(payload.aud) ? payload.aud : [payload.aud]
     if (!aud.includes(clientId)) throw new OidcError('token', 'ID token: wrong audience')
@@ -185,7 +196,37 @@ export function createOidcClient({ fetchImpl = fetch, now = () => Date.now() } =
     return { sub: payload.sub, name: str(payload.name), email: str(payload.email) || str(payload.preferred_username), locale: str(payload.locale) }
   }
 
-  return { discover, authorizationUrl, exchangeCode, verifyIdToken, forget: (issuer) => cache.delete(issuer) }
+  /**
+   * The token Kosmy Board's server sends to the admin API (kosmy.board-admin.v1):
+   * signed with the ID tokens' key, but typed `kb-admin+jwt` so that an ID token
+   * is never accepted in its place, and made for one request (`htm`, `htu`).
+   * `path` is the path that was asked for; `htu` must end with it. The caller
+   * keeps the `jti`s it has seen.
+   */
+  async function verifyAdminToken(jwt, { issuer, clientId, method, path }) {
+    const { header, payload } = await verifySigned(jwt, issuer, 'admin token')
+    const typ = String(header.typ ?? '').toLowerCase().replace(/^application\//, '')
+    if (typ !== ADMIN_TYP) throw new OidcError('token', `admin token: type ${header.typ} refused`)
+    if (payload.iss !== issuer) throw new OidcError('token', 'admin token: wrong issuer')
+    const aud = Array.isArray(payload.aud) ? payload.aud : [payload.aud]
+    if (!aud.includes(clientId)) throw new OidcError('token', 'admin token: wrong audience')
+    const t = Math.floor(now() / 1000)
+    if (typeof payload.exp !== 'number' || payload.exp + ADMIN_SKEW < t) throw new OidcError('token', 'admin token: expired')
+    if (typeof payload.iat !== 'number' || payload.iat - ADMIN_SKEW > t || t - payload.iat > ADMIN_MAX_AGE + ADMIN_SKEW) throw new OidcError('token', 'admin token: too old or issued in the future')
+    if (typeof payload.nbf === 'number' && payload.nbf - ADMIN_SKEW > t) throw new OidcError('token', 'admin token: not valid yet')
+    if (payload.htm !== method) throw new OidcError('token', 'admin token: made for another method')
+    let htu = ''
+    try {
+      htu = new URL(payload.htu).pathname
+    } catch {}
+    if (!htu || !htu.endsWith(path)) throw new OidcError('token', 'admin token: made for another address')
+    if (typeof payload.jti !== 'string' || !payload.jti) throw new OidcError('token', 'admin token: no jti')
+    if (typeof payload.sub !== 'string' || !payload.sub) throw new OidcError('token', 'admin token: no sub')
+    const str = (v) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, 200) : '')
+    return { sub: payload.sub, jti: payload.jti, exp: payload.exp, name: str(payload.name), email: str(payload.email) }
+  }
+
+  return { discover, authorizationUrl, exchangeCode, verifyIdToken, verifyAdminToken, forget: (issuer) => cache.delete(issuer) }
 }
 
 /* ── The three routes ───────────────────────────────────────────────── */

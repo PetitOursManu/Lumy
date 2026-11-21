@@ -94,6 +94,12 @@ Ouvrez ensuite `http://localhost:4000/_lumy/setup` pour créer le compte adminis
 
 Ensuite, **Se connecter avec Kosmy Board** sur la page de connexion, ou **Ouvrir** dans Kosmy Board, ouvre le compte Lumy de cette personne, avec son rôle. Les comptes sont reliés par le `sub` de Kosmy Board uniquement, jamais par l’e-mail (Kosmy Board ne le vérifie pas) : un compte Kosmy Board que personne n’a relié n’ouvre rien, et personne n’obtient le rôle d’administrateur par Kosmy Board sans qu’un administrateur y ait relié son propre compte. Le parcours utilise `state`, `nonce` et PKCE (S256), `client_secret_basic`, et vérifie la signature RS256 de l’ID token, `iss`, `aud`, `exp` et `nonce`, sans dépendance ajoutée.
 
+### L’admin dans Kosmy Board
+
+Une fois la connexion avec Kosmy Board réglée, un administrateur peut aussi piloter le tableau de bord de Lumy **depuis Kosmy Board**, avec son bouton **Admin**, sans ouvrir Lumy : la vue d’ensemble (pages, traductions, avis des lecteurs, dernière construction et ses avertissements, reconstruire), les avis par page et les commentaires, l’assistant (activé ou non, fournisseur, adresse, modèle, clé d’API, test), l’accès (qui peut lire, inscriptions, avis des lecteurs, la connexion à Kosmy Board), les comptes (ajouter, changer le rôle, définir un mot de passe, délier de Kosmy Board, supprimer), MCP (interrupteurs, adresse, jetons d’accès) et votre propre mot de passe.
+
+Le serveur de Kosmy Board appelle `{instance}/api/kosmy-board/admin` avec un jeton de 60 secondes signé par sa clé OpenID Connect, fait pour une seule requête et utilisable une seule fois. Lumy le vérifie (RS256, `typ`, `iss`, `aud`, `exp`, `htm`, `htu`, `jti`), puis n’ouvre que le compte Lumy **relié** à ce compte Kosmy Board, dans Compte, et seulement s’il est **administrateur** : Kosmy Board ne donne aucun droit. Chaque action passe par les mêmes vérifications que le tableau de bord, et les secrets enregistrés (clés d’API, secret client) ne sont jamais renvoyés ; un nouveau jeton MCP n’est affiché qu’une fois. L’envoi de fichiers et l’écriture des pages restent dans Lumy et dans les sources de la documentation. Le protocole : [kosmy.board-admin.v1](https://github.com/PetitOursManu/Kosmy-Board/blob/main/docs/admin-api.md).
+
 ## Documentation
 
 La documentation de Lumy est écrite avec Lumy, en anglais et en français, dans [`site/`](site/) :
