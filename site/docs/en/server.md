@@ -73,6 +73,10 @@ Accounts are matched on Kosmy Board's `sub`, never on the email, which Kosmy Boa
 
 The client secret is encrypted like the assistant's keys and never sent back to a browser. Signing out of Lumy ends the Lumy session only: **Open** in Kosmy Board signs back in with one click.
 
+### Users managed by Kosmy Board
+
+Kosmy Board can also give people access to Lumy itself: an administrator of the Board picks the role (Administrator, Editor, Reader) and, for an editor, whether they **can use MCP access tokens**. Lumy creates the account, linked and without a password, or updates it; removing the access **disables** it (sessions closed, no sign-in of any kind, MCP tokens refused) and keeps its data. Disabled accounts show a **Disabled** badge in the list of accounts. Nobody can take away their own rights from the Board, and the site always keeps an active administrator. The protocol: [kosmy.board-users.v1](https://github.com/PetitOursManu/Kosmy-Board/blob/main/docs/users-api.md).
+
 ## The assistant
 
 Readers open **Ask AI**, type a question, and get an answer written from the sections of the documentation that match it best, with the sources as links. Only those sections are sent to the model, never the whole site.

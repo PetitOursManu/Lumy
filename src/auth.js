@@ -36,9 +36,51 @@ export function validateCredentials(username, password) {
   return null
 }
 
+/**
+ * Per-account restrictions. Kosmy Board sets them (kosmy.board-users.v1);
+ * each one is enforced where it applies, never only shown.
+ *   mcpTokens (editors): may create MCP access tokens, and their tokens work.
+ */
+export const LIMITS = [{ name: 'mcpTokens', type: 'checkbox', value: true, roles: ['editor'] }]
+
+/** The restrictions of an account, defaults filled in. */
+export const limitsOf = (u) => Object.fromEntries(LIMITS.map((f) => [f.name, u?.limits?.[f.name] ?? f.value]))
+
+/** Whether this account may hold MCP access tokens that work. */
+export const mayUseTokens = (u) => Boolean(u) && !u.disabled && (u.role !== 'editor' || limitsOf(u).mcpTokens)
+
+/** Administrators who can still sign in: the site never runs out of them. */
+const activeAdmins = (list) => list.filter((u) => u.role === 'admin' && !u.disabled)
+
+const fail = (code, extra = {}) => {
+  throw Object.assign(new Error(code), { code, ...extra })
+}
+
+const sameEmail = (a, b) => Boolean(a && b) && String(a).toLowerCase() === String(b).toLowerCase()
+
+/** A free username made from the email or the name: same rules as a typed one. */
+function freeUsername(list, { email, name }) {
+  const clean = (s) => String(s || '').normalize('NFC').replace(/[^\p{L}\p{N}._-]+/gu, '-').replace(/^[._-]+|[._-]+$/g, '').slice(0, 32)
+  let stem = clean(email && email.split('@')[0].toLowerCase()) || clean(name)
+  if (stem.length < 3) stem = 'user'
+  const taken = new Set(list.map((u) => u.username.toLowerCase()))
+  if (!taken.has(stem.toLowerCase())) return stem
+  for (let i = 2; ; i++) if (!taken.has(`${stem}-${i}`.toLowerCase())) return `${stem}-${i}`
+}
+
 /** Public view of an account: never the password hash, never the Kosmy Board `sub`. */
 export const publicUser = (u) =>
-  u ? { id: u.id, username: u.username, role: u.role, createdAt: u.createdAt, kosmyBoard: u.kosmy ? { name: u.kosmy.name, email: u.kosmy.email, linkedAt: u.kosmy.linkedAt } : null } : null
+  u
+    ? {
+        id: u.id,
+        username: u.username,
+        role: u.role,
+        createdAt: u.createdAt,
+        disabled: Boolean(u.disabled),
+        limits: limitsOf(u),
+        kosmyBoard: u.kosmy ? { name: u.kosmy.name, email: u.kosmy.email, linkedAt: u.kosmy.linkedAt } : null,
+      }
+    : null
 
 export function createAuth(store) {
   const USERS = 'users.json'
@@ -66,6 +108,8 @@ export function createAuth(store) {
     // Hash anyway when the user does not exist, so timing does not tell.
     const ok = user ? verifyPassword(password, user.password) : (verifyPassword(password, hashPassword('x')), false)
     if (!ok) return null
+    // Access removed (by Kosmy Board): the right password opens nothing.
+    if (user.disabled) return { user, disabled: true }
     return { user, token: await openSession(user.id) }
   }
 
@@ -88,7 +132,9 @@ export function createAuth(store) {
     const id = sha(token)
     const session = (await store.read(SESSIONS, [])).find((s) => s.id === id && s.expires > Date.now())
     if (!session) return null
-    const user = (await users()).find((u) => u.id === session.userId) || null
+    const found = (await users()).find((u) => u.id === session.userId)
+    // A disabled account's sessions are closed when it is disabled; refused here anyway.
+    const user = found && !found.disabled ? found : null
     // Sliding sessions: a session used in its last half is extended.
     if (user && session.expires - Date.now() < (SESSION_DAYS / 2) * 86400_000) {
       await store.update(SESSIONS, [], (list) => ({ value: list.map((s) => (s.id === id ? { ...s, expires: Date.now() + SESSION_DAYS * 86400_000 } : s)) }))
@@ -109,8 +155,8 @@ export function createAuth(store) {
       const next = { ...user }
       if (patch.role) {
         if (!ROLES.includes(patch.role)) throw Object.assign(new Error('role'), { code: 'role' })
-        // Never leave the site without an administrator.
-        if (user.role === 'admin' && patch.role !== 'admin' && list.filter((u) => u.role === 'admin').length === 1) {
+        // Never leave the site without an administrator who can sign in.
+        if (user.role === 'admin' && !user.disabled && patch.role !== 'admin' && activeAdmins(list).length <= 1) {
           throw Object.assign(new Error('last-admin'), { code: 'last-admin' })
         }
         next.role = patch.role
@@ -131,7 +177,7 @@ export function createAuth(store) {
     await store.update(USERS, [], (list) => {
       const user = list.find((u) => u.id === id)
       if (!user) throw Object.assign(new Error('missing'), { code: 'missing' })
-      if (user.role === 'admin' && list.filter((u) => u.role === 'admin').length === 1) throw Object.assign(new Error('last-admin'), { code: 'last-admin' })
+      if (user.role === 'admin' && !user.disabled && activeAdmins(list).length <= 1) throw Object.assign(new Error('last-admin'), { code: 'last-admin' })
       return { value: list.filter((u) => u.id !== id) }
     })
     await store.update(SESSIONS, [], (list) => ({ value: list.filter((s) => s.userId !== id) }))
@@ -163,7 +209,77 @@ export function createAuth(store) {
     })
   }
 
-  return { users, createUser, login, checkPassword, openSession, userFor, logout, updateUser, deleteUser, findByKosmy, linkKosmy, unlinkKosmy }
+  /**
+   * Kosmy Board gives a person access (kosmy.board-users.v1, PUT, or the
+   * `kosmy_board_access` claim at sign-in): find the account linked to `sub`,
+   * or link an unlinked one with the same email (`linkByEmail`, only when an
+   * administrator asked), or create one without a password. Then apply the
+   * role and the restrictions, the name and email shown, and enable it.
+   * `actor` is the `sub` of the administrator who asked, if any.
+   * Errors (code): role, limit (+ field), email-taken, self-admin, last-admin.
+   */
+  async function provisionKosmy(sub, { name = '', email = '', role, limits } = {}, { actor = null, linkByEmail = false } = {}) {
+    if (!ROLES.includes(role)) fail('role')
+    if (limits !== undefined && limits !== null && (typeof limits !== 'object' || Array.isArray(limits))) fail('limit', { field: null })
+    for (const f of LIMITS) {
+      if (limits?.[f.name] !== undefined && typeof limits[f.name] !== 'boolean') fail('limit', { field: f.name })
+    }
+    const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '')
+    name = str(name, 200)
+    email = str(email, 200)
+    if (email && !/^[^\s@]+@[^\s@]+$/.test(email)) email = ''
+    return store.update(USERS, [], (list) => {
+      let user = list.find((u) => u.kosmy?.sub === sub)
+      let status = 'updated'
+      if (!user && email) {
+        if (list.some((u) => u.kosmy && (sameEmail(u.kosmy.email, email) || sameEmail(u.email, email)))) {
+          // At sign-in, never block on it: the account is created beside the other one.
+          if (linkByEmail) fail('email-taken')
+        } else if (linkByEmail) {
+          user = list.find((u) => !u.kosmy && sameEmail(u.email, email))
+          if (user) status = 'linked'
+        }
+      }
+      if (!user) {
+        user = { id: randomBytes(8).toString('hex'), username: freeUsername(list, { email, name }), role, createdAt: new Date().toISOString() }
+        status = 'created'
+      }
+      if (user.role === 'admin' && !user.disabled && role !== 'admin' && status !== 'created') {
+        if (actor && user.kosmy?.sub === actor) fail('self-admin')
+        if (activeAdmins(list).length <= 1) fail('last-admin')
+      }
+      const { disabled, disabledAt, ...rest } = user
+      const next = {
+        ...rest,
+        role,
+        ...(email ? { email } : {}),
+        limits: { ...limitsOf(user), ...Object.fromEntries(LIMITS.filter((f) => typeof limits?.[f.name] === 'boolean').map((f) => [f.name, limits[f.name]])) },
+        kosmy: { sub, name: name || user.kosmy?.name || '', email: email || user.kosmy?.email || '', linkedAt: user.kosmy?.linkedAt || new Date().toISOString() },
+      }
+      const value = status === 'created' ? [...list, next] : list.map((u) => (u.id === user.id ? next : u))
+      return { value, returns: { status, user: next } }
+    })
+  }
+
+  /**
+   * Kosmy Board removes a person's access: the account linked to `sub` is
+   * disabled (its data stays) and its sessions end. Null when there is none.
+   * Errors (code): self-disable, last-admin.
+   */
+  async function disableKosmy(sub, { actor = null } = {}) {
+    const user = await store.update(USERS, [], (list) => {
+      const found = list.find((u) => u.kosmy?.sub === sub)
+      if (!found || found.disabled) return { value: list, returns: null }
+      if (actor && sub === actor) fail('self-disable')
+      if (found.role === 'admin' && activeAdmins(list).length <= 1) fail('last-admin')
+      const next = { ...found, disabled: true, disabledAt: new Date().toISOString() }
+      return { value: list.map((u) => (u.id === found.id ? next : u)), returns: next }
+    })
+    if (user) await store.update(SESSIONS, [], (list) => ({ value: list.filter((s) => s.userId !== user.id) }))
+    return user
+  }
+
+  return { users, createUser, login, checkPassword, openSession, userFor, logout, updateUser, deleteUser, findByKosmy, linkKosmy, unlinkKosmy, provisionKosmy, disableKosmy }
 }
 
 /** Tokens for the remote MCP server: shown once, stored as hashes. */

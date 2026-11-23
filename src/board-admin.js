@@ -69,6 +69,7 @@ const STRINGS = {
     'err_current-password': 'The current password is wrong.', err_username: 'A username has 3 to 40 letters, digits, dots, dashes or underscores.', err_password: 'A password has at least 8 characters.',
     err_taken: 'This username is already taken.', 'err_last-admin': 'The site needs at least one administrator.', err_missing: 'This account does not exist.', err_role: 'Unknown role.',
     err_issuer: 'The issuer is an http(s) address, such as https://board.example.com/oidc.', err_choose: 'Choose a provider.',
+    err_disabled: 'Your Lumy account ({name}) is disabled.', active: 'Active', disabled: 'Disabled',
   },
   fr: {
     overview: 'Vue d’ensemble', feedback: 'Avis', assistant: 'Assistant', access: 'Accès', users: 'Comptes', mcp: 'MCP', account: 'Votre compte',
@@ -109,6 +110,7 @@ const STRINGS = {
     'err_current-password': 'Le mot de passe actuel est incorrect.', err_username: 'Un nom d’utilisateur contient de 3 à 40 lettres, chiffres, points, tirets ou soulignés.', err_password: 'Un mot de passe contient au moins 8 caractères.',
     err_taken: 'Ce nom d’utilisateur est déjà pris.', 'err_last-admin': 'Le site doit garder au moins un administrateur.', err_missing: 'Ce compte n’existe pas.', err_role: 'Rôle inconnu.',
     err_issuer: 'L’émetteur est une adresse http(s), par exemple https://board.exemple.fr/oidc.', err_choose: 'Choisissez un fournisseur.',
+    err_disabled: 'Votre compte Lumy ({name}) est désactivé.', active: 'Actif', disabled: 'Désactivé',
   },
 }
 
@@ -121,8 +123,8 @@ export function pickLanguage(header) {
   return 'en'
 }
 
-function words(lang) {
-  const t = (key, vars = {}) => String(STRINGS[lang][key] ?? STRINGS.en[key] ?? key).replace(/\{(\w+)\}/g, (m, v) => (v in vars ? vars[v] : m))
+export function words(lang, extra = {}) {
+  const t = (key, vars = {}) => String(extra[lang]?.[key] ?? extra.en?.[key] ?? STRINGS[lang][key] ?? STRINGS.en[key] ?? key).replace(/\{(\w+)\}/g, (m, v) => (v in vars ? vars[v] : m))
   const date = (iso, withTime) => {
     if (!iso) return '—'
     try {
@@ -134,7 +136,7 @@ function words(lang) {
   return { t, date, lang }
 }
 
-class AdminError extends Error {
+export class AdminError extends Error {
   constructor(status, code, message) {
     super(code)
     Object.assign(this, { status, code, userMessage: message })
@@ -231,6 +233,7 @@ export function createBoardAdmin(app) {
 
     const user = await auth.findByKosmy(claims.sub)
     if (!user) throw new AdminError(403, 'not_linked', t('err_not-linked'))
+    if (user.disabled) throw new AdminError(403, 'forbidden', t('err_disabled', { name: user.username }))
     if (user.role !== 'admin') throw new AdminError(403, 'forbidden', t('err_forbidden', { name: user.username, role: t(user.role) }))
     return user
   }
@@ -412,12 +415,13 @@ export function createBoardAdmin(app) {
           blocks: [
             ...(users.length > MAX_ROWS ? [{ type: 'notice', text: t('tooMany', { n: MAX_ROWS }) }] : []),
             { type: 'table', id: 'accounts',
-              columns: [{ key: 'username', label: t('username') }, { key: 'role', label: t('role') }, { key: 'kosmy', label: t('linked') }, { key: 'created', label: t('created') }],
+              columns: [{ key: 'username', label: t('username') }, { key: 'role', label: t('role') }, { key: 'status', label: t('status') }, { key: 'kosmy', label: t('linked') }, { key: 'created', label: t('created') }],
               rows: users.slice(0, MAX_ROWS).map((u) => ({
                 id: u.id,
                 cells: {
                   username: u.id === me.id ? t('you', { name: u.username }) : u.username,
                   role: roleCell(u.role, t),
+                  status: u.disabled ? { text: t('disabled'), tone: 'danger' } : { text: t('active'), tone: 'success' },
                   kosmy: u.kosmy ? [u.kosmy.name, u.kosmy.email && `(${u.kosmy.email})`].filter(Boolean).join(' ') || t('kosmyBoard') : null,
                   created: date(u.createdAt),
                 },
@@ -662,5 +666,5 @@ export function createBoardAdmin(app) {
     return true
   }
 
-  return { handle }
+  return { handle, authenticate, json }
 }

@@ -9,7 +9,11 @@
  * Accounts are matched on the Kosmy Board `sub` only, never on the email,
  * which Kosmy Board does not verify. A person links their Kosmy Board account
  * from their own Lumy account (Account → Link); from then on, that `sub` opens
- * that account, with its role. An unknown `sub` opens nothing.
+ * that account, with its role. An unknown `sub` opens nothing, unless the ID
+ * token carries `kosmy_board_access` (kosmy.board-users.v1): an administrator
+ * of Kosmy Board gave this person access, so that role and those restrictions
+ * are applied, as by Kosmy Board's PUT, and the account is created if needed
+ * (never linked by email at sign-in). A disabled account never opens.
  *
  * node:crypto only: discovery, PKCE, the code exchange and the RS256 check of
  * the ID token are small enough to write here rather than add a dependency.
@@ -193,7 +197,10 @@ export function createOidcClient({ fetchImpl = fetch, now = () => Date.now() } =
     if (typeof payload.nonce !== 'string' || !safeEqual(payload.nonce, nonce)) throw new OidcError('token', 'ID token: nonce mismatch')
     if (typeof payload.sub !== 'string' || !payload.sub) throw new OidcError('token', 'ID token: no sub')
     const str = (v) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, 200) : '')
-    return { sub: payload.sub, name: str(payload.name), email: str(payload.email) || str(payload.preferred_username), locale: str(payload.locale) }
+    // kosmy.board-users.v1: the access an administrator of Kosmy Board gave this person, if any.
+    const a = payload.kosmy_board_access
+    const access = a && typeof a === 'object' && !Array.isArray(a) ? { role: a.role, values: a.values } : null
+    return { sub: payload.sub, name: str(payload.name), email: str(payload.email) || str(payload.preferred_username), locale: str(payload.locale), access }
   }
 
   /**
@@ -344,10 +351,25 @@ export function createKosmyBoard({ settings, instance, auth, base, cookie, sessi
       return go(res, `${dashboard()}?kosmy=linked#account`)
     }
 
-    const user = await auth.findByKosmy(claims.sub)
+    let user
+    if (claims.access) {
+      try {
+        const done = await auth.provisionKosmy(claims.sub, { name: claims.name, email: claims.email, role: claims.access.role, limits: claims.access.values })
+        user = done.user
+        log(`  Kosmy Board: access from Kosmy Board ${done.status} account "${user.username}" (${user.role})`)
+      } catch (err) {
+        if (!err.code || !['role', 'limit', 'last-admin', 'self-admin', 'email-taken'].includes(err.code)) throw err
+        log(`  Kosmy Board: the access from Kosmy Board could not be applied (${err.code})`)
+        return fail('access')
+      }
+    } else user = await auth.findByKosmy(claims.sub)
     if (!user) {
       log(`  Kosmy Board: no Lumy account is linked to ${claims.sub}`)
       return fail('not-linked')
+    }
+    if (user.disabled) {
+      log(`  Kosmy Board: sign-in refused, account "${user.username}" is disabled`)
+      return fail('disabled')
     }
     // A new session replaces the one this browser had, if any.
     await auth.logout(cookie(req, 'lumy_session'))

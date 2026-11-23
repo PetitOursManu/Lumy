@@ -15,10 +15,11 @@ import { build, LUMY_ROOT, lumyVersion, printSummary } from './build.js'
 import { loadConfig } from './config.js'
 import { pageUrl } from './content.js'
 import { openStore } from './store.js'
-import { createAuth, createTokens, rateLimiter, publicUser, ROLES } from './auth.js'
+import { createAuth, createTokens, rateLimiter, publicUser, mayUseTokens, ROLES } from './auth.js'
 import { loadSettings, patchSettings, publicSettings, activeProvider, kosmyEnabled, kosmySettings } from './settings.js'
 import { createKosmyBoard, createOidcClient, LOGIN as KOSMY_LOGIN, CALLBACK as KOSMY_CALLBACK } from './kosmy-board.js'
 import { createBoardAdmin } from './board-admin.js'
+import { createBoardUsers } from './board-users.js'
 import { answer } from './assistant.js'
 import { testProvider, providerById } from './providers.js'
 import { mcpHandler } from './mcp-http.js'
@@ -129,7 +130,7 @@ const ERRORS = {
   username: 'A username has 3 to 40 letters, digits, dots, dashes or underscores.',
   password: 'A password has at least 8 characters.',
   taken: 'This username is already taken.',
-  'last-admin': 'The site needs at least one administrator.',
+  'last-admin': 'The site needs at least one active administrator.',
   missing: 'This account does not exist.',
   role: 'Unknown role.',
   issuer: 'The issuer is an http(s) address, such as https://board.example.com/oidc.',
@@ -260,10 +261,19 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
   }
 
   const files = staticHandler(() => out, config.base)
+  // A token works only while its owner may hold one: not disabled, not restricted.
+  const mcpTokens = {
+    async check(value) {
+      const token = await tokens.check(value)
+      if (!token) return null
+      const owner = (await auth.users()).find((u) => u.id === token.userId)
+      return owner && mayUseTokens(owner) ? token : null
+    },
+  }
   const mcp = mcpHandler({
     root,
     version,
-    tokens,
+    tokens: mcpTokens,
     readBody,
     canReadAnonymously: async () => settings.mcp.enabled && settings.mcp.publicRead && settings.access === 'public',
     onWrite: (tool) => rebuild(`MCP ${tool}`),
@@ -376,6 +386,7 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
       return lastBuild
     },
   })
+  const boardUsers = createBoardUsers({ admin: boardAdmin, auth, settings: () => settings, readBody, log })
 
   /* ── The dashboard page (one HTML shell, the app draws the rest) ──── */
   async function dashboardPage(res, view) {
@@ -479,6 +490,7 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
       if (!authLimit(clientIp(req))) return json(res, 429, { error: 'Too many attempts. Wait a minute.', code: 'rate' })
       const result = await auth.login(body.username, body.password)
       if (!result) return json(res, 401, { error: 'Wrong username or password.', code: 'credentials' })
+      if (result.disabled) return json(res, 403, { error: 'This account is disabled. Ask an administrator of this site.', code: 'disabled' })
       await sessionCookie(res, req, result.token)
       return json(res, 200, { user: publicUser(result.user) })
     }
@@ -629,7 +641,10 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
     if (route === 'admin/tokens') {
       if (!need(['admin', 'editor'])) return
       if (method === 'GET') return json(res, 200, { tokens: await tokenList(user), url: `${config.url}${config.base}_lumy/mcp` })
-      if (method === 'POST') return json(res, 200, { token: await tokens.create({ name: body.name, userId: user.id, scope: body.scope === 'read' ? 'read' : 'write' }) })
+      if (method === 'POST') {
+        if (!mayUseTokens(user)) return json(res, 403, { error: 'Your account cannot create access tokens.', code: 'tokens' })
+        return json(res, 200, { token: await tokens.create({ name: body.name, userId: user.id, scope: body.scope === 'read' ? 'read' : 'write' }) })
+      }
     }
     const tokenRoute = route.match(/^admin\/tokens\/([\w-]+)$/)
     if (tokenRoute && method === 'DELETE') {
@@ -677,6 +692,7 @@ export async function createApp(rootDir, { dev = false, watchFiles = dev, buildF
       // The admin in Kosmy Board: called by Kosmy Board's server with its own token,
       // never with a session, so it comes before sessions, sign-in pages and private pages.
       if (await boardAdmin.handle(req, res, sub)) return
+      if (await boardUsers.handle(req, res, sub)) return
       // Accounts are only looked up where they matter, not for every image.
       const user = () => auth.userFor(cookie(req, 'lumy_session'))
       if (sub.startsWith('_lumy/api/')) return await api(req, res, sub.slice('_lumy/api/'.length), await user())
