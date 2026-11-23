@@ -100,6 +100,15 @@ Once sign-in with Kosmy Board is set up, an administrator can also run Lumy's da
 
 Kosmy Board's server calls `{instance}/api/kosmy-board/admin` with a 60-second token signed by its OpenID Connect key, made for one request and used once. Lumy checks it (RS256, `typ`, `iss`, `aud`, `exp`, `htm`, `htu`, `jti`), then opens only the Lumy account **linked** to that Kosmy Board account, under Account, and only if it is an **administrator**: Kosmy Board gives no rights. Every action goes through the same checks as the dashboard, and saved secrets (API keys, client secret) are never sent back; a new MCP token is shown once. Uploading files and editing pages stay in Lumy and in the documentation's source. The protocol: [kosmy.board-admin.v1](https://github.com/PetitOursManu/Kosmy-Board/blob/main/docs/admin-api.md).
 
+### Users managed by Kosmy Board
+
+Kosmy Board can also manage who gets into Lumy ([kosmy.board-users.v1](https://github.com/PetitOursManu/Kosmy-Board/blob/main/docs/users-api.md)): an administrator of the Board gives a person access to the Lumy instance with a role (**Administrator**, **Editor** or **Reader**) and, for editors, one restriction, **Can use MCP access tokens** (off: the editor cannot create tokens and their tokens stop working). Kosmy Board's server calls `{instance}/api/kosmy-board/users` (GET), and `{instance}/api/kosmy-board/users/{sub}` (PUT, DELETE), with the same one-request token as the admin; the person who acts must open an active Lumy administrator.
+
+- **PUT** creates the account, linked to that Kosmy Board account and **without a password** (it signs in with Kosmy Board), or links an unlinked account that carries the same email, or updates the linked one: role, restriction, name and email shown. An email already linked to another Kosmy Board account is refused (409).
+- **DELETE** **disables** the account, and its data stays: its sessions end, and it can no longer sign in with its password or with Kosmy Board, use the admin in Kosmy Board, or use its MCP tokens. A later PUT enables it again.
+- Nobody can take away their own administrator rights or access from the Board, and the site always keeps one active administrator (409).
+- At sign-in, when the ID token carries `kosmy_board_access`, Lumy applies it like a PUT and creates the account if needed (never linking by email there); without it, nothing changes: an unlinked `sub` still opens nothing.
+
 ## Documentation
 
 Lumy's documentation is written with Lumy, in English and French, in [`site/`](site/):

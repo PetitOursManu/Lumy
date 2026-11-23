@@ -50,7 +50,7 @@
       err_credentials: 'Wrong username or password.', err_rate: 'Too many attempts. Wait a minute.', err_username: 'A username has 3 to 40 letters, digits, dots, dashes or underscores.',
       err_password: 'A password has at least 8 characters.', err_taken: 'This username is already taken.', 'err_last-admin': 'The site needs at least one administrator.',
       'err_setup-done': 'The administrator already exists. Sign in instead.', 'err_signups-closed': 'Sign-ups are closed on this site.', 'err_current-password': 'The current password is wrong.',
-      err_forbidden: 'Your account cannot do this.', err_signin: 'Sign in first.',
+      err_forbidden: 'Your account cannot do this.', err_signin: 'Sign in first.', err_disabled: 'This account is disabled. Ask an administrator of this site.', err_tokens: 'Your account cannot create access tokens.',
       or: 'or', kosmySignIn: 'Sign in with Kosmy Board', kosmyBoard: 'Kosmy Board',
       kosmyText: 'Let people sign in from Kosmy Board, the page that gathers your self-hosted apps. An account opens only once its owner has linked it, under Account.',
       issuer: 'Issuer', clientId: 'Client ID', clientSecret: 'Client secret', secretSaved: 'Saved. Type a new secret to replace it.', secretNone: 'Paste the secret Kosmy Board shows once',
@@ -62,6 +62,8 @@
       kosmy_failed: 'Signing in with Kosmy Board failed. Try again; if it goes on, check the settings under Access.', kosmy_unreachable: 'Kosmy Board cannot be reached.',
       'kosmy_not-linked': 'This Kosmy Board account is linked to no account here. Sign in with your password, then link it under Account.',
       kosmy_taken: 'This Kosmy Board account is already linked to another account here.', kosmy_session: 'Your session ended before the link was made. Sign in and try again.',
+      kosmy_disabled: 'This account is disabled. Ask an administrator of this site.', kosmy_access: 'The access Kosmy Board gives this account cannot be applied here (unknown role, or the site would lose its last administrator). Ask an administrator.',
+      disabled: 'Disabled', noTokensAllowed: 'Your account cannot create access tokens. An administrator can allow it from Kosmy Board.',
       hint_ollama: 'Ollama Cloud, or http://localhost:11434 for a local Ollama (no key).', hint_fal: 'fal routes chat models through OpenRouter: use ids such as openai/gpt-4o-mini.', hint_custom: 'Any server with /v1/chat/completions: LM Studio, vLLM, LocalAI, Together…',
     },
     fr: {
@@ -94,7 +96,7 @@
       err_credentials: 'Nom d’utilisateur ou mot de passe incorrect.', err_rate: 'Trop de tentatives. Patientez une minute.', err_username: 'Un nom d’utilisateur contient de 3 à 40 lettres, chiffres, points, tirets ou soulignés.',
       err_password: 'Un mot de passe contient au moins 8 caractères.', err_taken: 'Ce nom d’utilisateur est déjà pris.', 'err_last-admin': 'Le site doit garder au moins un administrateur.',
       'err_setup-done': 'L’administrateur existe déjà. Connectez-vous.', 'err_signups-closed': 'Les inscriptions sont fermées sur ce site.', 'err_current-password': 'Le mot de passe actuel est incorrect.',
-      err_forbidden: 'Votre compte ne peut pas faire cela.', err_signin: 'Connectez-vous d’abord.',
+      err_forbidden: 'Votre compte ne peut pas faire cela.', err_signin: 'Connectez-vous d’abord.', err_disabled: 'Ce compte est désactivé. Demandez à un administrateur de ce site.', err_tokens: 'Votre compte ne peut pas créer de jetons d’accès.',
       or: 'ou', kosmySignIn: 'Se connecter avec Kosmy Board', kosmyBoard: 'Kosmy Board',
       kosmyText: 'Permettre de se connecter depuis Kosmy Board, la page qui rassemble vos applis auto-hébergées. Un compte ne s’ouvre que si son propriétaire l’a relié, dans Compte.',
       issuer: 'Émetteur', clientId: 'Identifiant client', clientSecret: 'Secret client', secretSaved: 'Enregistré. Tapez un nouveau secret pour le remplacer.', secretNone: 'Collez le secret que Kosmy Board affiche une fois',
@@ -106,6 +108,8 @@
       kosmy_failed: 'La connexion avec Kosmy Board a échoué. Réessayez ; si cela continue, vérifiez les réglages dans Accès.', kosmy_unreachable: 'Kosmy Board est injoignable.',
       'kosmy_not-linked': 'Ce compte Kosmy Board n’est relié à aucun compte ici. Connectez-vous avec votre mot de passe, puis reliez-le dans Compte.',
       kosmy_taken: 'Ce compte Kosmy Board est déjà relié à un autre compte ici.', kosmy_session: 'Votre session a pris fin avant la liaison. Connectez-vous et réessayez.',
+      kosmy_disabled: 'Ce compte est désactivé. Demandez à un administrateur de ce site.', kosmy_access: 'L’accès que Kosmy Board donne à ce compte ne peut pas s’appliquer ici (rôle inconnu, ou le site perdrait son dernier administrateur). Demandez à un administrateur.',
+      disabled: 'Désactivé', noTokensAllowed: 'Votre compte ne peut pas créer de jetons d’accès. Un administrateur peut l’autoriser depuis Kosmy Board.',
       hint_ollama: 'Ollama Cloud, ou http://localhost:11434 pour un Ollama local (sans clé).', hint_fal: 'fal passe les modèles de chat par OpenRouter : utilisez des identifiants comme openai/gpt-4o-mini.', hint_custom: 'Tout serveur avec /v1/chat/completions : LM Studio, vLLM, LocalAI, Together…',
     },
   }
@@ -455,7 +459,7 @@
       const { users } = await api('admin/users')
       const roleOptions = (current) => ['admin', 'editor', 'reader'].map((r) => `<option value="${r}" ${r === current ? 'selected' : ''}>${esc(t(r))}</option>`).join('')
       const rows = users
-        .map((u) => `<tr data-user="${u.id}"><td><strong>${esc(u.username)}</strong>${u.id === state.me.id ? ' <span class="lmd-pill">✓</span>' : ''}${u.kosmyBoard ? ` <span class="lmd-pill" title="${esc([u.kosmyBoard.name, u.kosmyBoard.email].filter(Boolean).join(' · '))}">${icon('board')}${esc(t('kosmyLinkedPill'))}${u.id === state.me.id ? '' : ` <button class="lmd-link" type="button" data-act="unlink-user" title="${esc(t('kosmyUnlink'))}" aria-label="${esc(t('kosmyUnlink'))}">×</button>`}</span>` : ''}</td><td><select class="lmd-select" data-role="${u.id}" style="height:32px;width:auto" aria-label="${esc(t('role'))}">${roleOptions(u.role)}</select></td><td class="lmd-muted">${esc(date(u.createdAt))}</td><td class="lmd-num"><span class="lmd-del">${u.id === state.me.id ? '' : `<button class="lmd-btn lmd-btn-sm lmd-btn-danger" type="button" data-act="ask-remove">${esc(t('remove'))}</button>`}</span></td></tr>`)
+        .map((u) => `<tr data-user="${u.id}"><td><strong>${esc(u.username)}</strong>${u.id === state.me.id ? ' <span class="lmd-pill">✓</span>' : ''}${u.disabled ? ` <span class="lmd-pill lmd-pill-bad">${esc(t('disabled'))}</span>` : ''}${u.kosmyBoard ? ` <span class="lmd-pill" title="${esc([u.kosmyBoard.name, u.kosmyBoard.email].filter(Boolean).join(' · '))}">${icon('board')}${esc(t('kosmyLinkedPill'))}${u.id === state.me.id ? '' : ` <button class="lmd-link" type="button" data-act="unlink-user" title="${esc(t('kosmyUnlink'))}" aria-label="${esc(t('kosmyUnlink'))}">×</button>`}</span>` : ''}</td><td><select class="lmd-select" data-role="${u.id}" style="height:32px;width:auto" aria-label="${esc(t('role'))}">${roleOptions(u.role)}</select></td><td class="lmd-muted">${esc(date(u.createdAt))}</td><td class="lmd-num"><span class="lmd-del">${u.id === state.me.id ? '' : `<button class="lmd-btn lmd-btn-sm lmd-btn-danger" type="button" data-act="ask-remove">${esc(t('remove'))}</button>`}</span></td></tr>`)
         .join('')
       return `${head('access', t('accessText'))}
         <section class="lmd-card"><h2>${esc(t('visibility'))}</h2><p>${esc(t('visibilityText'))}</p>${seg('access', s.access, [['public', t('public')], ['private', t('private')]])}</section>
@@ -485,7 +489,7 @@
           <div id="lmd-new-token"></div>
           ${rows ? `<div class="lmd-table-wrap"><table class="lmd-table"><thead><tr><th>${esc(t('name'))}</th><th>${esc(t('scope'))}</th><th>${esc(t('owner'))}</th><th>${esc(t('created'))}</th><th>${esc(t('lastUsed'))}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : `<div class="lmd-empty">${esc(t('noTokens'))}</div>`}
           <hr class="lmd-sep"><h2 style="font-size:14.5px;margin:0 0 12px">${esc(t('newToken'))}</h2>
-          <form class="lmd-row" data-form="token" novalidate>${field('name', t('name'), 'text', `placeholder="${esc(t('tokenName'))}"`)}<div class="lmd-field" style="flex:0 0 auto">${esc(t('scope'))}${seg('scope', 'write', [['write', t('write')], ['read', t('read')]])}</div><button class="lmd-btn lmd-btn-primary" type="submit">${esc(t('createToken'))}</button></form>
+          ${state.me.role === 'editor' && state.me.limits?.mcpTokens === false ? `<p class="lmd-muted" style="margin:0">${esc(t('noTokensAllowed'))}</p>` : `<form class="lmd-row" data-form="token" novalidate>${field('name', t('name'), 'text', `placeholder="${esc(t('tokenName'))}"`)}<div class="lmd-field" style="flex:0 0 auto">${esc(t('scope'))}${seg('scope', 'write', [['write', t('write')], ['read', t('read')]])}</div><button class="lmd-btn lmd-btn-primary" type="submit">${esc(t('createToken'))}</button></form>`}
         </section>`
     },
 

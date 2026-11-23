@@ -100,6 +100,15 @@ Une fois la connexion avec Kosmy Board réglée, un administrateur peut aussi pi
 
 Le serveur de Kosmy Board appelle `{instance}/api/kosmy-board/admin` avec un jeton de 60 secondes signé par sa clé OpenID Connect, fait pour une seule requête et utilisable une seule fois. Lumy le vérifie (RS256, `typ`, `iss`, `aud`, `exp`, `htm`, `htu`, `jti`), puis n’ouvre que le compte Lumy **relié** à ce compte Kosmy Board, dans Compte, et seulement s’il est **administrateur** : Kosmy Board ne donne aucun droit. Chaque action passe par les mêmes vérifications que le tableau de bord, et les secrets enregistrés (clés d’API, secret client) ne sont jamais renvoyés ; un nouveau jeton MCP n’est affiché qu’une fois. L’envoi de fichiers et l’écriture des pages restent dans Lumy et dans les sources de la documentation. Le protocole : [kosmy.board-admin.v1](https://github.com/PetitOursManu/Kosmy-Board/blob/main/docs/admin-api.md).
 
+### Les utilisateurs gérés par Kosmy Board
+
+Kosmy Board peut aussi gérer qui entre dans Lumy ([kosmy.board-users.v1](https://github.com/PetitOursManu/Kosmy-Board/blob/main/docs/users-api.md)) : un administrateur du Board donne à une personne l’accès à l’instance Lumy avec un rôle (**Administrateur**, **Rédacteur** ou **Lecteur**) et, pour les rédacteurs, une restriction, **Peut utiliser des jetons d’accès MCP** (décochée : le rédacteur ne peut pas en créer, et ses jetons cessent de fonctionner). Le serveur de Kosmy Board appelle `{instance}/api/kosmy-board/users` (GET) et `{instance}/api/kosmy-board/users/{sub}` (PUT, DELETE), avec le même jeton à usage unique que l’admin ; la personne qui agit doit ouvrir un administrateur Lumy actif.
+
+- **PUT** crée le compte, relié à ce compte Kosmy Board et **sans mot de passe** (il se connecte avec Kosmy Board), ou relie un compte non relié qui porte la même adresse e-mail, ou met à jour le compte relié : rôle, restriction, nom et e-mail affichés. Une adresse déjà reliée à un autre compte Kosmy Board est refusée (409).
+- **DELETE** **désactive** le compte, ses données restent : ses sessions sont fermées, et il ne peut plus se connecter ni par mot de passe ni avec Kosmy Board, ni utiliser l’admin dans Kosmy Board, ni ses jetons MCP. Un PUT plus tard le réactive.
+- Personne ne peut se retirer ses propres droits d’administrateur ni son accès depuis le Board, et le site garde toujours un administrateur actif (409).
+- À la connexion, quand l’ID token porte `kosmy_board_access`, Lumy l’applique comme un PUT et crée le compte s’il le faut (sans jamais relier par l’e-mail à ce moment-là) ; sans elle, rien ne change : un `sub` non relié n’ouvre toujours rien.
+
 ## Documentation
 
 La documentation de Lumy est écrite avec Lumy, en anglais et en français, dans [`site/`](site/) :

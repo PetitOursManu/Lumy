@@ -3,7 +3,7 @@ title: Serveur et tableau de bord
 navTitle: Serveur et tableau de bord
 description: lumy serve ajoute un tableau de bord, des comptes, une documentation privée, l’assistant des lecteurs et un serveur MCP distant.
 audience: [admin]
-source_hash: 0061f97abe38
+source_hash: bf815aed2cf5
 ---
 
 Un site statique suffit pour une documentation publique. `lumy serve` ajoute ce qu’un hébergeur statique ne sait pas faire, le tout réglé depuis un tableau de bord dans le navigateur :
@@ -73,6 +73,10 @@ Les mots de passe sont hachés avec scrypt, les sessions durent 30 jours et se p
 Les comptes sont reliés par le `sub` de Kosmy Board, jamais par l’e-mail, que Kosmy Board ne vérifie pas. Un compte Kosmy Board que personne n’a relié n’ouvre rien ; un compte relié ouvre son compte Lumy, avec le rôle de ce compte. Un administrateur peut défaire le lien de quelqu’un depuis la liste des comptes, mais seul son propriétaire peut le créer.
 
 Le secret client est chiffré comme les clés de l’assistant et n’est jamais renvoyé à un navigateur. Se déconnecter de Lumy ne ferme que la session Lumy : **Ouvrir** dans Kosmy Board reconnecte d’un clic.
+
+### Les utilisateurs gérés par Kosmy Board
+
+Kosmy Board peut aussi donner aux personnes l’accès à Lumy lui-même : un administrateur du Board choisit le rôle (Administrateur, Rédacteur, Lecteur) et, pour un rédacteur, s’il **peut utiliser des jetons d’accès MCP**. Lumy crée le compte, relié et sans mot de passe, ou le met à jour ; retirer l’accès le **désactive** (sessions fermées, plus aucune connexion, jetons MCP refusés) et garde ses données. Les comptes désactivés portent un badge **Désactivé** dans la liste des comptes. Personne ne peut se retirer ses propres droits depuis le Board, et le site garde toujours un administrateur actif. Le protocole : [kosmy.board-users.v1](https://github.com/PetitOursManu/Kosmy-Board/blob/main/docs/users-api.md).
 
 ## L’assistant
 
